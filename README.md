@@ -4,7 +4,7 @@ Founder of TechMood 🚀
 
 🎓 Management Information Systems Graduate
 
-🤖 MBA in AI Student
+🤖 MBA in AI Graduate
 
 💻 Interested in:
 - AI
