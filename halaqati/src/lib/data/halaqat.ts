@@ -66,3 +66,27 @@ export async function halaqaRoster(supabase: Supa, halaqaId: string, statuses: s
 export function personName(p: { full_name: string; display_name: string | null } | null | undefined) {
   return p?.display_name || p?.full_name || "—";
 }
+
+export type ViewerHalaqa = { id: string; name: string; league_enabled: boolean; chat_students_can_post: boolean; is_demo: boolean; staff: boolean };
+
+/** Halaqat the viewer may see as a member: student, staff, or parent of an active student. */
+export async function viewerHalaqat(supabase: Supa, userId: string): Promise<ViewerHalaqa[]> {
+  const cols = "id, name, league_enabled, chat_students_can_post, is_demo";
+  const [{ data: own }, { data: kids }] = await Promise.all([
+    supabase.from("halaqa_memberships").select(`role, halaqat(${cols})`).eq("user_id", userId).eq("status", "active").limit(100),
+    supabase.from("parent_student_links").select("student_id").eq("parent_id", userId).eq("status", "active").limit(50),
+  ]);
+  type H = Omit<ViewerHalaqa, "staff">;
+  const map = new Map<string, ViewerHalaqa>();
+  for (const m of (own ?? []) as unknown as Array<{ role: string; halaqat: H | null }>) {
+    if (m.halaqat) map.set(m.halaqat.id, { ...m.halaqat, staff: m.role !== "student" || map.get(m.halaqat.id)?.staff === true });
+  }
+  const kidIds = (kids ?? []).map((k) => k.student_id);
+  if (kidIds.length) {
+    const { data } = await supabase.from("halaqa_memberships").select(`halaqat(${cols})`).in("user_id", kidIds).eq("role", "student").eq("status", "active").limit(100);
+    for (const m of (data ?? []) as unknown as Array<{ halaqat: H | null }>) {
+      if (m.halaqat && !map.has(m.halaqat.id)) map.set(m.halaqat.id, { ...m.halaqat, staff: false });
+    }
+  }
+  return [...map.values()];
+}

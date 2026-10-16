@@ -28,7 +28,7 @@ export function HalaqaCard({ h }: { h: PublicHalaqa }) {
       {formatSchedule(h.schedule).length > 0 && (
         <p className="text-sm text-muted">{formatSchedule(h.schedule).join(" · ")}</p>
       )}
-      <p className="text-sm text-muted">{h.active_students} / {h.max_students} طالب</p>
+      <p className="text-sm text-muted">{h.active_students} من {h.max_students} طالب</p>
     </Card>
   );
 }

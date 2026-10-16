@@ -16,7 +16,7 @@ export function StudentStatsView({ weeks }: { weeks: WeekStat[] }) {
         <Stat label={`النقاط (${weeks.length} أسبوعًا)`} value={sum(weeks.map((w) => w.points))} />
         <Stat label="حفظ جديد معتمد" value={`${sum(weeks.map((w) => w.new_ayat))} آية`} />
         <Stat label="مراجعة" value={`${sum(weeks.map((w) => w.review_ayat))} آية`} />
-        <Stat label="متوسط الإتقان" value={ms.length ? `${(sum(ms) / ms.length).toFixed(1)} / 5` : "—"} />
+        <Stat label="متوسط الإتقان" value={ms.length ? `${(sum(ms) / ms.length).toFixed(1)} من 5` : "—"} />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card><BarChart title="النقاط أسبوعيًا" unit="نقطة" data={series((w) => w.points, "نقطة")} /></Card>

@@ -89,7 +89,7 @@ export default async function HalaqaDetailsPage({ params }: PageProps<"/halaqat/
 
       <aside className="flex flex-col gap-4">
         <Card className="flex flex-col gap-3">
-          <p className="text-lg font-bold">{h.active_students} / {h.max_students} طالب</p>
+          <p className="text-lg font-bold">{h.active_students} من {h.max_students} طالب</p>
           {membership ? (
             <Alert tone="info">
               {membership.role !== "student" ? (

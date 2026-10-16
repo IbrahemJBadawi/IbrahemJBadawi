@@ -5,6 +5,7 @@ import { LeagueTable } from "@/components/motivation/LeagueTable";
 import { Alert, Button, Card, EmptyState, PageHeader, cx } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import type { LeagueRow } from "@/lib/data/motivation";
+import { viewerHalaqat } from "@/lib/data/halaqat";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "الدوري" };
@@ -21,21 +22,10 @@ export default async function LeaguePage({ searchParams }: PageProps<"/dashboard
   const sp = await searchParams;
   const supabase = await createClient();
 
-  // Halaqat the viewer may see a league for: as student, staff, or parent of a student.
-  const [{ data: own }, { data: kids }, { data: profile }] = await Promise.all([
-    supabase.from("halaqa_memberships").select("halaqa_id, role, halaqat(id, name, league_enabled)").eq("user_id", user.id).eq("status", "active").limit(100),
-    supabase.from("parent_student_links").select("student_id").eq("parent_id", user.id).eq("status", "active").limit(50),
+  const [halaqat, { data: profile }] = await Promise.all([
+    viewerHalaqat(supabase, user.id),
     supabase.from("profiles").select("league_visible").eq("id", user.id).single(),
   ]);
-  type H = { id: string; name: string; league_enabled: boolean };
-  const map = new Map<string, H>();
-  for (const m of (own ?? []) as unknown as Array<{ halaqat: H | null }>) if (m.halaqat) map.set(m.halaqat.id, m.halaqat);
-  const kidIds = (kids ?? []).map((k) => k.student_id);
-  if (kidIds.length) {
-    const { data } = await supabase.from("halaqa_memberships").select("halaqat(id, name, league_enabled)").in("user_id", kidIds).eq("role", "student").eq("status", "active").limit(100);
-    for (const m of (data ?? []) as unknown as Array<{ halaqat: H | null }>) if (m.halaqat) map.set(m.halaqat.id, m.halaqat);
-  }
-  const halaqat = [...map.values()];
   const selected = halaqat.find((h) => h.id === sp.h) ?? halaqat[0];
   const period: Period = PERIODS.some((p) => p.key === sp.p) ? (sp.p as Period) : "week";
   const href = (h: string, p: Period) => `/dashboard/league?h=${h}&p=${p}`;

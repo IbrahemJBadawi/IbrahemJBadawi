@@ -5,6 +5,7 @@ import { TaskForm, WirdForm } from "@/components/motivation/Forms";
 import { LeagueTable } from "@/components/motivation/LeagueTable";
 import { TaskList, type PersonalTask } from "@/components/motivation/TaskList";
 import { WeekStrip } from "@/components/motivation/WeekStrip";
+import { LevelCard } from "@/components/motivation/LevelCard";
 import { Alert, ButtonLink, Card, EmptyState, Stat } from "@/components/ui";
 import type { CurrentUser } from "@/lib/auth";
 import { studentMemberships } from "@/lib/data/halaqat";
@@ -22,7 +23,8 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
   const active = memberships.filter((m) => m.status === "active");
   const halaqaIds = active.map((m) => m.halaqa_id);
 
-  const [motivation, tasksRes, leagueRes, overviewRes, assignmentRes, sessionRes] = await Promise.all([
+  const [msgRes, motivation, tasksRes, leagueRes, overviewRes, assignmentRes, sessionRes] = await Promise.all([
+    halaqaIds.length ? supabase.rpc("get_halaqa_messages", { p_halaqa: halaqaIds[0], p_limit: 30 }) : Promise.resolve({ data: [] }),
     getMotivation(supabase),
     supabase.from("personal_tasks").select("id, title, due_on, priority, done_at").eq("user_id", user.id).is("done_at", null)
       .order("priority").order("due_on", { ascending: true, nullsFirst: false }).limit(3),
@@ -53,6 +55,8 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
   const tasks = (tasksRes.data ?? []) as PersonalTask[];
   const league = (leagueRes.data ?? []) as LeagueRow[];
   const m = motivation;
+  const announcement = ((msgRes.data ?? []) as Array<{ id: string; body: string; author_name: string; is_announcement: boolean; pinned: boolean; created_at: string }>)
+    .find((x) => x.is_announcement || x.pinned);
 
   return (
     <div className="flex flex-col gap-5">
@@ -73,15 +77,29 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
             <div className="border-t border-line pt-3"><WirdForm today={m.wird_today} /></div>
           </Card>
           <div className="grid grid-cols-2 gap-3">
+            <Card className="col-span-2"><LevelCard points={m.points_total} compact /></Card>
             <Stat label="نقاط هذا الأسبوع" value={m.points_week} />
             <Stat label="مجموع النقاط" value={m.points_total} />
             <Card className="col-span-2 text-sm text-muted">
               <p className="mb-1 font-semibold text-ink">كيف أجمع النقاط؟</p>
               حفظ جديد معتمد 10 · مراجعة 6 · حضور 5 (متأخر 3) · ورد يومي 3 · مهمة منجزة 2
-              <Link href="/dashboard/stats" className="mt-1 block font-semibold text-brand-800">إحصائياتي ←</Link>
+              <span className="mt-1 flex flex-wrap gap-x-4">
+                <Link href="/dashboard/achievements" className="font-semibold text-brand-800">إنجازاتي ←</Link>
+                <Link href="/dashboard/stats" className="font-semibold text-brand-800">إحصائياتي ←</Link>
+              </span>
             </Card>
           </div>
         </section>
+      )}
+
+      {announcement && (
+        <Link href={`/dashboard/messages?h=${halaqaIds[0]}`} className="surface flex items-start gap-3 border-brand-600/30 p-4">
+          <span className="grid size-10 shrink-0 place-items-center rounded-[14px] bg-brand-100 text-brand-800"><Icon name="megaphone" /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm text-muted">إعلان من {announcement.author_name} · {formatDateTime(announcement.created_at)}</span>
+            <span className="line-clamp-2 block">{announcement.body}</span>
+          </span>
+        </Link>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -142,8 +160,8 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <Stat label="مجموع الحفظ المعتمد" value={`${o.amount.new_memorization_ayat} آية`} />
             <Stat label="المراجعة" value={`${o.amount.review_ayat_period} آية`} />
-            <Stat label="متوسط الإتقان" value={o.mastery_avg ? `${o.mastery_avg} / 5` : "—"} />
-            <Stat label="متوسط جودة التلاوة" value={o.recitation_avg ? `${o.recitation_avg} / 5` : "—"} />
+            <Stat label="متوسط الإتقان" value={o.mastery_avg ? `${o.mastery_avg} من 5` : "—"} />
+            <Stat label="متوسط جودة التلاوة" value={o.recitation_avg ? `${o.recitation_avg} من 5` : "—"} />
           </div>
           <Link href="/dashboard/journey" className="mt-3 inline-block font-semibold text-brand-800 underline">تفاصيل رحلتي القرآنية</Link>
         </section>

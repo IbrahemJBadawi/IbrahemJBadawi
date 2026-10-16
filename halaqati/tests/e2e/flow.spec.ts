@@ -148,6 +148,22 @@ test.describe.serial("halaqa workflow", () => {
     await student.page.goto("/dashboard/notifications");
     await expect(student.page.locator("#main").getByText(/ما شاء الله/)).toBeVisible();
 
+    // Halaqa messages: a teacher announcement reaches the student.
+    await teacher.page.goto(`/dashboard/messages?h=${halaqaId}`);
+    await teacher.page.locator("#msg-body").fill("غدًا مراجعة جزء عمّ");
+    await teacher.page.getByLabel(/إعلان/).check();
+    await teacher.page.getByRole("button", { name: "إرسال" }).click();
+    await expect(teacher.page.locator("ol[aria-label='الرسائل']").getByText("غدًا مراجعة جزء عمّ")).toBeVisible();
+    await student.page.goto(`/dashboard/messages?h=${halaqaId}`);
+    await expect(student.page.locator("ol[aria-label='الرسائل']").getByText("غدًا مراجعة جزء عمّ")).toBeVisible();
+    await expect(student.page.getByText("المحفّظ جعل هذه الحلقة للإعلانات فقط.")).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+
+    // Achievements and the guide.
+    await student.page.goto("/dashboard/achievements");
+    await expect(student.page.getByText("أول تسميع")).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+
     // Settings page offers push, install and theme.
     await student.page.goto("/dashboard/settings");
     await expect(student.page.getByRole("heading", { name: "إشعارات الجهاز" })).toBeVisible();

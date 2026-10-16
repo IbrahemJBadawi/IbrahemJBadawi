@@ -89,6 +89,8 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
                 </details>
               )}
 
+              <Link href="/dashboard/search" className="icon-button" aria-label="البحث" title="البحث"><Icon name="search" /></Link>
+
               <details className="dropdown">
                 <summary className="icon-button" aria-label={`الإشعارات${unread ? `: ${unread} غير مقروءة` : ""}`}>
                   <Icon name="bell" />

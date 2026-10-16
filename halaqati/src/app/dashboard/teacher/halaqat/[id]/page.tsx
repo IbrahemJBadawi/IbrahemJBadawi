@@ -82,7 +82,7 @@ export default async function TeacherHalaqaPage({ params, searchParams }: PagePr
 
       <Card>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-bold text-brand-800">الطلاب ({active.rows.length} / {h.max_students})</h2>
+          <h2 className="text-lg font-bold text-brand-800">الطلاب ({active.rows.length} من {h.max_students})</h2>
           {active.rows.length > 0 && <ButtonLink variant="secondary" href={`/dashboard/teacher/halaqat/${id}/students`}>جدول الطلاب</ButtonLink>}
         </div>
         {active.rows.length === 0 ? (
@@ -111,6 +111,7 @@ export default async function TeacherHalaqaPage({ params, searchParams }: PagePr
           <p className="text-sm text-muted">{h.league_enabled !== false ? "مفعّل: يرى الطلاب ترتيبهم بالنقاط داخل الحلقة فقط." : "متوقف: لا يظهر الترتيب للطلاب وأولياء الأمور."}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <ButtonLink variant="ghost" href={`/dashboard/messages?h=${id}`}>رسائل الحلقة</ButtonLink>
           <ButtonLink variant="ghost" href={`/dashboard/league?h=${id}`}>عرض الترتيب</ButtonLink>
           {isManager && (
             <form action={setHalaqaLeagueAction}>

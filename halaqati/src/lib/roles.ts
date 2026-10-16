@@ -71,6 +71,8 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/journey", label: "رحلتي", icon: "journey" },
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
     { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
+    { href: "/dashboard/messages", label: "الرسائل", icon: "chat" },
+    { href: "/dashboard/achievements", label: "إنجازاتي", icon: "medal" },
     { href: "/dashboard/stats", label: "إحصائياتي", icon: "stats" },
     { href: "/dashboard/plan", label: "خطتي", icon: "plan" },
     { href: "/dashboard/schedule", label: "جدولي", icon: "calendar" },
@@ -81,6 +83,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
   parent: [
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/children", label: "الأبناء", icon: "child" },
+    { href: "/dashboard/messages", label: "الرسائل", icon: "chat" },
     { href: "/dashboard/stats", label: "الإحصائيات", icon: "stats" },
     { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
@@ -89,6 +92,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/teacher/halaqat", label: "حلقاتي", icon: "halaqa" },
     { href: "/dashboard/teacher/schedule", label: "جدولي", icon: "calendar" },
+    { href: "/dashboard/messages", label: "الرسائل", icon: "chat" },
     { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
     { href: "/dashboard/teacher/halaqat/new", label: "حلقة جديدة", icon: "plus" },
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
@@ -101,6 +105,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/admin/institutions", label: "المؤسسات", icon: "building" },
     { href: "/dashboard/admin/privacy", label: "طلبات الخصوصية", icon: "lock" },
     { href: "/dashboard/admin/audit", label: "سجل التدقيق", icon: "list" },
+    { href: "/dashboard/admin/demo", label: "البيانات التجريبية", icon: "sparkles" },
   ],
   center_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
   org_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
@@ -110,6 +115,8 @@ export const NAV: Record<ContextKey, NavItem[]> = {
 
 export const COMMON_NAV: NavItem[] = [
   { href: "/dashboard/notifications", label: "الإشعارات", icon: "bell" },
+  { href: "/dashboard/search", label: "البحث", icon: "search" },
+  { href: "/dashboard/guide", label: "دليل النقاط والمستويات", icon: "book" },
   { href: "/dashboard/settings", label: "الإعدادات", icon: "settings" },
   { href: "/dashboard/support", label: "المساعدة والبلاغات", icon: "support" },
   { href: "/dashboard/profile", label: "حسابي", icon: "user" },

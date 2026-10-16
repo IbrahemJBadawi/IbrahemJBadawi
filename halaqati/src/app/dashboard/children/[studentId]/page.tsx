@@ -63,6 +63,7 @@ export default async function ChildPage({ params }: PageProps<"/dashboard/childr
           <p className="text-muted">نقاط الأسبوع: <strong className="text-ink">{motivation.points_week}</strong> · المجموع: <strong className="text-ink">{motivation.points_total}</strong></p>
           <WeekStrip days={motivation.last7} />
           <Link href={`/dashboard/stats?s=${studentId}`} className="font-semibold text-brand-800">الإحصائيات ←</Link>
+          <Link href={`/dashboard/achievements?s=${studentId}`} className="font-semibold text-brand-800">الإنجازات ←</Link>
         </Card>
       )}
       {o && <OverviewStats o={o} />}

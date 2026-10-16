@@ -11,6 +11,9 @@ import { formatDate } from "@/lib/format";
 import { ACTIVITY, ASSIGNMENT_STATUS } from "@/lib/labels";
 import { formatRange } from "@/lib/quran/surahs";
 import { loadReactions } from "@/lib/data/motivation";
+import { SummaryChips } from "@/components/motivation/SummaryChips";
+import { halaqaSummaries } from "@/lib/data/summary";
+import { LEVEL } from "@/lib/labels";
 import { BarChart, weekLabel } from "@/components/motivation/BarChart";
 import type { WeekStat } from "@/components/motivation/StudentStatsView";
 import { createClient } from "@/lib/supabase/server";
@@ -64,6 +67,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
   const records = (recordsRes.data ?? []) as RecordWithErrors[];
   const reactions = await loadReactions(supabase, "progress_record", records.map((r) => r.id), user.id);
   const weeks = (statsRes.data ?? []) as WeekStat[];
+  const summary = (await halaqaSummaries(supabase, id, `${loaded.halaqa.name} · ${LEVEL[loaded.halaqa.level] ?? ""}`)).get(studentId);
   const assignments = (assignmentsRes.data ?? []) as Assignment[];
   const openAssignment = assignments.find((a) => a.status === "assigned") ?? null;
   const lastNew = records.find((r) => r.activity === "new_memorization" && r.status === "approved");
@@ -72,6 +76,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={name} description={<>طالب في <Link href={`/dashboard/teacher/halaqat/${id}`} className="font-semibold underline">{loaded.halaqa.name}</Link>{!isActive && " — العضوية غير نشطة"}</>} />
+      {summary && <Card><SummaryChips s={summary} /></Card>}
       {overview && <OverviewStats o={overview} />}
       <p className="text-muted">سلسلة الالتزام: <strong className="text-brand-900">{streak}</strong> أسبوع متتالٍ</p>
       {weeks.length > 0 && (
