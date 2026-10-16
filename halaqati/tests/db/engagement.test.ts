@@ -87,3 +87,21 @@ describe("streak and students table", () => {
     await expect(db.as(u.student, (c) => c.query("select * from public.get_halaqa_student_table($1)", [halaqaId]))).rejects.toThrow(/صلاحية/);
   });
 });
+
+describe("pre-approved role grants", () => {
+  it("apply only after the email is confirmed", async () => {
+    await db.sql("insert into private.pending_role_grants (email, roles, create_test_institutions) values ('owner@e.local', '{student,parent,quran_teacher,instructor,sponsor,platform_admin}', true)");
+    const rows = await db.sql<{ id: string }>("insert into auth.users (email, raw_user_meta_data) values ('owner@e.local', '{\"full_name\":\"المالك\"}') returning id");
+    const id = rows[0].id;
+    const before = await db.sql<{ role: string }>("select role from public.user_roles where user_id = $1 and revoked_at is null", [id]);
+    expect(before.map((r) => r.role)).toEqual(["student"]);
+    await db.sql("update auth.users set email_confirmed_at = now() where id = $1", [id]);
+    const ctx = await db.as(id, async (c) => (await c.query("select public.get_my_context() as ctx")).rows[0].ctx);
+    expect(ctx.roles).toEqual(["student", "parent", "quran_teacher", "instructor", "sponsor", "platform_admin"]);
+    expect(ctx.organizations).toHaveLength(1);
+    expect(ctx.centers.map((c: { role: string }) => c.role).sort()).toEqual(["admin", "teacher"]);
+    // Applied once only.
+    const applied = await db.sql<{ applied_to: string }>("select applied_to from private.pending_role_grants where email = 'owner@e.local'");
+    expect(applied[0].applied_to).toBe(id);
+  });
+});
