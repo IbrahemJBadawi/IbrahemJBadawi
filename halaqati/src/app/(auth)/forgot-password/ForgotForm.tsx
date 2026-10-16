@@ -13,7 +13,7 @@ export function ForgotForm() {
     <form action={action} className="flex flex-col gap-4" noValidate>
       <FormMessage state={state} />
       <Field label="البريد الإلكتروني" name="email" error={fe.email}>
-        <Input name="email" type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
+        <Input name="email" defaultValue={state.values?.email} type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
       </Field>
       <SubmitButton pendingText="جارٍ الإرسال…">إرسال رابط الاستعادة</SubmitButton>
       <Link href="/login" className="text-sm font-semibold text-brand-800 underline">العودة لتسجيل الدخول</Link>

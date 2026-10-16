@@ -15,10 +15,10 @@ export function RegisterForm() {
     <form action={action} className="flex flex-col gap-4" noValidate>
       <FormMessage state={state} />
       <Field label="الاسم الكامل" name="fullName" error={fe.fullName}>
-        <Input name="fullName" autoComplete="name" required aria-invalid={!!fe.fullName} />
+        <Input name="fullName" defaultValue={state.values?.fullName} autoComplete="name" required aria-invalid={!!fe.fullName} />
       </Field>
       <Field label="البريد الإلكتروني" name="email" error={fe.email}>
-        <Input name="email" type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
+        <Input name="email" defaultValue={state.values?.email} type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
       </Field>
       <Field label="كلمة المرور" name="password" error={fe.password} hint="8 أحرف على الأقل، حروف وأرقام">
         <Input name="password" type="password" autoComplete="new-password" dir="ltr" required aria-invalid={!!fe.password} />

@@ -14,7 +14,7 @@ export function LoginForm({ next }: { next?: string }) {
       <FormMessage state={state} />
       <input type="hidden" name="next" value={next ?? ""} />
       <Field label="البريد الإلكتروني" name="email" error={fe.email}>
-        <Input name="email" type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
+        <Input name="email" defaultValue={state.values?.email} type="email" autoComplete="email" inputMode="email" dir="ltr" required aria-invalid={!!fe.email} />
       </Field>
       <Field label="كلمة المرور" name="password" error={fe.password}>
         <Input name="password" type="password" autoComplete="current-password" dir="ltr" required aria-invalid={!!fe.password} />

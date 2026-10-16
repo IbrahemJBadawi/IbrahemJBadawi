@@ -8,9 +8,18 @@ import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { forgotSchema, loginSchema, registerSchema, resetSchema, safeNext } from "@/lib/validation/auth";
 import { invalid, type FormState } from "@/lib/validation/common";
 
+function keep(fd: FormData, ...names: string[]): Record<string, string> {
+  return Object.fromEntries(names.map((n) => [n, String(fd.get(n) ?? "")]));
+}
+
 const TOO_MANY: FormState = { ok: false, error: "محاولات كثيرة. انتظر بضع دقائق ثم حاول مجددًا." };
 
-export async function registerAction(_prev: FormState, fd: FormData): Promise<FormState> {
+export async function registerAction(prev: FormState, fd: FormData): Promise<FormState> {
+  const res = await register(fd);
+  return res.ok ? res : { ...res, values: keep(fd, "fullName", "email") };
+}
+
+async function register(fd: FormData): Promise<FormState> {
   const parsed = registerSchema.safeParse({
     fullName: fd.get("fullName"),
     email: fd.get("email"),
@@ -39,7 +48,12 @@ export async function registerAction(_prev: FormState, fd: FormData): Promise<Fo
   };
 }
 
-export async function loginAction(_prev: FormState, fd: FormData): Promise<FormState> {
+export async function loginAction(prev: FormState, fd: FormData): Promise<FormState> {
+  const res = await login(fd);
+  return { ...res, values: keep(fd, "email") };
+}
+
+async function login(fd: FormData): Promise<FormState> {
   const parsed = loginSchema.safeParse({
     email: fd.get("email"),
     password: fd.get("password"),
@@ -56,7 +70,12 @@ export async function loginAction(_prev: FormState, fd: FormData): Promise<FormS
   redirect(safeNext(parsed.data.next));
 }
 
-export async function forgotPasswordAction(_prev: FormState, fd: FormData): Promise<FormState> {
+export async function forgotPasswordAction(prev: FormState, fd: FormData): Promise<FormState> {
+  const res = await forgot(fd);
+  return res.ok ? res : { ...res, values: keep(fd, "email") };
+}
+
+async function forgot(fd: FormData): Promise<FormState> {
   const parsed = forgotSchema.safeParse({ email: fd.get("email") });
   if (!parsed.success) return invalid(parsed.error);
   const ip = await clientIp();

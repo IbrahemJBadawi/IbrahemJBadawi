@@ -5,6 +5,8 @@ export type FormState = {
   error?: string;
   message?: string;
   fieldErrors?: Record<string, string>;
+  /** Echo of non-secret inputs so a failed submit does not wipe the form. */
+  values?: Record<string, string>;
 };
 
 export const uuid = z.uuid({ error: "معرّف غير صالح" });
