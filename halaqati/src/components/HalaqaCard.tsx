@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { AUDIENCE, LEVEL, MEETING_MODE } from "@/lib/labels";
 import { formatSchedule } from "@/lib/format";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 import type { PublicHalaqa } from "@/lib/types";
 
 export function HalaqaCard({ h }: { h: PublicHalaqa }) {
@@ -15,7 +16,7 @@ export function HalaqaCard({ h }: { h: PublicHalaqa }) {
         {full ? <Badge tone="red">مكتملة</Badge> : <Badge tone="green">متاحة</Badge>}
       </div>
       <p className="text-sm text-muted">
-        المحفّظ: <span className="font-semibold text-ink">{h.teacher_name}</span>
+        المحفّظ: <span className="font-semibold text-ink">{h.teacher_name}</span><VerifiedBadge verified={h.teacher_verified} />
         {h.center_name ? <> · {h.center_name}</> : <> · حلقة مستقلة</>}
       </p>
       <div className="flex flex-wrap gap-2">

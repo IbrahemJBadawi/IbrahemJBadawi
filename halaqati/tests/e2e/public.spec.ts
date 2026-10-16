@@ -12,6 +12,8 @@ const PAGES = [
   { path: "/login", heading: "تسجيل الدخول" },
   { path: "/register", heading: "إنشاء حساب" },
   { path: "/forgot-password", heading: "استعادة كلمة المرور" },
+  { path: "/verify", heading: "التحقق من شهادة" },
+  { path: "/app", heading: "ثبّت حلقتي على هاتفك" },
 ];
 
 test.describe("14. public pages work on this screen size", () => {
@@ -36,6 +38,14 @@ test.describe("14. public pages work on this screen size", () => {
   test("private pages redirect anonymous visitors to login", async ({ page }) => {
     await page.goto("/dashboard/journey");
     await expect(page).toHaveURL(/\/login\?next=%2Fdashboard%2Fjourney/);
+  });
+
+  test("the app is installable (web manifest)", async ({ request }) => {
+    const res = await request.get("/manifest.webmanifest");
+    expect(res.ok()).toBe(true);
+    const m = await res.json();
+    expect(m).toMatchObject({ short_name: "حلقتي", dir: "rtl", lang: "ar", display: "standalone" });
+    expect((await request.get("/sw.js")).ok()).toBe(true);
   });
 
   test("security headers are sent", async ({ request }) => {

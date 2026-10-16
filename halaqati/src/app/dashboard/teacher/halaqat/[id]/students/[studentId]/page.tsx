@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Assignment, StudentOverview } from "@/lib/types";
 import { approveRecordAction, cancelAssignmentAction, deleteDraftAction } from "../../../../actions";
 import { AmendForm, AssignmentForm, RecitationForm } from "../../../../RecitationForms";
+import { CertificateForm } from "../../../../CertificateForm";
 
 export const metadata: Metadata = { title: "متابعة الطالب" };
 
@@ -39,7 +40,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
   const isActive = membership.status === "active";
   const sessionId = typeof sp.session === "string" && /^[0-9a-f-]{36}$/i.test(sp.session) ? sp.session : null;
 
-  const [overviewRes, recordsRes, assignmentsRes] = await Promise.all([
+  const [overviewRes, recordsRes, assignmentsRes, streakRes, certsRes] = await Promise.all([
     supabase.rpc("get_student_overview", { p_student: studentId, p_days: 30, p_halaqa: id }),
     supabase
       .from("quran_progress_records")
@@ -50,7 +51,11 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
       .order("created_at", { ascending: false })
       .limit(20),
     supabase.from("quran_assignments").select("*").eq("halaqa_id", id).eq("student_id", studentId).order("created_at", { ascending: false }).limit(10),
+    supabase.rpc("get_student_streak", { p_student: studentId, p_halaqa: id }),
+    supabase.from("certificates").select("id, serial, title, issued_on, revoked_at").eq("halaqa_id", id).eq("student_id", studentId).order("issued_on", { ascending: false }).limit(20),
   ]);
+  const streak = (streakRes.data as number | null) ?? 0;
+  const certs = (certsRes.data ?? []) as Array<{ id: string; serial: string; title: string; issued_on: string; revoked_at: string | null }>;
   const overview = overviewRes.data as StudentOverview | null;
   const records = (recordsRes.data ?? []) as RecordWithErrors[];
   const assignments = (assignmentsRes.data ?? []) as Assignment[];
@@ -62,6 +67,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
     <div className="flex flex-col gap-5">
       <PageHeader title={name} description={<>طالب في <Link href={`/dashboard/teacher/halaqat/${id}`} className="font-semibold underline">{loaded.halaqa.name}</Link>{!isActive && " — العضوية غير نشطة"}</>} />
       {overview && <OverviewStats o={overview} />}
+      <p className="text-muted">سلسلة الالتزام: <strong className="text-brand-900">{streak}</strong> أسبوع متتالٍ</p>
 
       {isActive && (
         <Card>
@@ -104,6 +110,26 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
               </li>
             ))}
           </ul>
+        )}
+      </Card>
+
+      <Card>
+        <h2 className="mb-3 text-lg font-bold text-brand-800">الشهادات</h2>
+        {certs.length > 0 && (
+          <ul className="mb-3 divide-y divide-line">
+            {certs.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <Link href={`/verify/${c.serial}`} className="font-semibold underline">{c.title}</Link>
+                <span className="text-sm text-muted">{formatDate(c.issued_on)} {c.revoked_at && <Badge tone="red">ملغاة</Badge>}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {isActive && (
+          <details>
+            <summary className="cursor-pointer font-semibold text-brand-800">إصدار شهادة إنجاز</summary>
+            <div className="mt-3"><CertificateForm halaqaId={id} studentId={studentId} /></div>
+          </details>
         )}
       </Card>
 

@@ -47,3 +47,25 @@ export async function adminUpdatePrivacyAction(fd: FormData) {
   await supabase.rpc("admin_update_privacy_request", { p_id: parsed.data.id, p_status: parsed.data.status, p_notes: parsed.data.notes });
   revalidatePath("/dashboard/admin/privacy");
 }
+
+const reviewSchema = z.object({ id: uuid, decision: z.enum(["approve", "reject"]), note: optionalText(1000) });
+
+export async function adminReviewVerificationAction(fd: FormData) {
+  await requireContext("platform_admin");
+  const parsed = reviewSchema.safeParse({ id: fd.get("id"), decision: fd.get("decision"), note: fd.get("note") ?? undefined });
+  if (!parsed.success) return;
+  const supabase = await createClient();
+  await supabase.rpc("admin_review_verification", { p_id: parsed.data.id, p_approve: parsed.data.decision === "approve", p_note: parsed.data.note });
+  revalidatePath("/dashboard/admin/verifications");
+}
+
+const ticketUpdateSchema = z.object({ id: uuid, status: z.enum(["open", "in_progress", "resolved", "closed"]), reply: optionalText(3000) });
+
+export async function adminUpdateTicketAction(fd: FormData) {
+  await requireContext("platform_admin");
+  const parsed = ticketUpdateSchema.safeParse({ id: fd.get("id"), status: fd.get("status"), reply: fd.get("reply") ?? undefined });
+  if (!parsed.success) return;
+  const supabase = await createClient();
+  await supabase.rpc("admin_update_ticket", { p_id: parsed.data.id, p_status: parsed.data.status, p_reply: parsed.data.reply });
+  revalidatePath("/dashboard/admin/tickets");
+}

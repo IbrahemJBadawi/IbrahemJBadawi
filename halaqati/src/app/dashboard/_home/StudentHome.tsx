@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { JoinMeetingButton } from "@/components/JoinMeetingButton";
 import { Alert, ButtonLink, Card, EmptyState, Stat } from "@/components/ui";
 import type { CurrentUser } from "@/lib/auth";
 import { studentMemberships } from "@/lib/data/halaqat";
@@ -42,11 +43,6 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="rounded-2xl bg-brand-800 px-5 py-5 text-white">
-        <p className="text-sm text-white/80">السلام عليكم 👋</p>
-        <h1 className="text-2xl font-bold">{user.displayName || user.fullName}</h1>
-        <p className="mt-1 text-sm text-gold">رحلتك مع القرآن</p>
-      </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-brand-600/30">
@@ -67,11 +63,7 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
             <>
               <p className="text-lg font-semibold">{nextHalaqa?.name}</p>
               <p className="text-muted">{formatDateTime(next.starts_at, nextHalaqa?.timezone)}</p>
-              {next.meeting_url && (
-                <a href={next.meeting_url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-semibold text-brand-800 underline">
-                  رابط اللقاء
-                </a>
-              )}
+              <JoinMeetingButton url={next.meeting_url} startsAt={next.starts_at} durationMinutes={next.duration_minutes} />
             </>
           ) : (
             <p className="text-muted">لا توجد جلسات مجدولة.</p>

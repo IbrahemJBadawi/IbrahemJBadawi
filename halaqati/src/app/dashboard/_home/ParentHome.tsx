@@ -15,7 +15,7 @@ export async function ParentHome({ user }: { user: CurrentUser }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-brand-900">لوحة وليّ الأمر</h1>
+        <h2 className="text-xl font-bold text-brand-900">لوحة وليّ الأمر</h2>
         <ButtonLink href="/dashboard/children" variant="secondary">ربط ابن جديد</ButtonLink>
       </div>
       {rows.length === 0 ? (

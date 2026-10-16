@@ -6,6 +6,7 @@ export type PublicHalaqa = {
   teacher_id: string;
   teacher_name: string;
   teacher_bio?: string | null;
+  teacher_verified?: boolean;
   center_id: string | null;
   center_name: string | null;
   is_independent: boolean;
@@ -85,4 +86,18 @@ export type StudentOverview = {
   attendance: Record<string, number>;
   errors_by_type: Record<string, number>;
   period_days: number;
+};
+
+export type Certificate = {
+  id: string;
+  serial: string;
+  student_id: string;
+  halaqa_id: string | null;
+  kind: "juz_completion" | "surah_completion" | "khatm" | "attendance" | "other";
+  title: string;
+  title_en: string | null;
+  description: string | null;
+  issued_on: string;
+  show_name_publicly: boolean;
+  revoked_at: string | null;
 };

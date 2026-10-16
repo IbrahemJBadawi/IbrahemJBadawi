@@ -29,3 +29,19 @@ export const INSTITUTION_STATUS: Record<string, string> = { pending: "بانتظ
 export const RELATIONSHIP: Record<string, string> = { father: "الأب", mother: "الأم", guardian: "وصي", other: "أخرى" };
 export const WEEKDAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
 export const SCORE_LABELS: Record<number, string> = { 1: "ضعيف", 2: "مقبول", 3: "جيد", 4: "جيد جدًا", 5: "ممتاز" };
+export const CERTIFICATE_KIND: Record<string, string> = {
+  juz_completion: "إتمام حفظ جزء",
+  surah_completion: "إتمام حفظ سورة",
+  khatm: "ختم القرآن الكريم",
+  attendance: "الانتظام والحضور",
+  other: "إنجاز",
+};
+export const TICKET_CATEGORY: Record<string, string> = {
+  report_abuse: "إبلاغ عن محتوى أو سلوك",
+  technical: "مشكلة تقنية",
+  privacy: "الخصوصية والبيانات",
+  suggestion: "اقتراح",
+  other: "أخرى",
+};
+export const TICKET_STATUS: Record<string, string> = { open: "مفتوح", in_progress: "قيد المعالجة", resolved: "تم الحل", closed: "مغلق" };
+export const REVIEW_STATUS: Record<string, string> = { pending: "قيد المراجعة", approved: "مقبول", rejected: "مرفوض" };

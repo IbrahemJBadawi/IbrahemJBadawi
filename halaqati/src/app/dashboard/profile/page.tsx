@@ -8,14 +8,17 @@ import { createClient } from "@/lib/supabase/server";
 import { cancelPrivacyRequestAction } from "../actions";
 import { LinkCodeGenerator, PrivacyRequestForm, ProfileForm, RoleToggle } from "./ProfileForms";
 import { revokeLinkAction } from "./parent-link-actions";
+import { VerificationForm } from "./VerificationForm";
+import { REVIEW_STATUS } from "@/lib/labels";
 
 export const metadata: Metadata = { title: "حسابي" };
 
 export default async function ProfilePage() {
   const user = await requireUser();
   const supabase = await createClient();
-  const [profileRes, detailsRes, parentsRes, privacyRes] = await Promise.all([
-    supabase.from("profiles").select("full_name, display_name, bio, directory_visible").eq("id", user.id).single(),
+  const isTeacher = user.roles.includes("quran_teacher") || user.roles.includes("instructor");
+  const [profileRes, detailsRes, parentsRes, privacyRes, verifRes] = await Promise.all([
+    supabase.from("profiles").select("full_name, display_name, bio, directory_visible, verified_teacher_at").eq("id", user.id).single(),
     supabase.from("profile_details").select("gender, birth_year, country, city").eq("user_id", user.id).maybeSingle(),
     supabase
       .from("parent_student_links")
@@ -23,7 +26,10 @@ export default async function ProfilePage() {
       .eq("student_id", user.id)
       .eq("status", "active"),
     supabase.from("privacy_requests").select("id, kind, status, created_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("verification_requests").select("id, status, review_note, created_at").order("created_at", { ascending: false }).limit(1),
   ]);
+  const verifiedAt = (profileRes.data as { verified_teacher_at?: string | null } | null)?.verified_teacher_at ?? null;
+  const lastVerif = verifRes.data?.[0] ?? null;
   const p = { ...(profileRes.data ?? { full_name: user.fullName, display_name: null, bio: null, directory_visible: false }), ...(detailsRes.data ?? { gender: null, birth_year: null, country: null, city: null }) };
   const parents = (parentsRes.data ?? []) as unknown as Array<{ id: string; relationship: string; created_at: string; profiles: { full_name: string } | null }>;
   const privacy = privacyRes.data ?? [];
@@ -48,6 +54,25 @@ export default async function ProfilePage() {
         </div>
         <p className="mt-3 text-sm text-muted">أدوار الإدارة (أمير مركز، مدير دار، إدارة المنصة) تُمنح عبر المؤسسة أو إدارة المنصة ولا تُضاف ذاتيًا.</p>
       </Card>
+
+      {isTeacher && (
+        <Card id="verification">
+          <h2 className="mb-1 text-lg font-bold text-brand-800">توثيق المحفّظ ✓</h2>
+          {verifiedAt ? (
+            <p className="text-brand-900">حسابك موثّق منذ {formatDate(verifiedAt)}، وتظهر علامة ✓ بجانب اسمك في الحلقات والدليل.</p>
+          ) : lastVerif?.status === "pending" ? (
+            <p className="text-muted">طلبك قيد المراجعة لدى إدارة المنصة.</p>
+          ) : (
+            <>
+              <p className="mb-3 text-sm text-muted">
+                يزيد التوثيق ثقة أولياء الأمور، وتظهر حلقاتك أولًا في نتائج البحث.
+                {lastVerif && <> آخر طلب: {REVIEW_STATUS[lastVerif.status]}{lastVerif.review_note ? ` — ${lastVerif.review_note}` : ""}.</>}
+              </p>
+              <VerificationForm />
+            </>
+          )}
+        </Card>
+      )}
 
       {user.roles.includes("student") && (
         <Card>

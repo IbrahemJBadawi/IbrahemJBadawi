@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JoinMeetingButton } from "@/components/JoinMeetingButton";
 import { Badge, Card, EmptyState, PageHeader } from "@/components/ui";
 import { requireContext } from "@/lib/auth";
 import { studentMemberships } from "@/lib/data/halaqat";
@@ -49,8 +50,8 @@ function SessionList({ items, halaqat, attendance, showAttendance }: {
             <div>
               <p className="font-semibold">{h?.name}</p>
               <p className="text-sm text-muted">{formatDateTime(s.starts_at, h?.timezone)} · {s.duration_minutes} دقيقة</p>
-              {!showAttendance && s.status === "scheduled" && s.meeting_url && (
-                <a href={s.meeting_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-800 underline">رابط اللقاء</a>
+              {!showAttendance && s.status === "scheduled" && (
+                <JoinMeetingButton url={s.meeting_url} startsAt={s.starts_at} durationMinutes={s.duration_minutes} />
               )}
             </div>
             <span className="flex gap-2">

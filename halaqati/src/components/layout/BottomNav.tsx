@@ -8,6 +8,11 @@ import { cx } from "@/components/ui";
 const ICONS: Record<string, string> = {
   "/dashboard": "⌂",
   "/dashboard/journey": "◔",
+  "/dashboard/schedule": "▦",
+  "/dashboard/teacher/schedule": "▦",
+  "/dashboard/certificates": "★",
+  "/dashboard/admin/verifications": "✓",
+  "/dashboard/admin/tickets": "!",
   "/dashboard/plan": "✓",
   "/dashboard/sessions": "◷",
   "/dashboard/halaqat": "◎",
