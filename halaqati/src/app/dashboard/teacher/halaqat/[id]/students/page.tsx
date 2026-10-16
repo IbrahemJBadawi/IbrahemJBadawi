@@ -6,6 +6,7 @@ import { requireContext } from "@/lib/auth";
 import { loadHalaqaForStaff } from "@/lib/data/staff";
 import { formatDate, percent } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { halaqaSummaries } from "@/lib/data/summary";
 
 export const metadata: Metadata = { title: "جدول الطلاب" };
 
@@ -25,6 +26,7 @@ export default async function StudentsTablePage({ params }: PageProps<"/dashboar
   if (!loaded) notFound();
   const { data, error } = await supabase.rpc("get_halaqa_student_table", { p_halaqa: id, p_days: 30 });
   const rows = (data ?? []) as Row[];
+  const summaries = await halaqaSummaries(supabase, id, loaded.halaqa.name);
   return (
     <div className="flex flex-col gap-4">
       <PageHeader
@@ -35,11 +37,15 @@ export default async function StudentsTablePage({ params }: PageProps<"/dashboar
       {rows.length === 0 ? <EmptyState title="لا يوجد طلاب نشطون" /> : (
         <Card className="!p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[760px] text-sm">
+            <table className="w-full min-w-[1000px] text-sm">
               <caption className="sr-only">طلاب الحلقة ومؤشراتهم</caption>
               <thead className="bg-brand-50 text-right text-brand-900">
                 <tr>
                   <th scope="col" className="sticky right-0 bg-brand-50 p-3">الطالب</th>
+                  <th scope="col" className="p-3">المستوى</th>
+                  <th scope="col" className="p-3">النقاط</th>
+                  <th scope="col" className="p-3">الحماسة</th>
+                  <th scope="col" className="p-3">الدوري</th>
                   <th scope="col" className="p-3">الحضور</th>
                   <th scope="col" className="p-3">الحفظ المعتمد</th>
                   <th scope="col" className="p-3">المراجعة</th>
@@ -51,12 +57,17 @@ export default async function StudentsTablePage({ params }: PageProps<"/dashboar
               </thead>
               <tbody>
                 {rows.map((r) => {
+                  const sm = summaries.get(r.student_id);
                   const att = Number(r.sessions_marked) ? percent(Number(r.sessions_attended), Number(r.sessions_marked)) : null;
                   return (
                     <tr key={r.student_id} className="border-t border-line">
                       <th scope="row" className="sticky right-0 bg-panel p-3 text-right font-semibold">
                         <Link href={`/dashboard/teacher/halaqat/${id}/students/${r.student_id}`} className="text-brand-900 underline">{r.name}</Link>
                       </th>
+                      <td className="p-3 whitespace-nowrap">{sm ? <>{sm.level.current.icon} {sm.level.current.title}</> : "—"}</td>
+                      <td className="p-3">{sm ? <>{sm.pointsTotal}<span className="block text-xs text-muted">الأسبوع {sm.pointsWeek}</span></> : "—"}</td>
+                      <td className="p-3 whitespace-nowrap">{sm ? `🔥 ${sm.streak}` : "—"}</td>
+                      <td className="p-3 whitespace-nowrap">{sm?.rank ? `${sm.rank.rank} من ${sm.rank.of}` : "—"}</td>
                       <td className={`p-3 ${att !== null && att < 60 ? "font-bold text-danger" : ""}`}>{att === null ? "—" : `${att}% (${r.sessions_attended}/${r.sessions_marked})`}</td>
                       <td className="p-3">{r.memorized_ayat} آية</td>
                       <td className="p-3">{r.reviewed_ayat_period} آية</td>

@@ -144,7 +144,11 @@ export function MobileTabBar({
         </button>
       </nav>
       <div className="sheet-backdrop" hidden={!open} onClick={() => setOpen(false)}>
-        <div id="more-sheet" className="sheet" role="dialog" aria-modal="true" aria-label="المزيد" onClick={(e) => e.stopPropagation()}>
+        <div id="more-sheet" className="sheet" role="dialog" aria-modal="true" aria-label="المزيد" onClick={(e) => {
+          e.stopPropagation();
+          // Any navigation or submit from the sheet (a tile, a role switch, sign out) closes it.
+          if ((e.target as Element).closest("a, button[type=submit]")) setOpen(false);
+        }}>
           <div className="sheet-head">
             <span className="sheet-grip" aria-hidden />
             <button type="button" className="icon-button" aria-label="إغلاق" onClick={() => setOpen(false)}><Icon name="close" /></button>

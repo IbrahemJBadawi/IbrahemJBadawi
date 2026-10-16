@@ -4,6 +4,8 @@ import type { CurrentUser } from "@/lib/auth";
 import { CONTEXT_LABELS, type ContextKey } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import { dismissOnboardingAction } from "../feature-actions";
+import { SummaryChips } from "@/components/motivation/SummaryChips";
+import type { MemberSummary } from "@/lib/data/summary";
 
 const THEME: Partial<Record<ContextKey, { action: { href: string; label: string } }>> = {
   student: { action: { href: "/dashboard/schedule", label: "جدولي الأسبوعي" } },
@@ -13,7 +15,7 @@ const THEME: Partial<Record<ContextKey, { action: { href: string; label: string 
 };
 
 /** Greeting hero with the single most useful action for the active role. */
-export function WelcomeCard({ user }: { user: CurrentUser }) {
+export function WelcomeCard({ user, summary }: { user: CurrentUser; summary?: MemberSummary | null }) {
   const ctx = user.activeContext;
   const theme = (ctx && THEME[ctx]) || { action: { href: "/dashboard/profile", label: "حسابي" } };
   return (
@@ -22,8 +24,9 @@ export function WelcomeCard({ user }: { user: CurrentUser }) {
         <p className="text-sm text-white/80">السلام عليكم 👋{ctx ? ` · ${CONTEXT_LABELS[ctx]}` : ""}</p>
         <h1 className="text-2xl font-bold sm:text-3xl">{user.displayName || user.fullName}</h1>
         <p className="mt-1 text-sm text-[#f3dfae]">رحلتك مع القرآن</p>
+        {summary && <div className="mt-3"><SummaryChips s={summary} tone="hero" /></div>}
       </div>
-      <ButtonLink href={theme.action.href} variant="secondary" className="relative !border-transparent">{theme.action.label}</ButtonLink>
+      <ButtonLink href={theme.action.href} variant="secondary" className="relative shrink-0 !border-transparent">{theme.action.label}</ButtonLink>
     </div>
   );
 }

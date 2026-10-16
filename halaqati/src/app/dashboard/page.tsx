@@ -7,6 +7,8 @@ import { ParentHome } from "./_home/ParentHome";
 import { StudentHome } from "./_home/StudentHome";
 import { OnboardingChecklist, WelcomeCard } from "./_home/Welcome";
 import { TeacherHome } from "./_home/TeacherHome";
+import { studentSummary } from "@/lib/data/summary";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const user = await requireUser();
@@ -36,10 +38,14 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
       </Card>
     );
   }
+  // Anyone who is also a student sees their own summary in the greeting.
+  const summary = ctx && user.roles.includes("student") && (ctx === "student" || ctx === "quran_teacher" || ctx === "parent")
+    ? await studentSummary(await createClient(), user.id, true)
+    : null;
   return (
     <div className="flex flex-col gap-5">
       {banner}
-      {ctx && <WelcomeCard user={user} />}
+      {ctx && <WelcomeCard user={user} summary={summary} />}
       <OnboardingChecklist user={user} />
       {body}
     </div>
