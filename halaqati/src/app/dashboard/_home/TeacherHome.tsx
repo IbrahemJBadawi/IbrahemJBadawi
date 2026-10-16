@@ -33,7 +33,7 @@ export async function TeacherHome({ user }: { user: CurrentUser }) {
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-brand-900">لوحة المحفّظ</h1>
+        <h2 className="text-xl font-bold text-brand-900">لوحة المحفّظ</h2>
         <ButtonLink href="/dashboard/teacher/halaqat/new">حلقة جديدة</ButtonLink>
       </div>
       <div className="grid grid-cols-3 gap-3">

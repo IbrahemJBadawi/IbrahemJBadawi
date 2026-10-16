@@ -4,11 +4,12 @@ import { Alert, Badge, Button, Card, EmptyState, Input, PageHeader, Pagination }
 import { isSupabaseConfigured } from "@/lib/env";
 import { CONTEXT_LABELS, type AppRole } from "@/lib/roles";
 import { createPublicClient } from "@/lib/supabase/server";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 export const metadata: Metadata = { title: "دليل المحفّظين والمعلمين" };
 const PAGE_SIZE = 20;
 
-type Teacher = { id: string; name: string; bio: string | null; roles: AppRole[]; published_halaqat: number; total_count: number };
+type Teacher = { id: string; name: string; bio: string | null; roles: AppRole[]; verified: boolean; published_halaqat: number; total_count: number };
 
 export default async function TeachersPage({ searchParams }: PageProps<"/teachers">) {
   const sp = await searchParams;
@@ -41,7 +42,7 @@ export default async function TeachersPage({ searchParams }: PageProps<"/teacher
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {rows.map((t) => (
               <Card key={t.id} className="flex flex-col gap-2">
-                <h2 className="text-lg font-bold text-brand-900">{t.name}</h2>
+                <h2 className="text-lg font-bold text-brand-900">{t.name}<VerifiedBadge verified={t.verified} /></h2>
                 <div className="flex flex-wrap gap-2">{t.roles.map((r) => <Badge key={r} tone="green">{CONTEXT_LABELS[r]}</Badge>)}</div>
                 {t.bio && <p className="line-clamp-4 text-muted">{t.bio}</p>}
                 <p className="text-sm text-muted">{t.published_halaqat} حلقة منشورة</p>

@@ -6,6 +6,14 @@
 - **طلبات الخصوصية** (`/dashboard/admin/privacy`): متابعة طلبات نسخ البيانات والحذف.
 - **سجل التدقيق** (`/dashboard/admin/audit`): للقراءة فقط.
 
+## منح أدوار مسبقًا لبريد معيّن
+من SQL Editor فقط (ليس من التطبيق). تُطبّق الأدوار تلقائيًا عند **تأكيد** البريد، فلا يستطيع أحد انتحالها بالتسجيل أولًا ببريد غيره:
+```sql
+insert into private.pending_role_grants (email, roles, create_test_institutions)
+values ('someone@example.com', '{student,parent,quran_teacher,instructor,sponsor,platform_admin}', false);
+```
+`create_test_institutions = true` ينشئ دارًا ومركزًا تجريبيين غير منشورين لتجربة لوحتي مدير الدار وأمير المركز.
+
 ## حذف حساب (طلب خصوصية)
 1. تحقق من هوية صاحب الطلب عبر بريده المسجّل.
 2. إن كان محفّظًا مسؤولًا عن حلقات: انقل المسؤولية أو أوقف الحلقات (قاعدة البيانات تمنع حذف محفّظ مسؤول عن حلقة قائمة).

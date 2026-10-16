@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import { publicEnv } from "@/lib/env";
+import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorker";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           تخطَّ إلى المحتوى
         </a>
         {children}
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

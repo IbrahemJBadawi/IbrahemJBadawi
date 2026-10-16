@@ -10,6 +10,7 @@ import { AUDIENCE, JOIN_POLICY, LEVEL, MEETING_MODE, MEMBERSHIP_STATUS } from "@
 import { createClient, createPublicClient } from "@/lib/supabase/server";
 import type { PublicHalaqa } from "@/lib/types";
 import { JoinForm } from "./JoinForm";
+import { VerifiedBadge } from "@/components/VerifiedBadge";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -81,7 +82,7 @@ export default async function HalaqaDetailsPage({ params }: PageProps<"/halaqat/
         </Card>
         <Card>
           <h2 className="mb-2 font-bold">المحفّظ</h2>
-          <p className="font-semibold">{h.teacher_name}</p>
+          <p className="font-semibold">{h.teacher_name}<VerifiedBadge verified={h.teacher_verified} />{h.teacher_verified && <span className="ms-1 text-sm text-muted">محفّظ موثّق</span>}</p>
           {h.teacher_bio && <p className="mt-1 whitespace-pre-line text-muted">{h.teacher_bio}</p>}
         </Card>
       </div>
@@ -113,6 +114,7 @@ export default async function HalaqaDetailsPage({ params }: PageProps<"/halaqat/
             <JoinForm halaqaId={h.id} needsApproval={h.join_policy === "approval"} />
           )}
         </Card>
+        <Link href={`/dashboard/support?category=report_abuse&path=/halaqat/${h.id}`} className="text-sm text-muted underline">الإبلاغ عن هذه الحلقة</Link>
       </aside>
     </div>
   );

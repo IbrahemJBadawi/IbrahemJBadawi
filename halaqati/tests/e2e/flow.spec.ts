@@ -80,6 +80,26 @@ test.describe.serial("halaqa workflow", () => {
     await teacher.page.getByRole("button", { name: "اعتماد التسميع" }).click();
     await expect(teacher.page.getByText("تم اعتماد التسميع.")).toBeVisible();
 
+    // Students table and a certificate with public verification.
+    await teacher.page.goto(`/dashboard/teacher/halaqat/${halaqaId}/students`);
+    await expect(teacher.page.getByRole("table")).toContainText("16 آية");
+    await expectNoHorizontalOverflow(teacher.page);
+    await teacher.page.getByRole("link", { name: "الطالب يوسف" }).click();
+    await teacher.page.getByText("إصدار شهادة إنجاز").click();
+    await teacher.page.locator("#cert-title").fill("إتمام حفظ سورة النبأ");
+    await teacher.page.getByRole("button", { name: "إصدار الشهادة" }).click();
+    await expect(teacher.page.getByText("تم إصدار الشهادة وإشعار الطالب.")).toBeVisible();
+    const certLink = teacher.page.getByRole("link", { name: /عرض الشهادة HQ-/ });
+    const certHref = (await certLink.getAttribute("href"))!;
+    const anon = await browser.newContext({ ...test.info().project.use });
+    const anonPage = await anon.newPage();
+    await anonPage.goto(certHref);
+    await expect(anonPage.getByText("✓ شهادة صحيحة صادرة عبر منصة حلقتي.")).toBeVisible();
+    await expect(anonPage.getByRole("heading", { name: "إتمام حفظ سورة النبأ" })).toBeVisible();
+    await expect(anonPage.getByText("ا***")).toBeVisible(); // name masked by default
+    await expectNoHorizontalOverflow(anonPage);
+    await anon.close();
+
     // Student sees the approved records in their journey.
     await student.page.goto("/dashboard/journey");
     await expect(student.page.getByText("حفظ جديد: النبأ 1–16")).toBeVisible();
@@ -87,6 +107,17 @@ test.describe.serial("halaqa workflow", () => {
     await expectNoHorizontalOverflow(student.page);
     await student.page.goto("/dashboard/sessions");
     await expect(student.page.getByText("حاضر")).toBeVisible();
+
+    await student.page.goto("/dashboard/schedule");
+    await expect(student.page.getByRole("heading", { name: "جدولي الأسبوعي" })).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+    await student.page.goto("/dashboard/certificates");
+    await expect(student.page.getByText("إتمام حفظ سورة النبأ")).toBeVisible();
+    await student.page.goto("/dashboard/support");
+    await student.page.getByLabel("العنوان").fill("استفسار");
+    await student.page.getByLabel("التفاصيل").fill("كيف أغيّر موعد الحلقة؟");
+    await student.page.getByRole("button", { name: "إرسال" }).click();
+    await expect(student.page.getByText("تم استلام بلاغك")).toBeVisible();
 
     // 7. The student cannot open the teacher's management pages.
     await student.page.goto(`/dashboard/teacher/halaqat/${halaqaId}`);

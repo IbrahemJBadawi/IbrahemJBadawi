@@ -79,7 +79,10 @@ export default async function TeacherHalaqaPage({ params, searchParams }: PagePr
       )}
 
       <Card>
-        <h2 className="mb-3 text-lg font-bold text-brand-800">الطلاب ({active.rows.length} / {h.max_students})</h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-lg font-bold text-brand-800">الطلاب ({active.rows.length} / {h.max_students})</h2>
+          {active.rows.length > 0 && <ButtonLink variant="secondary" href={`/dashboard/teacher/halaqat/${id}/students`}>جدول الطلاب</ButtonLink>}
+        </div>
         {active.rows.length === 0 ? (
           <p className="text-muted">لا يوجد طلاب بعد.</p>
         ) : (

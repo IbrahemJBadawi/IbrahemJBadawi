@@ -11,7 +11,7 @@ export async function AdminHome() {
   ]);
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-2xl font-bold text-brand-900">إدارة المنصة</h1>
+      <h2 className="text-xl font-bold text-brand-900">إدارة المنصة</h2>
       <div className="grid grid-cols-3 gap-3">
         <Stat label="مؤسسات بانتظار التوثيق" value={orgs.count ?? 0} />
         <Stat label="مراكز بانتظار التوثيق" value={centers.count ?? 0} />

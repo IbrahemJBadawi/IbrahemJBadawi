@@ -66,10 +66,12 @@ export type NavItem = { href: string; label: string };
 export const NAV: Record<ContextKey, NavItem[]> = {
   student: [
     { href: "/dashboard", label: "الرئيسية" },
-    { href: "/dashboard/journey", label: "رحلتي القرآنية" },
-    { href: "/dashboard/plan", label: "خطتي وواجباتي" },
+    { href: "/dashboard/journey", label: "رحلتي" },
+    { href: "/dashboard/plan", label: "خطتي" },
+    { href: "/dashboard/schedule", label: "جدولي" },
     { href: "/dashboard/sessions", label: "جلساتي" },
     { href: "/dashboard/halaqat", label: "حلقاتي" },
+    { href: "/dashboard/certificates", label: "شهاداتي" },
   ],
   parent: [
     { href: "/dashboard", label: "الرئيسية" },
@@ -78,11 +80,14 @@ export const NAV: Record<ContextKey, NavItem[]> = {
   quran_teacher: [
     { href: "/dashboard", label: "الرئيسية" },
     { href: "/dashboard/teacher/halaqat", label: "حلقاتي" },
+    { href: "/dashboard/teacher/schedule", label: "جدولي" },
     { href: "/dashboard/teacher/halaqat/new", label: "حلقة جديدة" },
   ],
   platform_admin: [
     { href: "/dashboard", label: "الرئيسية" },
     { href: "/dashboard/admin/users", label: "المستخدمون" },
+    { href: "/dashboard/admin/verifications", label: "التوثيق" },
+    { href: "/dashboard/admin/tickets", label: "البلاغات" },
     { href: "/dashboard/admin/institutions", label: "المؤسسات" },
     { href: "/dashboard/admin/privacy", label: "طلبات الخصوصية" },
     { href: "/dashboard/admin/audit", label: "سجل التدقيق" },
@@ -95,5 +100,6 @@ export const NAV: Record<ContextKey, NavItem[]> = {
 
 export const COMMON_NAV: NavItem[] = [
   { href: "/dashboard/notifications", label: "الإشعارات" },
+  { href: "/dashboard/support", label: "المساعدة والبلاغات" },
   { href: "/dashboard/profile", label: "حسابي" },
 ];

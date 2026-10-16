@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://adoohwswgvajeyzkhhnf.supabase.co";
 const supabaseOrigin = supabaseUrl ? new URL(supabaseUrl).origin : "";
 
 // Conservative CSP. 'unsafe-inline' for scripts is required by the App

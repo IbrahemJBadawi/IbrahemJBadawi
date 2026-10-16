@@ -54,3 +54,9 @@ export function dayBoundsUtc(timeZone: string, now = new Date()): { start: strin
 export function isoFromNow(ms = 0): string {
   return new Date(Date.now() + ms).toISOString();
 }
+
+/** Day of week (0 = Sunday) right now in a timezone. */
+export function weekdayIn(timeZone: string): number {
+  const name = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone }).format(new Date());
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(name);
+}
