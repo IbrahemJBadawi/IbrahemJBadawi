@@ -16,7 +16,7 @@ export function WeeklyTimetable({ halaqat, today }: { halaqat: TimetableHalaqa[]
   return (
     <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
       {byDay.map((items, day) => (
-        <li key={day} className={`rounded-xl border bg-white p-3 ${day === today ? "border-brand-600 ring-1 ring-brand-600" : "border-line"}`}>
+        <li key={day} className={`rounded-[20px] border bg-panel p-3 ${day === today ? "border-brand-600 ring-1 ring-brand-600" : "border-line"}`}>
           <p className="mb-2 font-bold text-brand-900">
             {WEEKDAYS[day]} {day === today && <span className="text-sm font-semibold text-gold-dark">(اليوم)</span>}
           </p>

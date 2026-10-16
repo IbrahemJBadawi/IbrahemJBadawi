@@ -11,7 +11,7 @@ export default function OfflinePage() {
       <p className="text-muted">تحقّق من الاتصال ثم أعد المحاولة. الصفحات العامة التي فتحتها سابقًا تعمل دون اتصال، أما بياناتك الخاصة فلا تُحفظ على الجهاز حمايةً لخصوصيتك.</p>
       {/* Full page load on purpose: client-side navigation cannot work offline. */}
       {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-      <a href="/" className="rounded-lg bg-brand-800 px-4 py-2 font-semibold text-white">إعادة المحاولة</a>
+      <a href="/" className="rounded-lg bg-brand-fill px-4 py-2 font-semibold text-white">إعادة المحاولة</a>
     </main>
   );
 }

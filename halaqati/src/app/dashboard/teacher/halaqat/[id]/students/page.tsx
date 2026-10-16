@@ -54,7 +54,7 @@ export default async function StudentsTablePage({ params }: PageProps<"/dashboar
                   const att = Number(r.sessions_marked) ? percent(Number(r.sessions_attended), Number(r.sessions_marked)) : null;
                   return (
                     <tr key={r.student_id} className="border-t border-line">
-                      <th scope="row" className="sticky right-0 bg-white p-3 text-right font-semibold">
+                      <th scope="row" className="sticky right-0 bg-panel p-3 text-right font-semibold">
                         <Link href={`/dashboard/teacher/halaqat/${id}/students/${r.student_id}`} className="text-brand-900 underline">{r.name}</Link>
                       </th>
                       <td className={`p-3 ${att !== null && att < 60 ? "font-bold text-danger" : ""}`}>{att === null ? "—" : `${att}% (${r.sessions_attended}/${r.sessions_marked})`}</td>

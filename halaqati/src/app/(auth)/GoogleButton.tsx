@@ -20,7 +20,7 @@ export async function GoogleButton({ next, label }: { next?: string; label: stri
     <>
       <form action={googleSignInAction}>
         <input type="hidden" name="next" value={next ?? ""} />
-        <button type="submit" className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-line bg-white px-4 py-2 font-semibold text-ink hover:bg-ivory">
+        <button type="submit" className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg border border-line bg-panel px-4 py-2 font-semibold text-ink hover:bg-ivory">
           <GoogleIcon />
           {label}
         </button>

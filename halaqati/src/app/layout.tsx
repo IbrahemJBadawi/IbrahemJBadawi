@@ -21,14 +21,23 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#075b46",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#075b46" },
+    { media: "(prefers-color-scheme: dark)", color: "#07110d" },
+  ],
 };
+
+/** Applies the saved theme before first paint (no flash). */
+const THEME_INIT = `try{var t=localStorage.getItem("halaqati-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} h-full antialiased`}>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
+      </head>
       <body className="min-h-full flex flex-col">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:right-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2">
+        <a href="#main" className="skip-link">
           تخطَّ إلى المحتوى
         </a>
         {children}

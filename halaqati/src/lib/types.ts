@@ -27,6 +27,7 @@ export type PublicHalaqa = {
 export type Halaqa = Omit<PublicHalaqa, "teacher_name" | "center_name" | "active_students" | "total_count"> & {
   status: "draft" | "published" | "completed" | "paused";
   created_at: string;
+  league_enabled?: boolean;
 };
 
 export type Session = {

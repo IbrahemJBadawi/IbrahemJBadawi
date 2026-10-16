@@ -10,6 +10,9 @@ import { loadHalaqaForStaff } from "@/lib/data/staff";
 import { formatDate } from "@/lib/format";
 import { ACTIVITY, ASSIGNMENT_STATUS } from "@/lib/labels";
 import { formatRange } from "@/lib/quran/surahs";
+import { loadReactions } from "@/lib/data/motivation";
+import { BarChart, weekLabel } from "@/components/motivation/BarChart";
+import type { WeekStat } from "@/components/motivation/StudentStatsView";
 import { createClient } from "@/lib/supabase/server";
 import type { Assignment, StudentOverview } from "@/lib/types";
 import { approveRecordAction, cancelAssignmentAction, deleteDraftAction } from "../../../../actions";
@@ -40,7 +43,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
   const isActive = membership.status === "active";
   const sessionId = typeof sp.session === "string" && /^[0-9a-f-]{36}$/i.test(sp.session) ? sp.session : null;
 
-  const [overviewRes, recordsRes, assignmentsRes, streakRes, certsRes] = await Promise.all([
+  const [overviewRes, recordsRes, assignmentsRes, streakRes, certsRes, statsRes] = await Promise.all([
     supabase.rpc("get_student_overview", { p_student: studentId, p_days: 30, p_halaqa: id }),
     supabase
       .from("quran_progress_records")
@@ -53,11 +56,14 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
     supabase.from("quran_assignments").select("*").eq("halaqa_id", id).eq("student_id", studentId).order("created_at", { ascending: false }).limit(10),
     supabase.rpc("get_student_streak", { p_student: studentId, p_halaqa: id }),
     supabase.from("certificates").select("id, serial, title, issued_on, revoked_at").eq("halaqa_id", id).eq("student_id", studentId).order("issued_on", { ascending: false }).limit(20),
+    supabase.rpc("get_student_stats", { p_student: studentId, p_weeks: 12, p_halaqa: id }),
   ]);
   const streak = (streakRes.data as number | null) ?? 0;
   const certs = (certsRes.data ?? []) as Array<{ id: string; serial: string; title: string; issued_on: string; revoked_at: string | null }>;
   const overview = overviewRes.data as StudentOverview | null;
   const records = (recordsRes.data ?? []) as RecordWithErrors[];
+  const reactions = await loadReactions(supabase, "progress_record", records.map((r) => r.id), user.id);
+  const weeks = (statsRes.data ?? []) as WeekStat[];
   const assignments = (assignmentsRes.data ?? []) as Assignment[];
   const openAssignment = assignments.find((a) => a.status === "assigned") ?? null;
   const lastNew = records.find((r) => r.activity === "new_memorization" && r.status === "approved");
@@ -68,6 +74,12 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
       <PageHeader title={name} description={<>طالب في <Link href={`/dashboard/teacher/halaqat/${id}`} className="font-semibold underline">{loaded.halaqa.name}</Link>{!isActive && " — العضوية غير نشطة"}</>} />
       {overview && <OverviewStats o={overview} />}
       <p className="text-muted">سلسلة الالتزام: <strong className="text-brand-900">{streak}</strong> أسبوع متتالٍ</p>
+      {weeks.length > 0 && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card><BarChart title="النقاط أسبوعيًا في هذه الحلقة" unit="نقطة" data={weeks.map((w) => ({ key: w.week, label: weekLabel(w.week), value: w.points, tip: `أسبوع ${weekLabel(w.week)}: ${w.points} نقطة` }))} /></Card>
+          <Card><BarChart title="الحفظ الجديد أسبوعيًا (آية)" unit="آية" data={weeks.map((w) => ({ key: w.week, label: weekLabel(w.week), value: w.new_ayat, tip: `أسبوع ${weekLabel(w.week)}: ${w.new_ayat} آية` }))} /></Card>
+        </div>
+      )}
 
       {isActive && (
         <Card>
@@ -138,6 +150,7 @@ export default async function TeacherStudentPage({ params, searchParams }: PageP
         {records.length === 0 ? <EmptyState title="لا توجد سجلات بعد" /> : (
           <ProgressList
             records={records}
+            reactions={reactions}
             renderActions={(r) =>
               r.status === "draft" ? (
                 <div className="mt-3 flex gap-2">

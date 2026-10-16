@@ -49,7 +49,7 @@ export default async function HalaqatPage({ searchParams }: PageProps<"/halaqat"
   return (
     <>
       <PageHeader title="الحلقات القرآنية" description="حلقات مستقلة وحلقات تابعة لدور ومراكز، حضورية وعن بُعد." />
-      <form className="mb-6 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-5" role="search">
+      <form className="mb-6 grid gap-3 rounded-[20px] border border-line bg-panel p-4 sm:grid-cols-5" role="search">
         <label className="sr-only" htmlFor="q">بحث</label>
         <Input name="q" defaultValue={q} placeholder="ابحث باسم الحلقة أو المدينة" className="sm:col-span-2" />
         <Select name="mode" defaultValue={mode ?? ""} aria-label="نوع اللقاء">

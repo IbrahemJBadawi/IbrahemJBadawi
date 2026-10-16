@@ -6,7 +6,6 @@ import { AdminHome } from "./_home/AdminHome";
 import { ParentHome } from "./_home/ParentHome";
 import { StudentHome } from "./_home/StudentHome";
 import { OnboardingChecklist, WelcomeCard } from "./_home/Welcome";
-import { createClient } from "@/lib/supabase/server";
 import { TeacherHome } from "./_home/TeacherHome";
 
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
@@ -37,15 +36,10 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
       </Card>
     );
   }
-  let streak: number | null = null;
-  if (ctx === "student") {
-    const supabase = await createClient();
-    streak = ((await supabase.rpc("get_student_streak", { p_student: user.id })).data as number | null) ?? null;
-  }
   return (
     <div className="flex flex-col gap-5">
       {banner}
-      {ctx && <WelcomeCard user={user} streak={streak} />}
+      {ctx && <WelcomeCard user={user} />}
       <OnboardingChecklist user={user} />
       {body}
     </div>

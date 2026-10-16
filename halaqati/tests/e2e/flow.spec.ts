@@ -112,7 +112,46 @@ test.describe.serial("halaqa workflow", () => {
     await expect(student.page.getByRole("heading", { name: "جدولي الأسبوعي" })).toBeVisible();
     await expectNoHorizontalOverflow(student.page);
     await student.page.goto("/dashboard/certificates");
-    await expect(student.page.getByText("إتمام حفظ سورة النبأ")).toBeVisible();
+    await expect(student.page.getByRole("heading", { name: "إتمام حفظ سورة النبأ" })).toBeVisible();
+
+    // Motivation: approved recitation + attendance already earned points; streak is live.
+    await student.page.goto("/dashboard");
+    await expect(student.page.getByText("الحماسة", { exact: true })).toBeVisible();
+    await student.page.locator("#wird-pages").fill("4");
+    await student.page.getByRole("button", { name: "سجّل الورد" }).click();
+    await expect(student.page.getByText("سجّلت وردك اليوم: 4 صفحة")).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+
+    // Personal tasks.
+    await student.page.goto("/dashboard/tasks");
+    await student.page.locator("#task-title").fill("مراجعة سورة الملك");
+    await student.page.getByRole("button", { name: "إضافة" }).click();
+    await expect(student.page.getByText("أُضيفت المهمة")).toBeVisible();
+    await student.page.getByRole("button", { name: "إنجاز: مراجعة سورة الملك" }).click();
+    await expect(student.page.getByRole("button", { name: "إلغاء إنجاز: مراجعة سورة الملك" })).toBeVisible();
+
+    // League shows the student with their points.
+    await student.page.goto("/dashboard/league");
+    await expect(student.page.getByText("(أنت)")).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+
+    // Stats charts render with a table view.
+    await student.page.goto("/dashboard/stats");
+    await expect(student.page.getByText("النقاط أسبوعيًا")).toBeVisible();
+    await expectNoHorizontalOverflow(student.page);
+
+    // Teacher encourages the record; the student is notified.
+    await teacher.page.goto(`/dashboard/teacher/halaqat/${halaqaId}/students`);
+    await teacher.page.getByRole("link", { name: "الطالب يوسف" }).click();
+    await teacher.page.getByRole("button", { name: "ما شاء الله" }).first().click();
+    await expect(teacher.page.getByRole("button", { name: "ما شاء الله (1)" }).first()).toHaveAttribute("aria-pressed", "true");
+    await student.page.goto("/dashboard/notifications");
+    await expect(student.page.locator("#main").getByText(/ما شاء الله/)).toBeVisible();
+
+    // Settings page offers push, install and theme.
+    await student.page.goto("/dashboard/settings");
+    await expect(student.page.getByRole("heading", { name: "إشعارات الجهاز" })).toBeVisible();
+    await expect(student.page.getByRole("heading", { name: "تثبيت التطبيق" })).toBeVisible();
     await student.page.goto("/dashboard/support");
     await student.page.getByLabel("العنوان").fill("استفسار");
     await student.page.getByLabel("التفاصيل").fill("كيف أغيّر موعد الحلقة؟");
@@ -153,7 +192,14 @@ test.describe.serial("halaqa workflow", () => {
     await page.getByRole("button", { name: "تسجيل الدخول" }).click();
     await page.waitForURL("**/dashboard");
     await expect(page.getByRole("heading", { name: "الطالب يوسف" })).toBeVisible();
-    await page.getByRole("button", { name: "خروج" }).click();
+    // Sign out from the account menu (desktop) or the "more" sheet (phone).
+    if (await page.locator(".tabbar").isVisible()) {
+      await page.getByRole("button", { name: "المزيد" }).click();
+      await page.getByRole("dialog", { name: "المزيد" }).getByRole("button", { name: "خروج" }).click();
+    } else {
+      await page.getByLabel("قائمة الحساب").click();
+      await page.getByRole("button", { name: "تسجيل الخروج" }).click();
+    }
     await page.waitForURL((u) => u.pathname === "/");
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/login/);

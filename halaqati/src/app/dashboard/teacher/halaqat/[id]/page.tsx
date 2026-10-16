@@ -12,6 +12,7 @@ import { isoFromNow, utcToLocalInput } from "@/lib/time";
 import type { Session } from "@/lib/types";
 import { decideJoinAction, removeMemberAction } from "../../actions";
 import { SessionForm } from "../../SessionForm";
+import { setHalaqaLeagueAction } from "@/app/dashboard/motivation-actions";
 
 export const metadata: Metadata = { title: "إدارة الحلقة" };
 
@@ -44,6 +45,7 @@ export default async function TeacherHalaqaPage({ params, searchParams }: PagePr
         actions={
           <>
             <Badge tone={h.status === "published" ? "green" : "gray"}>{HALAQA_STATUS[h.status]}</Badge>
+            <ButtonLink variant="secondary" href={`/dashboard/teacher/halaqat/${id}/stats`}>الإحصائيات</ButtonLink>
             {isManager && <ButtonLink variant="secondary" href={`/dashboard/teacher/halaqat/${id}/edit`}>تعديل</ButtonLink>}
             {h.status === "published" && <ButtonLink variant="ghost" href={`/halaqat/${id}`}>الصفحة العامة</ButtonLink>}
           </>
@@ -101,6 +103,23 @@ export default async function TeacherHalaqaPage({ params, searchParams }: PagePr
             ))}
           </ul>
         )}
+      </Card>
+
+      <Card className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-brand-800">دوري الحلقة</h2>
+          <p className="text-sm text-muted">{h.league_enabled !== false ? "مفعّل: يرى الطلاب ترتيبهم بالنقاط داخل الحلقة فقط." : "متوقف: لا يظهر الترتيب للطلاب وأولياء الأمور."}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink variant="ghost" href={`/dashboard/league?h=${id}`}>عرض الترتيب</ButtonLink>
+          {isManager && (
+            <form action={setHalaqaLeagueAction}>
+              <input type="hidden" name="halaqaId" value={id} />
+              <input type="hidden" name="enabled" value={h.league_enabled !== false ? "0" : "1"} />
+              <Button type="submit" variant="secondary">{h.league_enabled !== false ? "إيقاف الدوري" : "تفعيل الدوري"}</Button>
+            </form>
+          )}
+        </div>
       </Card>
 
       <Card>

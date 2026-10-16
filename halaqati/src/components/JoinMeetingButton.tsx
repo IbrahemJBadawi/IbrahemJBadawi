@@ -21,7 +21,7 @@ export function JoinMeetingButton({ url, startsAt, durationMinutes }: { url: str
     return <p className="mt-2 text-sm text-muted">يظهر زر الانضمام قبل الموعد بعشر دقائق.</p>;
   }
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-800 px-4 font-semibold text-white hover:bg-brand-900">
+    <a href={url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-fill px-4 font-semibold text-white hover:brightness-110">
       انضم إلى اللقاء الآن
     </a>
   );
