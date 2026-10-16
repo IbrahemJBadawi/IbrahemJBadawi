@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { publicEnv } from "@/lib/env";
+import { requestOrigin } from "@/lib/request";
 import { authErrorMessage } from "@/lib/errors";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { forgotSchema, loginSchema, registerSchema, resetSchema, safeNext } from "@/lib/validation/auth";
@@ -37,7 +37,7 @@ async function register(fd: FormData): Promise<FormState> {
     password: parsed.data.password,
     options: {
       data: { full_name: parsed.data.fullName, roles: parsed.data.roles },
-      emailRedirectTo: `${publicEnv.siteUrl}/auth/callback?next=/dashboard`,
+      emailRedirectTo: `${await requestOrigin()}/auth/callback?next=/dashboard`,
     },
   });
   if (error) return { ok: false, error: authErrorMessage(error) };
@@ -82,7 +82,7 @@ async function forgot(fd: FormData): Promise<FormState> {
   if (!(await rateLimit(`forgot:${ip}`, 5, 3600))) return TOO_MANY;
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${publicEnv.siteUrl}/auth/callback?next=/reset-password`,
+    redirectTo: `${await requestOrigin()}/auth/callback?next=/reset-password`,
   });
   // Same answer whether or not the account exists (no account enumeration).
   return { ok: true, message: "إذا كان البريد مسجّلًا لدينا فستصلك رسالة تتضمن رابط إعادة تعيين كلمة المرور." };
@@ -97,4 +97,18 @@ export async function resetPasswordAction(_prev: FormState, fd: FormData): Promi
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
   if (error) return { ok: false, error: authErrorMessage(error) };
   redirect("/dashboard?password=updated");
+}
+
+/** Starts Google sign-in (PKCE). Supabase redirects back to /auth/callback. */
+export async function googleSignInAction(fd: FormData) {
+  const ip = await clientIp();
+  if (!(await rateLimit(`oauth:${ip}`, 30, 900))) redirect("/login?error=rate");
+  const next = safeNext(String(fd.get("next") ?? ""));
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: `${await requestOrigin()}/auth/callback?next=${encodeURIComponent(next)}` },
+  });
+  if (error || !data.url) redirect("/login?error=google");
+  redirect(data.url);
 }
