@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
+import { Icon } from "@/components/Icon";
+import { DropdownCloser, ThemeToggle } from "@/components/layout/AppChrome";
 
 const LINKS = [
   { href: "/halaqat", label: "الحلقات" },
@@ -10,30 +12,28 @@ const LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-line bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <header className="topbar">
+      <DropdownCloser />
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-2.5">
         <Link href="/" aria-label="حلقتي — الرئيسية">
           <Logo withTagline />
         </Link>
-        <nav aria-label="الرئيسية" className="hidden items-center gap-5 md:flex">
+        <nav aria-label="الرئيسية" className="hidden items-center gap-1 md:flex">
           {LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="font-semibold text-ink hover:text-brand-800">
+            <Link key={l.href} href={l.href} className="rounded-full px-3.5 py-2 font-semibold text-muted hover:bg-brand-100 hover:text-brand-900">
               {l.label}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <Link href="/login" className="rounded-lg px-3 py-2 font-semibold text-brand-800 hover:bg-brand-50">دخول</Link>
-          <Link href="/register" className="hidden rounded-lg bg-brand-800 px-3 py-2 font-semibold text-white hover:bg-brand-900 sm:inline-block">حساب جديد</Link>
-          <details className="relative md:hidden">
-            <summary className="flex min-h-11 cursor-pointer list-none items-center rounded-lg border border-line px-3 font-semibold" aria-label="القائمة">
-              القائمة
-            </summary>
-            <nav aria-label="القائمة" className="absolute left-0 z-20 mt-2 w-52 rounded-xl border border-line bg-white p-2 shadow-lg">
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle />
+          <Link href="/login" className="btn btn-ghost !min-h-10 !px-3.5">دخول</Link>
+          <Link href="/register" className="btn btn-primary hidden !min-h-10 sm:inline-flex">حساب جديد</Link>
+          <details className="dropdown md:hidden">
+            <summary className="icon-button" aria-label="القائمة"><Icon name="more" /></summary>
+            <nav aria-label="القائمة" className="dropdown-panel !w-56">
               {[...LINKS, { href: "/register", label: "حساب جديد" }].map((l) => (
-                <Link key={l.href} href={l.href} className="block rounded-lg px-3 py-2.5 font-semibold hover:bg-brand-50">
-                  {l.label}
-                </Link>
+                <Link key={l.href} href={l.href} className="dropdown-item font-semibold">{l.label}</Link>
               ))}
             </nav>
           </details>

@@ -4,6 +4,8 @@ import { Badge, Button, Card, EmptyState, PageHeader } from "@/components/ui";
 import { requireContext } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { CERTIFICATE_KIND } from "@/lib/labels";
+import { Reactions } from "@/components/motivation/Reactions";
+import { loadReactions } from "@/lib/data/motivation";
 import { createClient } from "@/lib/supabase/server";
 import type { Certificate } from "@/lib/types";
 import { setCertificateVisibilityAction } from "../feature-actions";
@@ -15,6 +17,7 @@ export default async function MyCertificatesPage() {
   const supabase = await createClient();
   const { data } = await supabase.from("certificates").select("*").eq("student_id", user.id).order("issued_on", { ascending: false }).limit(50);
   const rows = (data ?? []) as Certificate[];
+  const reactions = await loadReactions(supabase, "certificate", rows.map((c) => c.id), user.id);
   return (
     <>
       <PageHeader title="شهاداتي" description="لكل شهادة رقم فريد وصفحة تحقق عامة يمكنك مشاركتها." />
@@ -38,6 +41,7 @@ export default async function MyCertificatesPage() {
                   </Button>
                 </form>
               </div>
+              {!c.revoked_at && <Reactions entityType="certificate" entityId={c.id} summary={reactions[c.id]} />}
             </Card>
           ))}
         </div>

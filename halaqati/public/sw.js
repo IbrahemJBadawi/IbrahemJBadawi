@@ -4,7 +4,7 @@
  * - Private pages (/dashboard, /auth) are never stored on the device,
  *   because family phones are often shared; offline they show /offline.
  */
-const VERSION = "halaqati-v1";
+const VERSION = "halaqati-v2";
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const PUBLIC_PAGES = ["/", "/halaqat", "/teachers", "/centers", "/about", "/privacy", "/terms", "/app", "/verify"];
@@ -50,4 +50,35 @@ self.addEventListener("fetch", (event) => {
         .catch(async () => (cacheable && (await caches.match(req))) || (await caches.match("/offline"))),
     );
   }
+});
+
+/* ---- Web Push ---- */
+self.addEventListener("push", (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = { title: event.data && event.data.text() }; }
+  const title = data.title || "حلقتي";
+  const url = typeof data.url === "string" && data.url.startsWith("/") ? data.url : "/dashboard/notifications";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: data.body || "",
+      icon: "/brand/halaqati-mark-256.png",
+      badge: "/brand/halaqati-mark-128.png",
+      dir: "rtl",
+      lang: "ar",
+      data: { url },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "/dashboard/notifications";
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (new URL(c.url).origin === self.location.origin && "focus" in c) { c.navigate(url); return c.focus(); }
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
 });

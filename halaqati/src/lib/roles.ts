@@ -1,3 +1,5 @@
+import type { IconName } from "@/components/Icon";
+
 /**
  * Role & context model (pure, unit-tested).
  *
@@ -61,45 +63,64 @@ export function isContextKey(value: unknown): value is ContextKey {
   return typeof value === "string" && value in CONTEXT_LABELS;
 }
 
-export type NavItem = { href: string; label: string };
+export type NavItem = { href: string; label: string; icon: IconName };
 
 export const NAV: Record<ContextKey, NavItem[]> = {
   student: [
-    { href: "/dashboard", label: "الرئيسية" },
-    { href: "/dashboard/journey", label: "رحلتي" },
-    { href: "/dashboard/plan", label: "خطتي" },
-    { href: "/dashboard/schedule", label: "جدولي" },
-    { href: "/dashboard/sessions", label: "جلساتي" },
-    { href: "/dashboard/halaqat", label: "حلقاتي" },
-    { href: "/dashboard/certificates", label: "شهاداتي" },
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/journey", label: "رحلتي", icon: "journey" },
+    { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
+    { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
+    { href: "/dashboard/stats", label: "إحصائياتي", icon: "stats" },
+    { href: "/dashboard/plan", label: "خطتي", icon: "plan" },
+    { href: "/dashboard/schedule", label: "جدولي", icon: "calendar" },
+    { href: "/dashboard/sessions", label: "جلساتي", icon: "sessions" },
+    { href: "/dashboard/halaqat", label: "حلقاتي", icon: "halaqa" },
+    { href: "/dashboard/certificates", label: "شهاداتي", icon: "certificate" },
   ],
   parent: [
-    { href: "/dashboard", label: "الرئيسية" },
-    { href: "/dashboard/children", label: "الأبناء" },
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/children", label: "الأبناء", icon: "child" },
+    { href: "/dashboard/stats", label: "الإحصائيات", icon: "stats" },
+    { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
+    { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
   ],
   quran_teacher: [
-    { href: "/dashboard", label: "الرئيسية" },
-    { href: "/dashboard/teacher/halaqat", label: "حلقاتي" },
-    { href: "/dashboard/teacher/schedule", label: "جدولي" },
-    { href: "/dashboard/teacher/halaqat/new", label: "حلقة جديدة" },
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/teacher/halaqat", label: "حلقاتي", icon: "halaqa" },
+    { href: "/dashboard/teacher/schedule", label: "جدولي", icon: "calendar" },
+    { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
+    { href: "/dashboard/teacher/halaqat/new", label: "حلقة جديدة", icon: "plus" },
+    { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
   ],
   platform_admin: [
-    { href: "/dashboard", label: "الرئيسية" },
-    { href: "/dashboard/admin/users", label: "المستخدمون" },
-    { href: "/dashboard/admin/verifications", label: "التوثيق" },
-    { href: "/dashboard/admin/tickets", label: "البلاغات" },
-    { href: "/dashboard/admin/institutions", label: "المؤسسات" },
-    { href: "/dashboard/admin/privacy", label: "طلبات الخصوصية" },
-    { href: "/dashboard/admin/audit", label: "سجل التدقيق" },
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/admin/users", label: "المستخدمون", icon: "users" },
+    { href: "/dashboard/admin/verifications", label: "التوثيق", icon: "shield" },
+    { href: "/dashboard/admin/tickets", label: "البلاغات", icon: "flag" },
+    { href: "/dashboard/admin/institutions", label: "المؤسسات", icon: "building" },
+    { href: "/dashboard/admin/privacy", label: "طلبات الخصوصية", icon: "lock" },
+    { href: "/dashboard/admin/audit", label: "سجل التدقيق", icon: "list" },
   ],
-  center_admin: [{ href: "/dashboard", label: "الرئيسية" }],
-  org_admin: [{ href: "/dashboard", label: "الرئيسية" }],
-  instructor: [{ href: "/dashboard", label: "الرئيسية" }],
-  sponsor: [{ href: "/dashboard", label: "الرئيسية" }],
+  center_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
+  org_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
+  instructor: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
+  sponsor: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
 };
 
 export const COMMON_NAV: NavItem[] = [
-  { href: "/dashboard/notifications", label: "الإشعارات" },
-  { href: "/dashboard/support", label: "المساعدة والبلاغات" },
-  { href: "/dashboard/profile", label: "حسابي" },
+  { href: "/dashboard/notifications", label: "الإشعارات", icon: "bell" },
+  { href: "/dashboard/settings", label: "الإعدادات", icon: "settings" },
+  { href: "/dashboard/support", label: "المساعدة والبلاغات", icon: "support" },
+  { href: "/dashboard/profile", label: "حسابي", icon: "user" },
 ];
+
+/** Where the active item is: exact for the home link, prefix for sections (most specific wins). */
+export function activeHref(pathname: string, items: NavItem[]): string | null {
+  let best: string | null = null;
+  for (const i of items) {
+    const hit = i.href === "/dashboard" ? pathname === "/dashboard" : pathname === i.href || pathname.startsWith(i.href + "/");
+    if (hit && (!best || i.href.length > best.length)) best = i.href;
+  }
+  return best;
+}

@@ -40,6 +40,11 @@ values ('someone@example.com', '{student,parent,quran_teacher,instructor,sponsor
 - الخطط المدفوعة توفر نسخًا يومية واستعادة لنقطة زمنية (PITR).
 - جرّب الاستعادة دوريًا على مشروع اختبار: `pg_restore --no-owner -d <test-db-url> file.dump`.
 
+## إشعارات الجهاز (Web Push)
+- عند إنشاء إشعار لمستخدم له جهاز مفعّل، يرسل `pg_net` رمزًا لمرة واحدة إلى `site_url/api/push`، ويستلم الخادم المحتوى ومفاتيح VAPID بهذا الرمز عبر `claim_push` (صالح 10 دقائق ولمرة واحدة). لا يحتاج Vercel أي متغير بيئة.
+- الإعدادات في `private.app_settings`: `site_url`، `vapid_public`، `vapid_private`، `vapid_subject`. لتدوير المفاتيح: ولّد زوجًا جديدًا (`npx web-push generate-vapid-keys`) وحدّث القيمتين؛ ستحتاج الأجهزة لإعادة التفعيل.
+- الأجهزة التي يرفضها مزوّد الدفع (404/410) تُحذف تلقائيًا.
+
 ## المراقبة
 - Supabase → Advisors (Security / Performance) بعد كل migration.
 - سجلات Auth لمتابعة محاولات الدخول المتكررة.

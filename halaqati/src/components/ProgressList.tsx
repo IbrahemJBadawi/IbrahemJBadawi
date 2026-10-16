@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
+import { Reactions } from "@/components/motivation/Reactions";
 import { Badge } from "@/components/ui";
+import type { ReactionSummary } from "@/lib/data/motivation";
 import { formatDate } from "@/lib/format";
 import { ACTIVITY, ADHERENCE, COMPLETION, ERROR_TYPE, SCORE_LABELS } from "@/lib/labels";
 import { formatRange, getSurah } from "@/lib/quran/surahs";
@@ -13,13 +15,22 @@ export type RecordWithErrors = ProgressRecord & {
 const score = (v: number | null) => (v ? `${v}/5 (${SCORE_LABELS[v]})` : "—");
 
 /** Shows the five signals separately — never merged into one score. */
-export function ProgressList({ records, renderActions }: { records: RecordWithErrors[]; renderActions?: (r: RecordWithErrors) => ReactNode }) {
+export function ProgressList({
+  records,
+  renderActions,
+  reactions,
+}: {
+  records: RecordWithErrors[];
+  renderActions?: (r: RecordWithErrors) => ReactNode;
+  /** When given, approved records show the encouragement reactions. */
+  reactions?: Record<string, ReactionSummary>;
+}) {
   return (
     <ul className="flex flex-col gap-3">
       {records.map((r) => (
-        <li key={r.id} className="rounded-xl border border-line bg-white p-4">
+        <li key={r.id} className="surface p-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-bold text-brand-900">{ACTIVITY[r.activity]}: {formatRange(r)}</p>
+            <p className="font-bold text-ink">{ACTIVITY[r.activity]}: {formatRange(r)}</p>
             <span className="flex gap-2">
               {r.status === "draft" && <Badge tone="gold">مسودة</Badge>}
               {r.revision > 1 && <Badge>معدَّل ({r.revision - 1})</Badge>}
@@ -48,6 +59,7 @@ export function ProgressList({ records, renderActions }: { records: RecordWithEr
             </div>
           )}
           {r.teacher_notes && <p className="mt-2 whitespace-pre-line text-ink">ملاحظات: {r.teacher_notes}</p>}
+          {reactions && r.status === "approved" && <Reactions entityType="progress_record" entityId={r.id} summary={reactions[r.id]} />}
           {renderActions?.(r)}
         </li>
       ))}

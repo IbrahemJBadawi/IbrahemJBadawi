@@ -29,7 +29,7 @@ describe("schema guarantees", () => {
       `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
        where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute') order by 1`,
     );
-    expect(rows.map((r) => r.proname)).toEqual(["get_public_centers", "get_public_halaqa", "get_public_halaqat", "get_public_teachers", "verify_certificate"]);
+    expect(rows.map((r) => r.proname)).toEqual(["claim_push", "get_public_centers", "get_public_halaqa", "get_public_halaqat", "get_public_teachers", "get_vapid_public_key", "prune_push_subscription", "verify_certificate"]);
   });
 
   it("every security definer function pins its search_path", async () => {

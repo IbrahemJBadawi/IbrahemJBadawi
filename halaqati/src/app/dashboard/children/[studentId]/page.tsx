@@ -10,7 +10,9 @@ import { personName } from "@/lib/data/halaqat";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { ACTIVITY, ASSIGNMENT_STATUS, MEMBERSHIP_STATUS } from "@/lib/labels";
 import { formatRange } from "@/lib/quran/surahs";
+import { getMotivation, loadReactions } from "@/lib/data/motivation";
 import { createClient } from "@/lib/supabase/server";
+import { WeekStrip } from "@/components/motivation/WeekStrip";
 import type { Assignment, Session, StudentOverview } from "@/lib/types";
 
 export const metadata: Metadata = { title: "تقدّم الابن" };
@@ -46,10 +48,23 @@ export default async function ChildPage({ params }: PageProps<"/dashboard/childr
     ? await supabase.from("quran_sessions").select("*").in("halaqa_id", activeIds).eq("status", "scheduled").gte("starts_at", new Date().toISOString()).order("starts_at").limit(5)
     : { data: [] as Session[] };
   const o = overviewRes.data as StudentOverview | null;
+  const records = (recordsRes.data ?? []) as RecordWithErrors[];
+  const [reactions, motivation] = await Promise.all([
+    loadReactions(supabase, "progress_record", records.map((r) => r.id), user.id),
+    getMotivation(supabase, studentId),
+  ]);
 
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={personName(child.profiles)} description={<Link href="/dashboard/children" className="underline">← الأبناء</Link>} />
+      {motivation && (
+        <Card className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <p className="text-lg font-bold"><span aria-hidden>🔥</span> الحماسة: {motivation.current_streak} {motivation.current_streak === 1 ? "يوم" : "أيام"}</p>
+          <p className="text-muted">نقاط الأسبوع: <strong className="text-ink">{motivation.points_week}</strong> · المجموع: <strong className="text-ink">{motivation.points_total}</strong></p>
+          <WeekStrip days={motivation.last7} />
+          <Link href={`/dashboard/stats?s=${studentId}`} className="font-semibold text-brand-800">الإحصائيات ←</Link>
+        </Card>
+      )}
       {o && <OverviewStats o={o} />}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
@@ -87,7 +102,7 @@ export default async function ChildPage({ params }: PageProps<"/dashboard/childr
       </Card>
       <section>
         <h2 className="mb-3 text-lg font-bold text-brand-800">آخر التسميعات المعتمدة</h2>
-        {(recordsRes.data ?? []).length === 0 ? <EmptyState title="لا توجد سجلات بعد" /> : <ProgressList records={recordsRes.data as RecordWithErrors[]} />}
+        {records.length === 0 ? <EmptyState title="لا توجد سجلات بعد" /> : <ProgressList records={records} reactions={reactions} />}
       </section>
     </div>
   );

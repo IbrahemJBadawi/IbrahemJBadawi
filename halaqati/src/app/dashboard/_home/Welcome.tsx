@@ -5,27 +5,25 @@ import { CONTEXT_LABELS, type ContextKey } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import { dismissOnboardingAction } from "../feature-actions";
 
-const THEME: Partial<Record<ContextKey, { bg: string; action: { href: string; label: string } }>> = {
-  student: { bg: "bg-brand-800", action: { href: "/dashboard/schedule", label: "جدولي الأسبوعي" } },
-  quran_teacher: { bg: "bg-brand-900", action: { href: "/dashboard/teacher/schedule", label: "جلسات الأسبوع" } },
-  parent: { bg: "bg-[#5b4a1f]", action: { href: "/dashboard/children", label: "تقدّم الأبناء" } },
-  platform_admin: { bg: "bg-ink", action: { href: "/dashboard/admin/tickets", label: "البلاغات المفتوحة" } },
+const THEME: Partial<Record<ContextKey, { action: { href: string; label: string } }>> = {
+  student: { action: { href: "/dashboard/schedule", label: "جدولي الأسبوعي" } },
+  quran_teacher: { action: { href: "/dashboard/teacher/schedule", label: "جلسات الأسبوع" } },
+  parent: { action: { href: "/dashboard/children", label: "تقدّم الأبناء" } },
+  platform_admin: { action: { href: "/dashboard/admin/tickets", label: "البلاغات المفتوحة" } },
 };
 
-/** Role-coloured greeting with the single most useful action for that role. */
-export function WelcomeCard({ user, streak }: { user: CurrentUser; streak?: number | null }) {
+/** Greeting hero with the single most useful action for the active role. */
+export function WelcomeCard({ user }: { user: CurrentUser }) {
   const ctx = user.activeContext;
-  const theme = (ctx && THEME[ctx]) || { bg: "bg-brand-800", action: { href: "/dashboard/profile", label: "حسابي" } };
+  const theme = (ctx && THEME[ctx]) || { action: { href: "/dashboard/profile", label: "حسابي" } };
   return (
-    <div className={cx("flex flex-col gap-3 rounded-2xl px-5 py-5 text-white sm:flex-row sm:items-end sm:justify-between", theme.bg)}>
-      <div>
-        <p className="text-sm text-white/80">السلام عليكم 👋 · {ctx ? CONTEXT_LABELS[ctx] : ""}</p>
-        <h1 className="text-2xl font-bold">{user.displayName || user.fullName}</h1>
-        <p className="mt-1 text-sm text-gold">
-          رحلتك مع القرآن{typeof streak === "number" && streak > 0 && <> · سلسلة الالتزام: {streak} أسبوع متتالٍ 🔥</>}
-        </p>
+    <div className="hero-card">
+      <div className="relative">
+        <p className="text-sm text-white/80">السلام عليكم 👋{ctx ? ` · ${CONTEXT_LABELS[ctx]}` : ""}</p>
+        <h1 className="text-2xl font-bold sm:text-3xl">{user.displayName || user.fullName}</h1>
+        <p className="mt-1 text-sm text-[#f3dfae]">رحلتك مع القرآن</p>
       </div>
-      <ButtonLink href={theme.action.href} className="!bg-white !text-brand-900 hover:!bg-ivory">{theme.action.label}</ButtonLink>
+      <ButtonLink href={theme.action.href} variant="secondary" className="relative !border-transparent">{theme.action.label}</ButtonLink>
     </div>
   );
 }

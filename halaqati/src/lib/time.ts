@@ -60,3 +60,8 @@ export function weekdayIn(timeZone: string): number {
   const name = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone }).format(new Date());
   return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(name);
 }
+
+/** Today as YYYY-MM-DD in UTC — the same calendar the database's current_date uses. */
+export function todayUtc(): string {
+  return new Date().toISOString().slice(0, 10);
+}

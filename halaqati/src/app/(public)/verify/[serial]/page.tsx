@@ -43,7 +43,7 @@ export default async function CertificatePage({ params }: PageProps<"/verify/[se
         <Alert tone="error">هذه الشهادة ملغاة{c.revoked_at ? ` منذ ${formatDate(c.revoked_at)}` : ""} ولم تعد سارية.</Alert>
       )}
 
-      <article className="relative overflow-hidden rounded-2xl border-4 border-double border-gold bg-white p-5 shadow-sm sm:p-10 print:border-gold print:shadow-none" aria-label="الشهادة">
+      <article className="relative overflow-hidden rounded-2xl border-4 border-double border-gold bg-panel p-5 shadow-sm sm:p-10 print:border-gold print:shadow-none" aria-label="الشهادة">
         <div className="flex items-start justify-between gap-3">
           <LogoMark size={64} />
           <div className="text-left text-xs text-muted" dir="ltr">

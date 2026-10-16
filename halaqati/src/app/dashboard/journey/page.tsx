@@ -3,6 +3,7 @@ import { OverviewStats } from "@/components/OverviewStats";
 import { ProgressList, type RecordWithErrors } from "@/components/ProgressList";
 import { EmptyState, PageHeader, Pagination } from "@/components/ui";
 import { requireContext } from "@/lib/auth";
+import { loadReactions } from "@/lib/data/motivation";
 import { createClient } from "@/lib/supabase/server";
 import type { StudentOverview } from "@/lib/types";
 
@@ -25,13 +26,14 @@ export default async function JourneyPage({ searchParams }: PageProps<"/dashboar
   ]);
   const o = overviewRes.data as StudentOverview | null;
   const records = (recordsRes.data ?? []) as RecordWithErrors[];
+  const reactions = await loadReactions(supabase, "progress_record", records.map((r) => r.id), user.id);
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title="رحلتي القرآنية" description="كل مؤشر يُقاس منفصلًا: المقدار، والإتقان، وجودة التلاوة، والالتزام، والحضور." />
       {o && <OverviewStats o={o} />}
       <section>
         <h2 className="mb-3 text-lg font-bold text-brand-800">سجل التسميع المعتمد</h2>
-        {records.length === 0 ? <EmptyState title="لا توجد سجلات معتمدة بعد">ستظهر هنا بعد أن يعتمد المحفّظ تسميعك.</EmptyState> : <ProgressList records={records} />}
+        {records.length === 0 ? <EmptyState title="لا توجد سجلات معتمدة بعد">ستظهر هنا بعد أن يعتمد المحفّظ تسميعك.</EmptyState> : <ProgressList records={records} reactions={reactions} />}
         <Pagination page={page} pageSize={PAGE_SIZE} total={recordsRes.count ?? 0} hrefFor={(p) => `/dashboard/journey?page=${p}`} />
       </section>
     </div>
