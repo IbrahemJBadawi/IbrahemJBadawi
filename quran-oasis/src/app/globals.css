@@ -94,8 +94,15 @@ body {
   line-height: 2.35;
   word-spacing: 0.04em;
   font-feature-settings: "kern", "liga", "calt";
-  text-align: justify;
-  text-align-last: right;
+  text-align: right;
+}
+
+/* المحاذاة الكاملة على الشاشات الواسعة فقط؛ على الهاتف تُحدث فراغات كبيرة بين الكلمات */
+@media (min-width: 640px) {
+  .quran-text {
+    text-align: justify;
+    text-align-last: right;
+  }
 }
 
 .quran-inline {

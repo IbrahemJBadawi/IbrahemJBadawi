@@ -13,8 +13,12 @@ create table auth.users (
   created_at timestamptz default now(),
   last_sign_in_at timestamptz
 );
+-- مطابق لتعريف Supabase: يقرأ sub من إعداد الجلسة أو من مطالبات JWT التي يضبطها PostgREST
 create function auth.uid() returns uuid language sql stable as $$
-  select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid
+  select coalesce(
+    nullif(current_setting('request.jwt.claim.sub', true), ''),
+    (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')
+  )::uuid
 $$;
 grant usage on schema auth to anon, authenticated;
 grant execute on function auth.uid() to anon, authenticated;

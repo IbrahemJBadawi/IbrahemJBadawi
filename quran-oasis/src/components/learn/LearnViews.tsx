@@ -139,7 +139,7 @@ export function LessonView({ path, index, children }: { path: LearningPath; inde
       </Link>
       <header className="mb-6">
         <p className="text-sm font-semibold text-accent">
-          الدرس {toArabicDigits(index + 1)} من {toArabicDigits(path.lessons.length)} · {toArabicDigits(lesson.minutes)} دقائق
+          الدرس {toArabicDigits(index + 1)} من {toArabicDigits(path.lessons.length)} — مدته {toArabicDigits(lesson.minutes)} دقائق
         </p>
         <h1 className="mt-1 text-2xl font-bold md:text-3xl">{lesson.title}</h1>
         <p className="mt-1 text-muted">{lesson.summary}</p>

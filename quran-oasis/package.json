@@ -10,11 +10,14 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run tests/unit",
     "test:e2e": "playwright test",
     "data:build": "node scripts/build-quran-data.mjs",
     "data:verify": "node scripts/verify-quran-data.mjs",
-    "db:seed-sql": "node scripts/generate-seed-sql.mjs"
+    "db:seed-sql": "node scripts/generate-seed-sql.mjs",
+    "test:db": "bash scripts/test-db.sh",
+    "test:integration": "bash scripts/test-integration.sh",
+    "test:all": "npm run lint && npm run typecheck && npm test && npm run build && npm run test:e2e"
   },
   "engines": {
     "node": ">=20.9"

@@ -1,0 +1,62 @@
+name: Quran Oasis CI
+
+on:
+  push:
+    paths: ["quran-oasis/**", ".github/workflows/quran-oasis.yml"]
+  pull_request:
+    paths: ["quran-oasis/**", ".github/workflows/quran-oasis.yml"]
+
+defaults:
+  run:
+    working-directory: quran-oasis
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: quran-oasis/package-lock.json
+      - run: npm ci
+      - run: npm run data:verify
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  database:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: quran-oasis/package-lock.json
+      - run: npm ci
+      - name: RLS tests
+        run: npm run test:db
+      - name: Install PostgREST
+        run: |
+          curl -sL https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz | tar xJ
+          echo "POSTGREST_BIN=$PWD/postgrest" >> "$GITHUB_ENV"
+      - name: Integration tests (supabase-js → PostgREST → Postgres)
+        run: npm run test:integration

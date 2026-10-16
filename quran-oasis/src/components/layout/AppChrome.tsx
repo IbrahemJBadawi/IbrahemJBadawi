@@ -60,7 +60,7 @@ export function AppHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-1 lg:flex">
-            {[...SECONDARY_NAV.slice(3, 5), ...(staff ? [ADMIN_NAV] : [])].map((item) => (
+            {[...SECONDARY_NAV.slice(3), ...(staff ? [ADMIN_NAV] : [])].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

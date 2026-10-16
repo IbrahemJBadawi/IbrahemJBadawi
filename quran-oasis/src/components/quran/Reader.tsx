@@ -116,8 +116,6 @@ export function Reader({ meta, text, basmala }: { meta: SurahMeta; text: SurahTe
             if (!visibleSince.has(a)) visibleSince.set(a, now);
           } else visibleSince.delete(a);
         }
-        const visible = [...visibleSince.keys()].sort((x, y) => x - y);
-        topAyah = visible[0] ?? topAyah;
       },
       { rootMargin: "-120px 0px -25% 0px", threshold: 0 },
     );
@@ -132,6 +130,13 @@ export function Reader({ meta, text, basmala }: { meta: SurahMeta; text: SurahTe
           credited.add(a);
           pending.push(a);
         }
+      }
+      // الموضع الحالي = أول آية تبدأ داخل منطقة القراءة (لا ذيل الآية السابقة في السطر نفسه)
+      const visible = [...visibleSince.keys()].sort((x, y) => x - y);
+      for (const a of visible) {
+        topAyah = a;
+        const top = document.getElementById(`a-${a}`)?.getBoundingClientRect().top ?? 0;
+        if (top >= 100) break;
       }
       if (topAyah) saveLastRead(meta.n, topAyah);
     }, 1000);

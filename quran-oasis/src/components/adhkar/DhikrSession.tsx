@@ -107,7 +107,7 @@ export function DhikrSession({ category, items }: { category: DhikrCategory; ite
             <p className="text-sm text-muted">{category.description}</p>
           </div>
           <p className="shrink-0 text-sm font-bold tabular-nums" aria-live="polite">
-            {done} / {items.length}
+            {toArabicDigits(done)} من {toArabicDigits(items.length)}
           </p>
         </div>
         <ProgressBar className="mt-2" value={done / items.length} label={`تقدم ${category.title}`} />
@@ -192,7 +192,7 @@ export function DhikrSession({ category, items }: { category: DhikrCategory; ite
                     </>
                   ) : (
                     <span className="tabular-nums">
-                      {c} / {d.repeat}
+                      {toArabicDigits(c)} من {toArabicDigits(d.repeat)}
                       {d.repeat > 1 && <span className="mr-2 text-sm font-semibold opacity-80">اضغط للعدّ</span>}
                     </span>
                   )}

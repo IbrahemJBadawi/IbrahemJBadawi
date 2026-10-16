@@ -9,6 +9,7 @@ import { ProgressBar } from "@/components/ui/Progress";
 import { EmptyState } from "@/components/ui/States";
 import { dayKey } from "@/lib/date";
 import { adhkarStatus } from "@/lib/store/progress";
+import { toArabicDigits } from "@/lib/quran";
 import { useHydrated, useStore } from "@/lib/store/store";
 import { CATEGORY_ICONS } from "./icons";
 import { DhikrText } from "./DhikrText";
@@ -46,7 +47,7 @@ export function AdhkarHome({ categories, adhkar }: { categories: DhikrCategory[]
                 <span className="mt-4 flex items-center gap-3">
                   <ProgressBar value={hydrated && st.total ? st.done / st.total : 0} label={`تقدم ${c.title}`} />
                   <span className="shrink-0 text-xs font-semibold text-muted tabular-nums">
-                    {hydrated ? st.done : 0}/{st.total}
+                    {toArabicDigits(hydrated ? st.done : 0)} من {toArabicDigits(st.total)}
                   </span>
                   <ChevronLeft className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
                 </span>
