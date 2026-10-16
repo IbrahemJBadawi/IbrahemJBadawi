@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Halaqati identity — green is primary, gold only for small accents. */
+@theme {
+  --color-brand-900: #053f31;
+  --color-brand-800: #075b46;
+  --color-brand-600: #168466;
+  --color-brand-100: #e3f1ec;
+  --color-brand-50: #f1f8f5;
+  --color-gold: #c9a45c;
+  --color-gold-dark: #7a5c22; /* accessible gold for text on light backgrounds */
+  --color-gold-50: #f8f1e3;
+  --color-ivory: #faf9f4;
+  --color-ink: #1e293b;
+  --color-muted: #586579; /* slightly darker than #64748B for AA on ivory */
+  --color-line: #e5e2d8;
+  --color-danger: #b42318;
+  --color-danger-50: #fef3f2;
+  --color-warning-50: #fffaeb;
+  --color-warning: #93370d;
+
+  --font-sans: var(--font-arabic), "Noto Sans Arabic", "Segoe UI", Tahoma, system-ui, sans-serif;
+  --radius-card: 0.875rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+
+/* Visible focus for keyboard users everywhere. */
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,141 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { OverviewStats } from "@/components/OverviewStats";
+import { ProgressList, type RecordWithErrors } from "@/components/ProgressList";
+import { Badge, Button, Card, EmptyState, PageHeader } from "@/components/ui";
+import { requireContext } from "@/lib/auth";
+import { personName } from "@/lib/data/halaqat";
+import { loadHalaqaForStaff } from "@/lib/data/staff";
+import { formatDate } from "@/lib/format";
+import { ACTIVITY, ASSIGNMENT_STATUS } from "@/lib/labels";
+import { formatRange } from "@/lib/quran/surahs";
+import { createClient } from "@/lib/supabase/server";
+import type { Assignment, StudentOverview } from "@/lib/types";
+import { approveRecordAction, cancelAssignmentAction, deleteDraftAction } from "../../../../actions";
+import { AmendForm, AssignmentForm, RecitationForm } from "../../../../RecitationForms";
+
+export const metadata: Metadata = { title: "متابعة الطالب" };
+
+export default async function TeacherStudentPage({ params, searchParams }: PageProps<"/dashboard/teacher/halaqat/[id]/students/[studentId]">) {
+  const user = await requireContext("quran_teacher");
+  const { id, studentId } = await params;
+  const sp = await searchParams;
+  const supabase = await createClient();
+  const loaded = await loadHalaqaForStaff(supabase, user, id);
+  if (!loaded || !/^[0-9a-f-]{36}$/i.test(studentId)) notFound();
+
+  const { data: membership } = await supabase
+    .from("halaqa_memberships")
+    .select("status, profiles!halaqa_memberships_user_id_fkey(full_name, display_name)")
+    .eq("halaqa_id", id)
+    .eq("user_id", studentId)
+    .eq("role", "student")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!membership) notFound();
+  const name = personName(membership.profiles as unknown as { full_name: string; display_name: string | null });
+  const isActive = membership.status === "active";
+  const sessionId = typeof sp.session === "string" && /^[0-9a-f-]{36}$/i.test(sp.session) ? sp.session : null;
+
+  const [overviewRes, recordsRes, assignmentsRes] = await Promise.all([
+    supabase.rpc("get_student_overview", { p_student: studentId, p_days: 30, p_halaqa: id }),
+    supabase
+      .from("quran_progress_records")
+      .select("*, quran_error_records(id, error_type, surah, ayah, note)")
+      .eq("halaqa_id", id)
+      .eq("student_id", studentId)
+      .order("recorded_on", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(20),
+    supabase.from("quran_assignments").select("*").eq("halaqa_id", id).eq("student_id", studentId).order("created_at", { ascending: false }).limit(10),
+  ]);
+  const overview = overviewRes.data as StudentOverview | null;
+  const records = (recordsRes.data ?? []) as RecordWithErrors[];
+  const assignments = (assignmentsRes.data ?? []) as Assignment[];
+  const openAssignment = assignments.find((a) => a.status === "assigned") ?? null;
+  const lastNew = records.find((r) => r.activity === "new_memorization" && r.status === "approved");
+  const path = `/dashboard/teacher/halaqat/${id}/students/${studentId}`;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <PageHeader title={name} description={<>طالب في <Link href={`/dashboard/teacher/halaqat/${id}`} className="font-semibold underline">{loaded.halaqa.name}</Link>{!isActive && " — العضوية غير نشطة"}</>} />
+      {overview && <OverviewStats o={overview} />}
+
+      {isActive && (
+        <Card>
+          <h2 className="mb-3 text-lg font-bold text-brand-800">تسجيل تسميع {sessionId && <Badge tone="green">مرتبط بالجلسة</Badge>}</h2>
+          <RecitationForm halaqaId={id} studentId={studentId} sessionId={sessionId} assignment={openAssignment} />
+        </Card>
+      )}
+
+      <Card>
+        <h2 className="mb-3 text-lg font-bold text-brand-800">الواجب القادم</h2>
+        {openAssignment ? (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg bg-brand-50 p-3">
+            <span>
+              <span className="font-semibold">{ACTIVITY[openAssignment.activity]}: {formatRange(openAssignment)}</span>
+              <span className="block text-sm text-muted">{openAssignment.ayah_count} آية{openAssignment.due_on ? ` · ${formatDate(openAssignment.due_on)}` : ""}</span>
+            </span>
+            <form action={cancelAssignmentAction}>
+              <input type="hidden" name="assignmentId" value={openAssignment.id} />
+              <input type="hidden" name="path" value={path} />
+              <Button type="submit" variant="ghost">إلغاء الواجب</Button>
+            </form>
+          </div>
+        ) : (
+          <p className="mb-3 text-muted">لا يوجد واجب مفتوح.</p>
+        )}
+        {isActive && (
+          <details>
+            <summary className="cursor-pointer font-semibold text-brand-800">تحديد واجب جديد</summary>
+            <div className="mt-3">
+              <AssignmentForm halaqaId={id} studentId={studentId} defaults={lastNew ? { surahFrom: lastNew.surah_to, ayahFrom: lastNew.ayah_to } : undefined} />
+            </div>
+          </details>
+        )}
+        {assignments.filter((a) => a.status !== "assigned").length > 0 && (
+          <ul className="mt-4 divide-y divide-line text-sm">
+            {assignments.filter((a) => a.status !== "assigned").map((a) => (
+              <li key={a.id} className="flex justify-between gap-2 py-2">
+                <span>{ACTIVITY[a.activity]}: {formatRange(a)}</span>
+                <Badge tone={a.status === "completed" ? "green" : "gray"}>{ASSIGNMENT_STATUS[a.status]}</Badge>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <section>
+        <h2 className="mb-3 text-lg font-bold text-brand-800">سجل التسميع</h2>
+        {records.length === 0 ? <EmptyState title="لا توجد سجلات بعد" /> : (
+          <ProgressList
+            records={records}
+            renderActions={(r) =>
+              r.status === "draft" ? (
+                <div className="mt-3 flex gap-2">
+                  <form action={approveRecordAction}>
+                    <input type="hidden" name="recordId" value={r.id} />
+                    <input type="hidden" name="path" value={path} />
+                    <Button type="submit">اعتماد</Button>
+                  </form>
+                  <form action={deleteDraftAction}>
+                    <input type="hidden" name="recordId" value={r.id} />
+                    <input type="hidden" name="path" value={path} />
+                    <Button type="submit" variant="ghost">حذف المسودة</Button>
+                  </form>
+                </div>
+              ) : (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-sm font-semibold text-brand-800">تعديل السجل المعتمد (بسبب موثّق)</summary>
+                  <AmendForm record={r} />
+                </details>
+              )
+            }
+          />
+        )}
+      </section>
+    </div>
+  );
+}
