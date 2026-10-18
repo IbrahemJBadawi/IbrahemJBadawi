@@ -24,6 +24,7 @@ const SYMBOLS: Record<string, { s: string; prefix: boolean }> = {
   USD: { s: "$", prefix: true },
   EUR: { s: "€", prefix: true },
   TRY: { s: "₺", prefix: true },
+  ILS: { s: "₪", prefix: false },
   SAR: { s: "ر.س", prefix: false },
   AED: { s: "د.إ", prefix: false },
   KWD: { s: "د.ك", prefix: false },

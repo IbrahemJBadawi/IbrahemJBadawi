@@ -23,15 +23,16 @@ beforeAll(async () => {
     admin = await mk("a@test.dev");
     await tx.query("update public.profiles set role = 'admin' where id = $1", [admin]);
     await tx.query("update public.countries set is_active = true where code = 'JO'");
-    const [s] = await tx.query<{ id: string }>("insert into public.suppliers (name) values ('S') returning id");
-    const [p] = await tx.query<{ id: string }>("insert into public.products (slug, name_ar, price, currency_code, status) values ('pub', 'منشور', 10, 'USD', 'published') returning id");
+    const [s] = await tx.query<{ id: string }>("insert into public.suppliers (name, agreement_status) values ('S', 'approved') returning id");
+    const [p] = await tx.query<{ id: string }>("insert into public.products (slug, name_ar, price, currency_code, status) values ('pub', 'منشور', 10, 'USD', 'draft') returning id");
     const [d] = await tx.query<{ id: string }>("insert into public.products (slug, name_ar, price, currency_code, status) values ('draft', 'مسودة', 10, 'USD', 'draft') returning id");
     draftId = d.id;
     await tx.query("insert into public.supplier_products (supplier_id, product_id, cost, currency_code) values ($1, $2, 4, 'USD')", [s.id, p.id]);
+    await tx.query("update public.products set status = 'published' where id = $1", [p.id]);
     const [o] = await tx.query<{ id: string }>(
       `insert into public.orders (order_number, user_id, customer_name, customer_phone, country_code, city, address_line, currency_code,
          subtotal, shipping_cost, total, payment_method, terms_accepted_at)
-       values ('JM-TEST-1', $1, 'C', '+962700000000', 'JO', 'Amman', 'Street 1', 'USD', 10, 2, 12, 'manual', now()) returning id`,
+       values ('JM-TEST-1', $1, 'C', '+962700000000', 'JO', 'Amman', 'Street 1', 'USD', 10, 2, 12, 'bank_transfer', now()) returning id`,
       [customer],
     );
     orderId = o.id;

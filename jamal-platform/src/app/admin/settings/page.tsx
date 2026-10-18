@@ -1,18 +1,21 @@
 import { withAdmin } from "@/lib/admin";
-import { saveSettingsAction } from "@/lib/actions/admin/operations";
+import { savePaymentSettingsAction, saveSettingsAction } from "@/lib/actions/admin/operations";
 import { authProvider } from "@/lib/auth";
 import { storageMode } from "@/lib/storage";
 import { AdminTitle, Card } from "@/components/admin/ui";
 import { ActionForm } from "@/components/forms/ActionForm";
-import { Checkbox, Field, Input, Select } from "@/components/ui/Field";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/Field";
 
 export const metadata = { title: "الإعدادات" };
 
 export default async function AdminSettings() {
-  const { s, currencies } = await withAdmin(async (tx) => {
+  const { s, currencies, pay } = await withAdmin(async (tx) => {
     const [s] = await tx.query<Record<string, string | boolean | null>>("select * from public.store_settings where id = 1");
     const currencies = await tx.query<{ code: string }>("select code from public.currencies where is_active order by code");
-    return { s, currencies };
+    const [pay] = await tx.query<{ bank_transfer_enabled: boolean; beneficiary_name: string | null; bank_name: string | null; transfer_details: string | null; instructions: string | null; validity_hours: number | null; proof_review_policy: string | null; contact: string | null }>(
+      "select bank_transfer_enabled, beneficiary_name, bank_name, transfer_details, instructions, validity_hours, proof_review_policy, contact from public.payment_settings where id = 1",
+    );
+    return { s, currencies, pay };
   });
   const v = (k: string) => (s[k] as string | null) ?? "";
   return (
@@ -35,9 +38,31 @@ export default async function AdminSettings() {
           <fieldset className="space-y-2 rounded-md border border-line p-4">
             <legend className="px-1 text-sm font-bold">طرق الطلب</legend>
             <Checkbox name="cod_enabled" defaultChecked={!!s.cod_enabled} label="تفعيل الدفع عند الاستلام (يظهر فقط إذا كانت منطقة الشحن والمورد يدعمانه أيضًا)" />
-            <Checkbox name="manual_orders_enabled" defaultChecked={!!s.manual_orders_enabled} label="تفعيل الطلب اليدوي (نتواصل مع العميل لتأكيد الطلب والدفع)" />
+            <Checkbox name="manual_orders_enabled" defaultChecked={!!s.manual_orders_enabled} label="استقبال الطلبات بالتحويل البنكي بعد اعتماد السعر" />
             <p className="text-xs text-muted">الدفع الإلكتروني غير متاح: لم يتم ربط أي مزود دفع.</p>
           </fieldset>
+        </ActionForm>
+      </Card>
+      <Card title="إعدادات التحويل البنكي">
+        <p className="mb-4 text-xs leading-6 text-muted">
+          تظهر هذه البيانات للعميل فقط داخل صفحة طلبه بعد اعتماد السعر. أدخل فقط ما توافق على نشره، ولا تُدخل أبدًا كلمات مرور أو بيانات دخول بنكية.
+          هذه الحقول فارغة عمدًا حتى تدخل البيانات الصحيحة بنفسك.
+        </p>
+        <ActionForm action={savePaymentSettingsAction} submitLabel="حفظ إعدادات التحويل" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="اسم المستفيد"><Input name="beneficiary_name" defaultValue={pay?.beneficiary_name ?? ""} /></Field>
+            <Field label="اسم البنك"><Input name="bank_name" defaultValue={pay?.bank_name ?? ""} placeholder="مثل: بنك فلسطين" /></Field>
+          </div>
+          <Field label="تفاصيل التحويل التي توافق على نشرها" hint="مثل رقم الحساب أو IBAN أو رقم المحفظة — كما تريد أن تظهر للعميل.">
+            <Textarea name="transfer_details" dir="ltr" rows={3} defaultValue={pay?.transfer_details ?? ""} />
+          </Field>
+          <Field label="تعليمات الدفع"><Textarea name="instructions" rows={3} defaultValue={pay?.instructions ?? ""} placeholder="مثل: حوّل المبلغ كاملًا واكتب رقم الطلب في الملاحظة ثم ارفع صورة الإيصال." /></Field>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Field label="صلاحية التعليمات الافتراضية (ساعات)"><Input name="validity_hours" type="number" min={1} max={720} defaultValue={pay?.validity_hours ?? ""} /></Field>
+            <Field label="وسيلة تواصل للاستفسارات"><Input name="contact" dir="ltr" defaultValue={pay?.contact ?? ""} /></Field>
+          </div>
+          <Field label="سياسة مراجعة إثباتات التحويل"><Textarea name="proof_review_policy" rows={2} defaultValue={pay?.proof_review_policy ?? ""} placeholder="مثل: نراجع الإثباتات خلال يوم عمل، ولا يُعتبر الطلب مدفوعًا قبل وصول المبلغ إلى الحساب." /></Field>
+          <Checkbox name="bank_transfer_enabled" defaultChecked={!!pay?.bank_transfer_enabled} label="عرض تعليمات التحويل للعملاء" />
         </ActionForm>
       </Card>
       <Card title="حالة التكاملات">
@@ -45,7 +70,8 @@ export default async function AdminSettings() {
           <li>المصادقة: <strong>{authProvider() === "supabase" ? "Supabase Auth" : "محلية (بريد + كلمة مرور)"}</strong></li>
           <li>قاعدة البيانات: <strong>{process.env.DATABASE_URL ? "Postgres خارجي (DATABASE_URL)" : "PGlite محلية — للتطوير فقط"}</strong></li>
           <li>تخزين الصور: <strong>{storageMode() === "supabase" ? "Supabase Storage" : "مجلد محلي .data/uploads — للتطوير فقط"}</strong></li>
-          <li>الدفع الإلكتروني: <strong>غير مفعّل</strong> · التكامل الآلي مع الموردين: <strong>غير مفعّل (يدوي)</strong></li>
+          <li>الدفع: <strong>تحويل بنكي يُتحقق منه يدويًا</strong> — لا بوابة دفع ولا ربط مصرفي.</li>
+          <li>التكامل مع الموردين وشركات التوصيل: <strong>غير موجود (يدوي)</strong></li>
         </ul>
       </Card>
     </div>

@@ -13,7 +13,7 @@ async function Content() {
       <CheckoutForm
         zones={zones}
         loggedIn={!!user}
-        prefill={{ name: user?.fullName ?? "", phone: user?.phone ?? "", email: user?.email ?? "" }}
+        prefill={{ name: user?.fullName ?? "", phone: user?.phone ?? "" }}
       />
   );
 }

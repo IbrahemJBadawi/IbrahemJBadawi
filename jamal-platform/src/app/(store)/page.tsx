@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { ArrowLeft, PackageCheck, RotateCcw, ShieldCheck, Truck } from "lucide-react";
-import { getCategories, getStoreSettings, listProducts } from "@/lib/data/catalog";
+import { getCategories, listProducts } from "@/lib/data/catalog";
 import { ProductGrid } from "@/components/product/ProductCard";
 import { CategoryTile } from "@/components/catalog/CategoryTile";
 import { ButtonLink } from "@/components/ui/Button";
@@ -20,7 +20,7 @@ function Hero() {
             <span className="text-beige-deep">لكل يوم.</span>
           </h1>
           <p className="mt-5 max-w-md text-base leading-8 text-muted">
-            قطع مختارة بعناية للنساء والرجال والأطفال، من الملابس إلى الأحذية والحقائب والإكسسوارات.
+            ملابس يومية أساسية من موردين محليين في فلسطين، نؤكد توفرها وسعرها قبل أن تدفع.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink href="/products" size="lg">
@@ -92,15 +92,12 @@ function Section({ title, href, children }: { title: string; href?: string; chil
   );
 }
 
-async function Promises() {
-  const s = await getStoreSettings();
+function Promises() {
   const items = [
-    { icon: Truck, title: "شحن لدول مختارة", text: "تكلفة الشحن والمدة التقديرية تظهر قبل تأكيد الطلب." },
-    s?.cod_enabled
-      ? { icon: PackageCheck, title: "الدفع عند الاستلام", text: "متاح فقط في الدول والمنتجات المؤكدة." }
-      : { icon: PackageCheck, title: "تأكيد قبل التنفيذ", text: "نتواصل معك لتأكيد طلبك قبل تجهيزه." },
+    { icon: PackageCheck, title: "نتأكد قبل الدفع", text: "نؤكد التوفر والمقاس والسعر مع المورد قبل أن تدفع." },
+    { icon: ShieldCheck, title: "تحويل بنكي آمن", text: "تحوّل بعد اعتماد السعر، ونؤكد الدفع بعد التحقق من وصوله." },
+    { icon: Truck, title: "توصيل لمحافظات مختارة", text: "الرسوم والمدة تظهر لمنطقتك قبل الدفع." },
     { icon: RotateCcw, title: "استبدال وإرجاع", text: "حسب سياسة كل منتج والموضحة في صفحته." },
-    { icon: ShieldCheck, title: "بياناتك محمية", text: "لا نخزن بيانات بطاقات ولا نبيع بياناتك." },
   ];
   return (
     <section className="border-y border-line bg-paper">

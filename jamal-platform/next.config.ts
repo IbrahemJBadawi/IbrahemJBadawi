@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  experimental: {
+    // Payment proofs / product photos (≤ 4 MB). Vercel caps request bodies at 4.5 MB.
+    serverActions: { bodySizeLimit: "4.4mb" },
+  },
   // PGlite ships WASM + data files and must not be bundled.
   serverExternalPackages: ["@electric-sql/pglite"],
   images: {

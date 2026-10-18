@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canTransition, computeQuote, deliveryEstimate, effectiveUnitPrice, expectedMargin, isCodAvailable, PricingError } from "@/lib/pricing";
+import { computeQuote, deliveryEstimate, effectiveUnitPrice, expectedMargin, isCodAvailable, PricingError } from "@/lib/pricing";
 import { formatMoney, fromMills, toMills } from "@/lib/money";
 
 const line = (unitPrice: string, quantity = 1, currency = "USD") => ({ productId: "p", variantId: null, unitPrice, quantity, currency });
@@ -13,6 +13,7 @@ describe("money", () => {
   it("formats 3-decimal currencies", () => {
     expect(formatMoney("1.5", "KWD")).toContain("1.500");
     expect(formatMoney("12", "USD")).toContain("$12.00");
+    expect(formatMoney("165", "ILS")).toContain("165.00\u00a0₪");
   });
 });
 
@@ -60,9 +61,5 @@ describe("pricing", () => {
     expect(expectedMargin({ price: "50", priceCurrency: "USD", cost: "20", shippingCost: "5", costCurrency: "TRY" })).toBeNull();
   });
 
-  it("enforces the order status flow", () => {
-    expect(canTransition("pending", "confirmed")).toBe(true);
-    expect(canTransition("pending", "delivered")).toBe(false);
-    expect(canTransition("cancelled", "pending")).toBe(false);
-  });
+
 });

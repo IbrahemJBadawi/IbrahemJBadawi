@@ -4,7 +4,7 @@ import { withAdmin } from "@/lib/admin";
 import { deleteSupplierAction } from "@/lib/actions/admin/operations";
 import { formatMoney } from "@/lib/money";
 import { AdminTitle, Card, Table, td } from "@/components/admin/ui";
-import { SupplierForm, type SupplierRow } from "@/components/admin/SupplierForm";
+import { SUPPLIER_SELECT, SupplierForm, type SupplierRow } from "@/components/admin/SupplierForm";
 import { ActionForm } from "@/components/forms/ActionForm";
 
 export const metadata = { title: "مورد" };
@@ -14,7 +14,7 @@ export default async function SupplierPage({ params }: PageProps<"/admin/supplie
   if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
   const data = await withAdmin(async (tx) => {
     const [s] = await tx.query<SupplierRow>(
-      "select id, name, contact_name, email, phone, whatsapp, website, country_code, ships_to, cod_countries, processing_days, notes, is_active from public.suppliers where id = $1",
+      `select ${SUPPLIER_SELECT} from public.suppliers where id = $1`,
       [id],
     );
     if (!s) return null;

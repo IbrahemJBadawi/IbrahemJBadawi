@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ClipboardList, FileText, Globe2, History, LayoutDashboard, Mail, Package, Percent, Settings, Shapes, Truck, Undo2, Users,
+  ClipboardList, FileText, HandCoins, Globe2, History, LayoutDashboard, Mail, Package, Percent, Settings, Shapes, Truck, Undo2, Users,
 } from "lucide-react";
 
 const ITEMS = [
   { href: "/admin", label: "الملخص", icon: LayoutDashboard },
   { href: "/admin/orders", label: "الطلبات", icon: ClipboardList },
+  { href: "/admin/settlements", label: "مستحقات الموردين", icon: HandCoins },
   { href: "/admin/returns", label: "المرتجعات", icon: Undo2 },
   { href: "/admin/products", label: "المنتجات", icon: Package },
   { href: "/admin/categories", label: "الفئات", icon: Shapes },

@@ -5,8 +5,6 @@ import { refresh } from "next/cache";
 import { z } from "zod";
 import { audit, withAdmin } from "@/lib/admin";
 import { country, currency, dbError, f, fieldErrors, money, optMoney, optUrl, slug } from "@/lib/admin/form";
-import { canTransition } from "@/lib/pricing";
-import { toMills } from "@/lib/money";
 import type { ActionResult } from "@/components/forms/ActionForm";
 
 const done = (message = "تم الحفظ."): ActionResult => {
@@ -30,46 +28,6 @@ class UserError extends Error {}
 // Orders
 // ---------------------------------------------------------------------------
 
-export async function updateOrderStatusAction(_: ActionResult, form: FormData): Promise<ActionResult> {
-  const p = z
-    .object({
-      id: z.uuid(),
-      status: z.enum(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"]),
-      note: z.string().trim().max(500),
-      visible: z.boolean(),
-    })
-    .safeParse({ id: f.str(form, "id"), status: f.str(form, "status"), note: f.str(form, "note"), visible: f.bool(form, "visible") });
-  if (!p.success) return { fieldErrors: fieldErrors(p.error) };
-  const d = p.data;
-  return run(async (tx, admin) => {
-    const [o] = await tx.query<{ status: string }>("select status from public.orders where id = $1 for update", [d.id]);
-    if (!o) throw new UserError("الطلب غير موجود.");
-    if (!canTransition(o.status, d.status)) throw new UserError("لا يمكن الانتقال إلى هذه الحالة من الحالة الحالية.");
-    if (d.status === "cancelled" && !d.note) throw new UserError("اكتب سبب الإلغاء في الملاحظة.");
-    await tx.query("update public.orders set status = $1, cancel_reason = case when $1 = 'cancelled' then $2 else cancel_reason end where id = $3", [d.status, d.note || null, d.id]);
-    if (d.status === "cancelled") {
-      await tx.query("update public.fulfillment_records set status = 'cancelled' where order_id = $1 and status in ('pending', 'sent_to_supplier', 'confirmed')", [d.id]);
-    }
-    await tx.query(
-      "insert into public.order_events (order_id, status, note, visible_to_customer, actor_id) values ($1,$2,$3,$4,$5)",
-      [d.id, d.status, d.note || null, d.visible, admin.id],
-    );
-    await audit(tx, admin, "order_status", "order", d.id, { from: o.status, to: d.status });
-  }, "تم تحديث حالة الطلب.");
-}
-
-export async function updatePaymentStatusAction(_: ActionResult, form: FormData): Promise<ActionResult> {
-  const p = z
-    .object({ id: z.uuid(), payment_status: z.enum(["unpaid", "paid", "refunded", "partially_refunded"]) })
-    .safeParse({ id: f.str(form, "id"), payment_status: f.str(form, "payment_status") });
-  if (!p.success) return { error: "قيمة غير صالحة." };
-  return run(async (tx, admin) => {
-    const [o] = await tx.query<{ payment_status: string }>("select payment_status from public.orders where id = $1", [p.data.id]);
-    await tx.query("update public.orders set payment_status = $1 where id = $2", [p.data.payment_status, p.data.id]);
-    await audit(tx, admin, "payment_status", "order", p.data.id, { from: o?.payment_status, to: p.data.payment_status });
-  }, "تم تحديث حالة الدفع.");
-}
-
 export async function addOrderNoteAction(_: ActionResult, form: FormData): Promise<ActionResult> {
   const id = z.uuid().safeParse(f.str(form, "id"));
   const note = f.str(form, "note");
@@ -82,137 +40,95 @@ export async function addOrderNoteAction(_: ActionResult, form: FormData): Promi
   }, "تمت إضافة الملاحظة.");
 }
 
-const fulfillmentSchema = z.object({
-  id: z.uuid(),
-  supplier_id: z.union([z.literal(""), z.uuid()]).transform((v) => v || null),
-  status: z.enum(["pending", "sent_to_supplier", "confirmed", "shipped", "delivered", "cancelled", "failed"]),
-  supplier_order_ref: z.string().trim().max(120).transform((v) => v || null),
-  carrier: z.string().trim().max(80).transform((v) => v || null),
-  tracking_number: z.string().trim().max(120).transform((v) => v || null),
-  tracking_url: optUrl,
-  cost_currency: z.union([z.literal(""), currency]).transform((v) => v || null),
-  actual_cost: optMoney,
-  actual_shipping_cost: optMoney,
-  notes: z.string().trim().max(2000).transform((v) => v || null),
-});
-
-export async function updateFulfillmentAction(_: ActionResult, form: FormData): Promise<ActionResult> {
-  const p = fulfillmentSchema.safeParse(Object.fromEntries(
-    ["id", "supplier_id", "status", "supplier_order_ref", "carrier", "tracking_number", "tracking_url", "cost_currency", "actual_cost", "actual_shipping_cost", "notes"].map((k) => [k, f.str(form, k)]),
-  ));
-  if (!p.success) return { fieldErrors: fieldErrors(p.error) };
-  const d = p.data;
-  if ((d.actual_cost || d.actual_shipping_cost) && !d.cost_currency) return { error: "حدد عملة التكلفة الفعلية." };
-  return run(async (tx, admin) => {
-    const [prev] = await tx.query<{ status: string; order_id: string }>("select status, order_id from public.fulfillment_records where id = $1", [d.id]);
-    if (!prev) throw new UserError("سجل التنفيذ غير موجود.");
-    await tx.query(
-      `update public.fulfillment_records set supplier_id=$1, status=$2, supplier_order_ref=$3, carrier=$4, tracking_number=$5,
-         tracking_url=$6, cost_currency=$7, actual_cost=$8, actual_shipping_cost=$9, notes=$10,
-         sent_at = case when $2 = 'sent_to_supplier' and sent_at is null then now() else sent_at end,
-         shipped_at = case when $2 = 'shipped' and shipped_at is null then now() else shipped_at end,
-         delivered_at = case when $2 = 'delivered' and delivered_at is null then now() else delivered_at end
-       where id = $11`,
-      [d.supplier_id, d.status, d.supplier_order_ref, d.carrier, d.tracking_number, d.tracking_url, d.cost_currency, d.actual_cost, d.actual_shipping_cost, d.notes, d.id],
-    );
-    await audit(tx, admin, "fulfillment_update", "order", prev.order_id, { fulfillment: d.id, from: prev.status, to: d.status, actual_cost: d.actual_cost });
-  }, "تم حفظ سجل التنفيذ.");
-}
-
-export async function updateReturnAction(_: ActionResult, form: FormData): Promise<ActionResult> {
-  const p = z
-    .object({
-      id: z.uuid(),
-      status: z.enum(["requested", "approved", "rejected", "received", "refunded"]),
-      refund_amount: optMoney,
-      admin_notes: z.string().trim().max(2000).transform((v) => v || null),
-    })
-    .safeParse({ id: f.str(form, "id"), status: f.str(form, "status"), refund_amount: f.str(form, "refund_amount"), admin_notes: f.str(form, "admin_notes") });
-  if (!p.success) return { fieldErrors: fieldErrors(p.error) };
-  const d = p.data;
-  if (d.status === "refunded" && !d.refund_amount) return { error: "أدخل المبلغ المسترد." };
-  return run(async (tx, admin) => {
-    const [r] = await tx.query<{ order_id: string; total: string }>(
-      "select r.order_id, o.total::text from public.return_requests r join public.orders o on o.id = r.order_id where r.id = $1",
-      [d.id],
-    );
-    if (!r) throw new UserError("طلب الإرجاع غير موجود.");
-    if (d.refund_amount && toMills(d.refund_amount) > toMills(r.total)) throw new UserError("المبلغ المسترد أكبر من إجمالي الطلب.");
-    await tx.query("update public.return_requests set status=$1, refund_amount=$2, admin_notes=$3 where id=$4", [d.status, d.refund_amount, d.admin_notes, d.id]);
-    if (d.status === "refunded" && d.refund_amount) {
-      const full = toMills(d.refund_amount) === toMills(r.total);
-      await tx.query("update public.orders set payment_status = $1 where id = $2", [full ? "refunded" : "partially_refunded", r.order_id]);
-    }
-    await tx.query(
-      "insert into public.order_events (order_id, note, visible_to_customer, actor_id) values ($1, $2, true, $3)",
-      [r.order_id, `تحديث طلب الإرجاع: ${{ requested: "تم الطلب", approved: "مقبول", rejected: "مرفوض", received: "تم استلام المرتجع", refunded: "تم الاسترداد" }[d.status]}`, admin.id],
-    );
-    await audit(tx, admin, "return_update", "order", r.order_id, { return: d.id, status: d.status, refund: d.refund_amount });
-  }, "تم تحديث طلب الإرجاع.");
-}
-
 // ---------------------------------------------------------------------------
 // Suppliers
 // ---------------------------------------------------------------------------
 
+const tri = z.enum(["", "yes", "no"]).transform((v) => (v === "" ? null : v === "yes"));
+const optText = (max: number) => z.string().trim().max(max).transform((v) => v || null);
+
 const supplierSchema = z.object({
   name: z.string().trim().min(2, "اسم المورد مطلوب").max(120),
-  contact_name: z.string().trim().max(120).transform((v) => v || null),
+  contact_name: optText(120),
   email: z.union([z.literal(""), z.email("بريد غير صالح")]).transform((v) => v || null),
-  phone: z.string().trim().max(40).transform((v) => v || null),
-  whatsapp: z.string().trim().max(40).transform((v) => v || null),
+  phone: optText(40),
+  whatsapp: optText(40),
+  social_links: optText(500),
   website: optUrl,
   country_code: z.union([z.literal(""), country]).transform((v) => v || null),
+  coverage_areas: optText(500),
+  categories_supplied: optText(500),
   ships_to: z.array(country),
   cod_countries: z.array(country),
   processing_days: z.coerce.number().int().min(0).max(90),
-  notes: z.string().trim().max(4000).transform((v) => v || null),
+  delivery_days: z.union([z.literal(""), z.coerce.number().int().min(0).max(90)]).transform((v) => (v === "" ? null : v)),
+  return_policy: optText(2000),
+  min_order: optText(200),
+  accepts_single_item: tri,
+  accepts_dropship: tri,
+  accepts_pay_after_collection: tri,
+  accepts_cod: tri,
+  collection_party: z.enum(["", "platform", "supplier", "courier"]).transform((v) => v || null),
+  settlement_method: optText(300),
+  agreement_status: z.enum(["contacting", "negotiating", "approved", "suspended"]),
+  notes: optText(4000),
   is_active: z.boolean(),
 });
 
+const SUPPLIER_COLS = [
+  "name", "contact_name", "email", "phone", "whatsapp", "social_links", "website", "country_code", "coverage_areas",
+  "categories_supplied", "ships_to", "cod_countries", "processing_days", "delivery_days", "return_policy", "min_order",
+  "accepts_single_item", "accepts_dropship", "accepts_pay_after_collection", "accepts_cod", "collection_party",
+  "settlement_method", "agreement_status", "notes", "is_active",
+] as const;
+
 export async function saveSupplierAction(_: ActionResult, form: FormData): Promise<ActionResult> {
   const id = f.opt(form, "id");
-  const p = supplierSchema.safeParse({
-    name: f.str(form, "name"),
-    contact_name: f.str(form, "contact_name"),
-    email: f.str(form, "email"),
-    phone: f.str(form, "phone"),
-    whatsapp: f.str(form, "whatsapp"),
-    website: f.str(form, "website"),
-    country_code: f.str(form, "country_code").toUpperCase(),
-    ships_to: f.list(form, "ships_to"),
-    cod_countries: f.list(form, "cod_countries"),
-    processing_days: f.str(form, "processing_days") || "0",
-    notes: f.str(form, "notes"),
-    is_active: f.bool(form, "is_active"),
-  });
+  const raw: Record<string, unknown> = {};
+  for (const k of SUPPLIER_COLS) raw[k] = f.str(form, k);
+  raw.country_code = f.str(form, "country_code").toUpperCase();
+  raw.ships_to = f.list(form, "ships_to");
+  raw.cod_countries = f.list(form, "cod_countries");
+  raw.processing_days = f.str(form, "processing_days") || "0";
+  raw.is_active = f.bool(form, "is_active");
+  const p = supplierSchema.safeParse(raw);
   if (!p.success) return { fieldErrors: fieldErrors(p.error) };
   const d = p.data;
-  const vals = [d.name, d.contact_name, d.email, d.phone, d.whatsapp, d.website, d.country_code, d.ships_to, d.cod_countries, d.processing_days, d.notes, d.is_active];
+  const confirmTerms = f.bool(form, "confirm_terms");
+  const confirmPrices = f.bool(form, "confirm_prices");
+  if (d.agreement_status === "approved" && !confirmTerms && !(await supplierTermsConfirmed(id))) {
+    return { error: "لاعتماد المورد يجب أن تؤكد بنفسك أنه وافق فعليًا على شروط المنصة (خانة تأكيد الشروط)." };
+  }
+  const vals = SUPPLIER_COLS.map((k) => d[k]);
+  const sets = SUPPLIER_COLS.map((k, i) => `${k} = $${i + 1}${k === "ships_to" || k === "cod_countries" ? "::text[]" : ""}`).join(", ");
   let newId: string | null = null;
   try {
     await withAdmin(async (tx, admin) => {
       if (id) {
-        await tx.query(
-          `update public.suppliers set name=$1, contact_name=$2, email=$3, phone=$4, whatsapp=$5, website=$6, country_code=$7,
-             ships_to=$8::text[], cod_countries=$9::text[], processing_days=$10, notes=$11, is_active=$12 where id=$13`,
-          [...vals, id],
-        );
+        await tx.query(`update public.suppliers set ${sets} where id = $${vals.length + 1}`, [...vals, id]);
       } else {
         const [row] = await tx.query<{ id: string }>(
-          `insert into public.suppliers (name, contact_name, email, phone, whatsapp, website, country_code, ships_to, cod_countries, processing_days, notes, is_active)
-           values ($1,$2,$3,$4,$5,$6,$7,$8::text[],$9::text[],$10,$11,$12) returning id`,
+          `insert into public.suppliers (${SUPPLIER_COLS.join(", ")}) values (${SUPPLIER_COLS.map((k, i) => `$${i + 1}${k === "ships_to" || k === "cod_countries" ? "::text[]" : ""}`).join(", ")}) returning id`,
           vals,
         );
         newId = row.id;
       }
-      await audit(tx, admin, id ? "update" : "create", "supplier", id ?? newId, { name: d.name });
+      const sid = id ?? newId!;
+      if (confirmTerms) await tx.query("update public.suppliers set terms_confirmed_at = now(), terms_confirmed_by = $1 where id = $2", [admin.id, sid]);
+      if (confirmPrices) await tx.query("update public.suppliers set prices_confirmed_at = now() where id = $1", [sid]);
+      await audit(tx, admin, id ? "update" : "create", "supplier", sid, { name: d.name, agreement_status: d.agreement_status, terms_confirmed: confirmTerms });
     });
   } catch (e) {
     return { error: dbError(e) };
   }
   if (newId) redirect(`/admin/suppliers/${newId}`);
   return done("تم حفظ المورد.");
+}
+
+async function supplierTermsConfirmed(id: string | null) {
+  if (!id) return false;
+  const rows = await withAdmin((tx) => tx.query("select 1 from public.suppliers where id = $1 and terms_confirmed_at is not null", [id]));
+  return rows.length > 0;
 }
 
 export async function deleteSupplierAction(_: ActionResult, form: FormData): Promise<ActionResult> {
@@ -278,8 +194,11 @@ const zoneSchema = z
   .object({
     country_code: country,
     currency_code: currency,
+    governorate_id: z.union([z.literal(""), z.uuid()]).transform((v) => v || null),
     name_ar: z.string().trim().min(2, "الاسم مطلوب").max(80),
     rate: money,
+    estimated_cost: optMoney,
+    carrier: optText(120),
     free_shipping_threshold: optMoney,
     min_days: z.coerce.number().int().min(0).max(120),
     max_days: z.coerce.number().int().min(0).max(120),
@@ -294,8 +213,11 @@ export async function saveZoneAction(_: ActionResult, form: FormData): Promise<A
   const p = zoneSchema.safeParse({
     country_code: f.str(form, "country_code"),
     currency_code: f.str(form, "currency_code"),
+    governorate_id: f.str(form, "governorate_id"),
     name_ar: f.str(form, "name_ar"),
     rate: f.str(form, "rate"),
+    estimated_cost: f.str(form, "estimated_cost"),
+    carrier: f.str(form, "carrier"),
     free_shipping_threshold: f.str(form, "free_shipping_threshold"),
     min_days: f.str(form, "min_days"),
     max_days: f.str(form, "max_days"),
@@ -305,18 +227,18 @@ export async function saveZoneAction(_: ActionResult, form: FormData): Promise<A
   });
   if (!p.success) return { fieldErrors: fieldErrors(p.error) };
   const d = p.data;
-  const vals = [d.country_code, d.currency_code, d.name_ar, d.rate, d.free_shipping_threshold, d.min_days, d.max_days, d.cod_available, d.is_active, d.notes];
+  const vals = [d.country_code, d.currency_code, d.name_ar, d.rate, d.free_shipping_threshold, d.min_days, d.max_days, d.cod_available, d.is_active, d.notes, d.governorate_id, d.estimated_cost, d.carrier];
   return run(async (tx, admin) => {
     if (id) {
       await tx.query(
         `update public.shipping_zones set country_code=$1, currency_code=$2, name_ar=$3, rate=$4, free_shipping_threshold=$5,
-           min_days=$6, max_days=$7, cod_available=$8, is_active=$9, notes=$10 where id=$11`,
+           min_days=$6, max_days=$7, cod_available=$8, is_active=$9, notes=$10, governorate_id=$11, estimated_cost=$12, carrier=$13 where id=$14`,
         [...vals, id],
       );
     } else {
       await tx.query(
-        `insert into public.shipping_zones (country_code, currency_code, name_ar, rate, free_shipping_threshold, min_days, max_days, cod_available, is_active, notes)
-         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+        `insert into public.shipping_zones (country_code, currency_code, name_ar, rate, free_shipping_threshold, min_days, max_days, cod_available, is_active, notes, governorate_id, estimated_cost, carrier)
+         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
         vals,
       );
     }
@@ -331,6 +253,48 @@ export async function deleteZoneAction(_: ActionResult, form: FormData): Promise
     await tx.query("delete from public.shipping_zones where id = $1", [id.data]);
     await audit(tx, admin, "delete", "shipping_zone", id.data);
   }, "تم حذف منطقة الشحن.");
+}
+
+// ---------------------------------------------------------------------------
+// Bank transfer settings (never invented — entered by the owner)
+// ---------------------------------------------------------------------------
+
+export async function savePaymentSettingsAction(_: ActionResult, form: FormData): Promise<ActionResult> {
+  const p = z
+    .object({
+      bank_transfer_enabled: z.boolean(),
+      beneficiary_name: optText(120),
+      bank_name: optText(120),
+      transfer_details: optText(1000),
+      instructions: optText(2000),
+      validity_hours: z.union([z.literal(""), z.coerce.number().int().min(1).max(720)]).transform((v) => (v === "" ? null : v)),
+      proof_review_policy: optText(1000),
+      contact: optText(200),
+    })
+    .safeParse({
+      bank_transfer_enabled: f.bool(form, "bank_transfer_enabled"),
+      beneficiary_name: f.str(form, "beneficiary_name"),
+      bank_name: f.str(form, "bank_name"),
+      transfer_details: f.str(form, "transfer_details"),
+      instructions: f.str(form, "instructions"),
+      validity_hours: f.str(form, "validity_hours"),
+      proof_review_policy: f.str(form, "proof_review_policy"),
+      contact: f.str(form, "contact"),
+    });
+  if (!p.success) return { fieldErrors: fieldErrors(p.error) };
+  const d = p.data;
+  if (d.bank_transfer_enabled && !d.transfer_details && !d.beneficiary_name) {
+    return { error: "لتفعيل عرض التعليمات أدخل اسم المستفيد أو تفاصيل التحويل." };
+  }
+  return run(async (tx, admin) => {
+    await tx.query(
+      `update public.payment_settings set bank_transfer_enabled=$1, beneficiary_name=$2, bank_name=$3, transfer_details=$4,
+         instructions=$5, validity_hours=$6, proof_review_policy=$7, contact=$8 where id = 1`,
+      [d.bank_transfer_enabled, d.beneficiary_name, d.bank_name, d.transfer_details, d.instructions, d.validity_hours, d.proof_review_policy, d.contact],
+    );
+    // Details themselves are not copied into the audit log.
+    await audit(tx, admin, "update", "payment_settings", "1", { enabled: d.bank_transfer_enabled });
+  }, "تم حفظ إعدادات التحويل البنكي.");
 }
 
 // ---------------------------------------------------------------------------

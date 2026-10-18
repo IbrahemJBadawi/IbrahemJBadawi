@@ -78,31 +78,49 @@ async function main() {
       fs.writeFileSync(path.join(dir, `${p.slug}-2.svg`), artSvg(p.category, "#faf7f2", "#1d1b18", "JAMAL · DEMO"));
     }
 
-    // Demo markets (USD so no conversion is ever implied).
-    await tx.query("update public.countries set is_active = true where code in ('JO', 'SA')");
-    await tx.query(
-      `insert into public.shipping_zones (country_code, currency_code, name_ar, rate, free_shipping_threshold, min_days, max_days, cod_available, is_active, notes)
-       values ('JO', 'USD', 'الأردن — تجريبي', 5, 100, 4, 8, true, true, $1),
-              ('SA', 'USD', 'السعودية — تجريبي', 9, null, 6, 12, false, true, $1)
-       on conflict (country_code, currency_code) do nothing`,
-      [DEMO_NOTE],
+    // Demo market: Palestine in shekels (no conversion is ever implied).
+    const ils = (usd: number) => Math.round((usd * 3.6) / 5) * 5;
+    const govs = await tx.query<{ id: string; name_ar: string }>(
+      "select id, name_ar from public.governorates where country_code = 'PS' and name_ar in ('رام الله والبيرة', 'نابلس', 'الخليل')",
     );
-    await tx.query("update public.store_settings set cod_enabled = true where id = 1");
+    const fees: Record<string, [number, number, number, number]> = {
+      "رام الله والبيرة": [20, 15, 1, 3],
+      "نابلس": [25, 18, 2, 4],
+      "الخليل": [30, 22, 2, 5],
+    };
+    for (const g of govs) {
+      const [fee, cost, min, max] = fees[g.name_ar];
+      await tx.query(
+        `insert into public.shipping_zones (country_code, currency_code, governorate_id, name_ar, rate, estimated_cost, min_days, max_days, cod_available, is_active, notes)
+         values ('PS', 'ILS', $1, $2, $3, $4, $5, $6, false, true, $7)
+         on conflict do nothing`,
+        [g.id, `${g.name_ar} — تجريبي`, fee, cost, min, max, DEMO_NOTE],
+      );
+    }
+    await tx.query(
+      `update public.payment_settings set bank_transfer_enabled = true,
+         instructions = coalesce(instructions, 'بيانات تجريبية: لا تحوّل أي مبلغ. أدخل بيانات الحساب الحقيقية من لوحة الإدارة قبل الإطلاق.')
+       where id = 1`,
+    );
 
     const [supplier] = await tx.query<{ id: string }>(
-      `insert into public.suppliers (name, country_code, ships_to, cod_countries, processing_days, notes)
-       values ($1, 'TR', '{JO,SA}', '{JO}', 2, $2) returning id`,
+      `insert into public.suppliers (name, country_code, ships_to, processing_days, notes, agreement_status, coverage_areas,
+         categories_supplied, accepts_single_item, accepts_dropship, accepts_pay_after_collection, accepts_cod,
+         collection_party, settlement_method, terms_confirmed_at, prices_confirmed_at)
+       values ($1, 'PS', '{PS}', 2, $2, 'approved', 'الضفة الغربية (تجريبي)', 'ملابس يومية', true, true, true, false,
+         'platform', 'تحويل بنكي بعد تأكيد التحصيل (تجريبي)', now(), now()) returning id`,
       [DEMO_SUPPLIER, DEMO_NOTE],
     );
 
     for (const p of PRODUCTS) {
       const [cat] = await tx.query<{ id: string }>("select id from public.categories where slug = $1", [p.category]);
+      // Inserted as draft: publishing requires an approved primary supplier (DB trigger).
       const [prod] = await tx.query<{ id: string }>(
         `insert into public.products (slug, name_ar, name_en, description_ar, category_id, price, sale_price, currency_code,
-           images, availability, status, is_featured, is_demo, return_policy, delivery_overrides)
-         values ($1,$2,$3,$4,$5,$6,$7,'USD',$8::text::jsonb,$9,'published',$10,true,$11,$12::text::jsonb) returning id`,
+           images, availability, status, is_featured, is_demo, return_policy, processing_days, stock_confirmed_at)
+         values ($1,$2,$3,$4,$5,$6,$7,'ILS',$8::text::jsonb,$9,'draft',$10,true,$11,2,now()) returning id`,
         [
-          p.slug, p.name, p.nameEn, p.description, cat?.id ?? null, p.price, p.sale ?? null,
+          p.slug, p.name, p.nameEn, p.description, cat?.id ?? null, ils(p.price), p.sale ? ils(p.sale) : null,
           JSON.stringify([
             { url: `/demo/${p.slug}.svg`, alt: p.name },
             { url: `/demo/${p.slug}-2.svg`, alt: `${p.name} — صورة إضافية` },
@@ -110,7 +128,6 @@ async function main() {
           p.outOfStock ? "out_of_stock" : "available",
           !!p.featured,
           "يمكن طلب الاستبدال خلال 7 أيام من الاستلام إذا كان المنتج بحالته الأصلية.",
-          JSON.stringify(p.category === "shoes" ? { SA: { min: 8, max: 14 } } : {}),
         ],
       );
       let order = 0;
@@ -126,11 +143,12 @@ async function main() {
       }
       await tx.query(
         `insert into public.supplier_products (supplier_id, product_id, supplier_sku, supplier_url, cost, shipping_cost, currency_code, is_primary)
-         values ($1,$2,$3,null,$4,3,'USD',true)`,
-        [supplier.id, prod.id, `SUP-${p.slug.toUpperCase()}`, p.cost],
+         values ($1,$2,$3,null,$4,0,'ILS',true)`,
+        [supplier.id, prod.id, `SUP-${p.slug.toUpperCase()}`, ils(p.cost)],
       );
+      await tx.query("update public.products set status = 'published' where id = $1", [prod.id]);
     }
-    console.log(`seeded ${PRODUCTS.length} demo products (marked is_demo), 1 demo supplier, demo zones JO/SA (USD)`);
+    console.log(`seeded ${PRODUCTS.length} demo products (marked is_demo, ILS), 1 approved demo supplier, 3 demo governorate zones`);
   });
   await (await getDatabase()).close();
 }
