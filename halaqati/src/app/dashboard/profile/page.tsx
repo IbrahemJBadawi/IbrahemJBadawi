@@ -10,6 +10,9 @@ import { LinkCodeGenerator, PrivacyRequestForm, ProfileForm, RoleToggle } from "
 import { revokeLinkAction } from "./parent-link-actions";
 import { VerificationForm } from "./VerificationForm";
 import { REVIEW_STATUS } from "@/lib/labels";
+import { ImageUpload } from "@/components/images/ImageUpload";
+import { loadImages } from "@/lib/data/images";
+import { setPhotoOnCertificatesAction } from "../image-actions";
 
 export const metadata: Metadata = { title: "حسابي" };
 
@@ -28,6 +31,11 @@ export default async function ProfilePage() {
     supabase.from("privacy_requests").select("id, kind, status, created_at").order("created_at", { ascending: false }).limit(10),
     supabase.from("verification_requests").select("id, status, review_note, created_at").order("created_at", { ascending: false }).limit(1),
   ]);
+  const [images, { data: photoPref }] = await Promise.all([
+    loadImages(supabase, "profile", [user.id]),
+    supabase.from("profiles").select("photo_on_certificates").eq("id", user.id).single(),
+  ]);
+  const photoOnCerts = Boolean(photoPref?.photo_on_certificates);
   const verifiedAt = (profileRes.data as { verified_teacher_at?: string | null } | null)?.verified_teacher_at ?? null;
   const lastVerif = verifRes.data?.[0] ?? null;
   const p = { ...(profileRes.data ?? { full_name: user.fullName, display_name: null, bio: null, directory_visible: false }), ...(detailsRes.data ?? { gender: null, birth_year: null, country: null, city: null }) };
@@ -38,6 +46,19 @@ export default async function ProfilePage() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title="حسابي" description={user.email ?? undefined} />
+
+      <Card>
+        <h2 className="mb-3 text-lg font-bold text-brand-800">صورتي</h2>
+        <ImageUpload type="profile" id={user.id} current={images.get(user.id) ?? null} label="صورتي" />
+        {user.roles.includes("student") && (
+          <form action={setPhotoOnCertificatesAction} className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+            <p className="text-sm text-muted">{photoOnCerts ? "تظهر صورتك على شهاداتك (عند إظهار اسمك فيها)." : "صورتك لا تظهر على الشهادات."}</p>
+            <input type="hidden" name="on" value={photoOnCerts ? "0" : "1"} />
+            <Button type="submit" variant="secondary">{photoOnCerts ? "إخفاء صورتي من الشهادات" : "إظهار صورتي على الشهادات"}</Button>
+          </form>
+        )}
+        <p className="mt-2 text-xs text-muted">يرى صورتك أنت ووليّ أمرك ومحفّظوك وزملاء حلقتك فقط. صور المحفّظين يراها المسجّلون.</p>
+      </Card>
 
       <Card>
         <h2 className="mb-4 text-lg font-bold text-brand-800">البيانات الشخصية</h2>

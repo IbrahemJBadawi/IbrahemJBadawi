@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import { Alert, Badge, Button, Card, EmptyState, Input, PageHeader, Pagination, Select } from "@/components/ui";
 import { requireContext } from "@/lib/auth";
@@ -23,7 +24,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/dashb
   const back = `/dashboard/admin/users?${new URLSearchParams({ ...(q ? { q } : {}), page: String(page) })}`;
   return (
     <>
-      <PageHeader title="المستخدمون والأدوار" description="كل منح أو سحب للأدوار يُسجَّل في سجل التدقيق." />
+      <PageHeader title="المستخدمون والأدوار" description="كل منح أو سحب للأدوار يُسجَّل في سجل التدقيق." actions={<ExportBar type="admin-users" fileName="المستخدمون" />} />
       {typeof sp.error === "string" && <div className="mb-4"><Alert tone="error">{sp.error}</Alert></div>}
       {error && <div className="mb-4"><Alert tone="error">تعذّر تحميل المستخدمين.</Alert></div>}
       <form role="search" className="mb-4 flex gap-2">

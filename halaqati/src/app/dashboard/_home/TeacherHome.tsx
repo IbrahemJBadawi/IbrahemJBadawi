@@ -7,6 +7,9 @@ import { HALAQA_STATUS } from "@/lib/labels";
 import { createClient } from "@/lib/supabase/server";
 import { isoFromNow } from "@/lib/time";
 import type { Session } from "@/lib/types";
+import { HalaqaCharts, TasksPreview } from "@/components/motivation/HomeWidgets";
+import { LeagueTable } from "@/components/motivation/LeagueTable";
+import type { LeagueRow } from "@/lib/data/motivation";
 
 export async function TeacherHome({ user }: { user: CurrentUser }) {
   const supabase = await createClient();
@@ -29,6 +32,8 @@ export async function TeacherHome({ user }: { user: CurrentUser }) {
     : [{ count: 0 }, { data: [] as Session[] }, { count: 0 }];
   const sessions = ("data" in sessionsRes ? sessionsRes.data ?? [] : []) as Session[];
   const nameOf = (id: string) => rows.find((r) => r.halaqa_id === id)?.halaqat;
+  const first = rows.find((r) => r.halaqat?.status === "published") ?? rows[0];
+  const top = first ? ((await supabase.rpc("get_halaqa_league", { p_halaqa: first.halaqa_id, p_period: "week" })).data ?? []) as LeagueRow[] : [];
 
   return (
     <div className="flex flex-col gap-5">
@@ -40,6 +45,17 @@ export async function TeacherHome({ user }: { user: CurrentUser }) {
         <Stat label="حلقاتي" value={rows.length} />
         <Stat label="طلبات انضمام" value={pendingRes.count ?? 0} />
         <Stat label="واجبات مفتوحة" value={assignmentsRes.count ?? 0} />
+      </div>
+      {first?.halaqat && <HalaqaCharts supabase={supabase} halaqaId={first.halaqa_id} name={first.halaqat.name} />}
+      <div className="grid gap-4 md:grid-cols-2">
+        <TasksPreview supabase={supabase} userId={user.id} />
+        <Card>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h2 className="font-bold text-brand-800">أبرز طلاب الأسبوع</h2>
+            {first && <Link href={`/dashboard/league?h=${first.halaqa_id}`} className="text-sm font-semibold text-brand-800">الترتيب الكامل ←</Link>}
+          </div>
+          {top.length > 0 ? <LeagueTable rows={top} limit={3} /> : <p className="text-muted">يظهر هنا ترتيب طلاب حلقتك بالنقاط.</p>}
+        </Card>
       </div>
       <Card>
         <h2 className="mb-3 font-bold text-brand-800">جلسات اليوم والغد</h2>

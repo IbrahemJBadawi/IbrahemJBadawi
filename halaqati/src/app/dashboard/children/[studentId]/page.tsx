@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -57,6 +58,7 @@ export default async function ChildPage({ params }: PageProps<"/dashboard/childr
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={personName(child.profiles)} description={<Link href="/dashboard/children" className="underline">← الأبناء</Link>} />
+      <ExportBar type="records" id={studentId} fileName={`تقدم-${personName(child.profiles)}`} />
       {motivation && (
         <Card className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <p className="text-lg font-bold"><span aria-hidden>🔥</span> الحماسة: {motivation.current_streak} {motivation.current_streak === 1 ? "يوم" : "أيام"}</p>

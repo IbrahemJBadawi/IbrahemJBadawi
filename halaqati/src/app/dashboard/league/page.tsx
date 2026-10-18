@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { setLeagueVisibilityAction } from "@/app/dashboard/motivation-actions";
@@ -53,6 +54,7 @@ export default async function LeaguePage({ searchParams }: PageProps<"/dashboard
               ))}
             </nav>
           )}
+          {selected && <ExportBar type="league" id={selected.id} fileName={`دوري-${selected.name}`} />}
           <Card>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-bold text-brand-800">{selected?.name}</h2>

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icon";
 import { JoinMeetingButton } from "@/components/JoinMeetingButton";
-import { TaskForm, WirdForm } from "@/components/motivation/Forms";
+import { WirdForm } from "@/components/motivation/Forms";
 import { LeagueTable } from "@/components/motivation/LeagueTable";
-import { TaskList, type PersonalTask } from "@/components/motivation/TaskList";
 import { WeekStrip } from "@/components/motivation/WeekStrip";
+import { BadgesPreview, TasksPreview, WeekPointsChart } from "@/components/motivation/HomeWidgets";
 import { LevelCard } from "@/components/motivation/LevelCard";
 import { Alert, ButtonLink, Card, EmptyState, Stat } from "@/components/ui";
 import type { CurrentUser } from "@/lib/auth";
@@ -14,7 +14,7 @@ import { ACTIVITY } from "@/lib/labels";
 import { formatRange } from "@/lib/quran/surahs";
 import { createClient } from "@/lib/supabase/server";
 import { getMotivation, type LeagueRow } from "@/lib/data/motivation";
-import { isoFromNow, todayUtc } from "@/lib/time";
+import { isoFromNow } from "@/lib/time";
 import type { Assignment, Session, StudentOverview } from "@/lib/types";
 
 export async function StudentHome({ user }: { user: CurrentUser }) {
@@ -23,11 +23,9 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
   const active = memberships.filter((m) => m.status === "active");
   const halaqaIds = active.map((m) => m.halaqa_id);
 
-  const [msgRes, motivation, tasksRes, leagueRes, overviewRes, assignmentRes, sessionRes] = await Promise.all([
+  const [msgRes, motivation, leagueRes, overviewRes, assignmentRes, sessionRes] = await Promise.all([
     halaqaIds.length ? supabase.rpc("get_halaqa_messages", { p_halaqa: halaqaIds[0], p_limit: 30 }) : Promise.resolve({ data: [] }),
     getMotivation(supabase),
-    supabase.from("personal_tasks").select("id, title, due_on, priority, done_at").eq("user_id", user.id).is("done_at", null)
-      .order("priority").order("due_on", { ascending: true, nullsFirst: false }).limit(3),
     halaqaIds.length ? supabase.rpc("get_halaqa_league", { p_halaqa: halaqaIds[0], p_period: "week" }) : Promise.resolve({ data: [] as LeagueRow[] }),
     supabase.rpc("get_student_overview", { p_student: user.id, p_days: 30 }),
     supabase
@@ -52,7 +50,6 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
   const task = (assignmentRes.data?.[0] ?? null) as Assignment | null;
   const next = (sessionRes.data?.[0] ?? null) as Session | null;
   const nextHalaqa = next ? active.find((m) => m.halaqa_id === next.halaqa_id)?.halaqat : null;
-  const tasks = (tasksRes.data ?? []) as PersonalTask[];
   const league = (leagueRes.data ?? []) as LeagueRow[];
   const m = motivation;
   const announcement = ((msgRes.data ?? []) as Array<{ id: string; body: string; author_name: string; is_announcement: boolean; pinned: boolean; created_at: string }>)
@@ -90,6 +87,13 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
             </Card>
           </div>
         </section>
+      )}
+
+      {m && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card><WeekPointsChart days={m.last7} /></Card>
+          <Card><BadgesPreview supabase={supabase} longestStreak={m.longest_streak} /></Card>
+        </div>
       )}
 
       {announcement && (
@@ -130,14 +134,7 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <h2 className="font-bold text-brand-800">مهامي</h2>
-            <Link href="/dashboard/tasks" className="text-sm font-semibold text-brand-800">كل المهام ←</Link>
-          </div>
-          {tasks.length > 0 ? <TaskList tasks={tasks} today={todayUtc()} allowDelete={false} /> : <p className="mb-2 text-muted">لا مهام مفتوحة. أضف مهمة صغيرة لليوم.</p>}
-          <div className="mt-2"><TaskForm compact /></div>
-        </Card>
+        <TasksPreview supabase={supabase} userId={user.id} />
         <Card>
           <div className="mb-2 flex items-center justify-between gap-2">
             <h2 className="flex items-center gap-2 font-bold text-brand-800"><Icon name="trophy" />الدوري هذا الأسبوع</h2>

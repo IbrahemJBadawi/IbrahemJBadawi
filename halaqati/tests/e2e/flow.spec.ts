@@ -116,7 +116,7 @@ test.describe.serial("halaqa workflow", () => {
 
     // Motivation: approved recitation + attendance already earned points; streak is live.
     await student.page.goto("/dashboard");
-    await expect(student.page.getByText("الحماسة", { exact: true })).toBeVisible();
+    await expect(student.page.getByRole("region", { name: "الحماسة والنقاط" })).toBeVisible();
     await student.page.locator("#wird-pages").fill("4");
     await student.page.getByRole("button", { name: "سجّل الورد" }).click();
     await expect(student.page.getByText("سجّلت وردك اليوم: 4 صفحة")).toBeVisible();
