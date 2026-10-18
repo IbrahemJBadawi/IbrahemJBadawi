@@ -93,6 +93,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/teacher/halaqat", label: "حلقاتي", icon: "halaqa" },
     { href: "/dashboard/teacher/schedule", label: "جدولي", icon: "calendar" },
     { href: "/dashboard/messages", label: "الرسائل", icon: "chat" },
+    { href: "/dashboard/staff-messages", label: "رسائل الإدارة", icon: "megaphone" },
     { href: "/dashboard/league", label: "الدوري", icon: "trophy" },
     { href: "/dashboard/teacher/halaqat/new", label: "حلقة جديدة", icon: "plus" },
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
@@ -106,9 +107,18 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/admin/privacy", label: "طلبات الخصوصية", icon: "lock" },
     { href: "/dashboard/admin/audit", label: "سجل التدقيق", icon: "list" },
     { href: "/dashboard/admin/demo", label: "البيانات التجريبية", icon: "sparkles" },
+    { href: "/dashboard/institutions", label: "شعارات المؤسسات", icon: "building" },
   ],
-  center_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
-  org_admin: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
+  center_admin: [
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/staff-messages", label: "رسائل الإدارة", icon: "megaphone" },
+    { href: "/dashboard/institutions", label: "مؤسساتي", icon: "building" },
+  ],
+  org_admin: [
+    { href: "/dashboard", label: "الرئيسية", icon: "home" },
+    { href: "/dashboard/staff-messages", label: "رسائل الإدارة", icon: "megaphone" },
+    { href: "/dashboard/institutions", label: "مؤسساتي", icon: "building" },
+  ],
   instructor: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
   sponsor: [{ href: "/dashboard", label: "الرئيسية", icon: "home" }],
 };

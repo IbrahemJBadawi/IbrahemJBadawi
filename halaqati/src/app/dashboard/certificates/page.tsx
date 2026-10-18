@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge, Button, Card, EmptyState, PageHeader } from "@/components/ui";
@@ -20,7 +21,7 @@ export default async function MyCertificatesPage() {
   const reactions = await loadReactions(supabase, "certificate", rows.map((c) => c.id), user.id);
   return (
     <>
-      <PageHeader title="شهاداتي" description="لكل شهادة رقم فريد وصفحة تحقق عامة يمكنك مشاركتها." />
+      <PageHeader title="شهاداتي" description="لكل شهادة رقم فريد وصفحة تحقق عامة يمكنك مشاركتها." actions={<ExportBar type="certificates" fileName="شهاداتي" />} />
       {rows.length === 0 ? <EmptyState title="لا توجد شهادات بعد">يصدر المحفّظ الشهادات عند إتمام جزء أو سورة أو غير ذلك من الإنجازات.</EmptyState> : (
         <div className="grid gap-3 sm:grid-cols-2">
           {rows.map((c) => (

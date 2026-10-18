@@ -23,17 +23,23 @@ export async function updateSession(request: NextRequest) {
   const signedIn = Boolean(data?.claims?.sub);
   const path = request.nextUrl.pathname;
 
+  // A redirect must carry any cookies the refresh just wrote: the old refresh
+  // token is already spent, so dropping them would sign the person out.
+  const redirect = (pathname: string, search = "") => {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname;
+    url.search = search;
+    const res = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => res.cookies.set(c));
+    return res;
+  };
+
   if (!signedIn && path.startsWith("/dashboard")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.search = `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
-    return NextResponse.redirect(url);
+    return redirect("/login", `?next=${encodeURIComponent(path + request.nextUrl.search)}`);
   }
-  if (signedIn && (path === "/login" || path === "/register")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
+  // Signed-in people open the app straight into their dashboard.
+  if (signedIn && (path === "/" || path === "/login" || path === "/register")) {
+    return redirect("/dashboard");
   }
   return response;
 }

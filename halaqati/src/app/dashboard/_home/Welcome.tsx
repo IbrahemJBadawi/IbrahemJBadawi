@@ -21,12 +21,12 @@ export function WelcomeCard({ user, summary }: { user: CurrentUser; summary?: Me
   return (
     <div className="hero-card">
       <div className="relative">
-        <p className="text-sm text-white/80">السلام عليكم 👋{ctx ? ` · ${CONTEXT_LABELS[ctx]}` : ""}</p>
-        <h1 className="text-2xl font-bold sm:text-3xl">{user.displayName || user.fullName}</h1>
-        <p className="mt-1 text-sm text-[#f3dfae]">رحلتك مع القرآن</p>
-        {summary && <div className="mt-3"><SummaryChips s={summary} tone="hero" /></div>}
+        <p className="text-sm text-muted">السلام عليكم ورحمة الله{ctx ? ` · ${CONTEXT_LABELS[ctx]}` : ""}</p>
+        <h1 className="text-2xl font-bold text-brand-900 sm:text-[1.75rem]">{user.displayName || user.fullName}</h1>
+        <p className="mt-0.5 text-sm text-gold-dark">رحلتك مع القرآن</p>
+        {summary && <div className="mt-4"><SummaryChips s={summary} tone="hero" /></div>}
       </div>
-      <ButtonLink href={theme.action.href} variant="secondary" className="relative shrink-0 !border-transparent">{theme.action.label}</ButtonLink>
+      <ButtonLink href={theme.action.href} variant="primary" className="relative shrink-0">{theme.action.label}</ButtonLink>
     </div>
   );
 }

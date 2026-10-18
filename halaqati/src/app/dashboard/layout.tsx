@@ -10,6 +10,7 @@ import { formatDateTime } from "@/lib/format";
 import { COMMON_NAV, CONTEXT_LABELS, NAV } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import { switchContextAction } from "./actions";
+import { loadImages } from "@/lib/data/images";
 
 function RoleSwitcher({ user, variant }: { user: CurrentUser; variant: "menu" | "sheet" }) {
   return (
@@ -42,6 +43,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
     supabase.from("notifications").select("id, title, link_path, read_at, created_at").order("created_at", { ascending: false }).limit(5),
   ]);
 
+  const avatar = (await loadImages(supabase, "profile", [user.id])).get(user.id);
   const contextNav = user.activeContext ? NAV[user.activeContext] : NAV.sponsor;
   const roleLabel = user.activeContext ? CONTEXT_LABELS[user.activeContext] : "حسابي";
   const groups: NavGroup[] = [
@@ -124,7 +126,8 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
 
               <details className="dropdown">
                 <summary className="icon-button" aria-label="قائمة الحساب">
-                  <span className="avatar size-9 text-sm">{initial}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {avatar ? <img src={avatar} alt="" className="avatar size-9 object-cover" /> : <span className="avatar size-9 text-sm">{initial}</span>}
                 </summary>
                 <div className="dropdown-panel">
                   <div className="dropdown-head">

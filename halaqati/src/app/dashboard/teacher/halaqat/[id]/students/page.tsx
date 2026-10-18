@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -33,6 +34,10 @@ export default async function StudentsTablePage({ params }: PageProps<"/dashboar
         title="جدول الطلاب"
         description={<><Link href={`/dashboard/teacher/halaqat/${id}`} className="underline">{loaded.halaqa.name}</Link> · مؤشرات آخر 30 يومًا (الحفظ المعتمد إجمالي)</>}
       />
+      <div className="flex flex-wrap items-center gap-3">
+        <ExportBar type="halaqa-students" id={id} fileName={`طلاب-${loaded.halaqa.name}`} />
+        <a href={`/api/export?type=halaqa-attendance&format=xlsx&id=${id}`} className="btn btn-ghost !min-h-9 text-sm print:hidden">سجل الحضور Excel</a>
+      </div>
       {error && <Alert tone="error">تعذّر تحميل الجدول.</Alert>}
       {rows.length === 0 ? <EmptyState title="لا يوجد طلاب نشطون" /> : (
         <Card className="!p-0">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { Icon } from "@/components/Icon";
 import { DropdownCloser, ThemeToggle } from "@/components/layout/AppChrome";
+import { AuthLinks } from "@/components/layout/AuthLinks";
 
 const LINKS = [
   { href: "/halaqat", label: "الحلقات" },
@@ -27,8 +28,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-1.5">
           <ThemeToggle />
-          <Link href="/login" className="btn btn-ghost !min-h-10 !px-3.5">دخول</Link>
-          <Link href="/register" className="btn btn-primary hidden !min-h-10 sm:inline-flex">حساب جديد</Link>
+          <AuthLinks />
           <details className="dropdown md:hidden">
             <summary className="icon-button" aria-label="القائمة"><Icon name="more" /></summary>
             <nav aria-label="القائمة" className="dropdown-panel !w-56">

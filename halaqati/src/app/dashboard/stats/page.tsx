@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StudentStatsView, type WeekStat } from "@/components/motivation/StudentStatsView";
@@ -40,6 +41,7 @@ export default async function StatsPage({ searchParams }: PageProps<"/dashboard/
   return (
     <>
       <PageHeader title="الإحصائيات" description="من السجلات المعتمدة فقط — كل مقياس في رسم مستقل." />
+      <div className="mb-3"><ExportBar type="records" id={who.id === user.id ? undefined : who.id} fileName={`احصائيات-${who.name}`} /></div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
         {people.length > 1 && people.map((p) => (
           <Link key={p.id} href={href(p.id, weeksParam)} aria-current={p.id === who.id ? "page" : undefined} className={cx("btn !min-h-9 !px-3 text-sm", p.id === who.id ? "btn-primary" : "btn-secondary")}>{p.name}</Link>

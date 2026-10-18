@@ -32,9 +32,20 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
     body = (
       <Card>
         <h1 className="mb-2 text-xl font-bold">{CONTEXT_LABELS[ctx]}</h1>
-        <Alert tone="info">
-          لوحة «{CONTEXT_LABELS[ctx]}» قيد التطوير ضمن المراحل القادمة، ولم تُفعَّل وظائفها بعد. يمكنك التبديل إلى دور آخر من أعلى الصفحة.
-        </Alert>
+        {ctx === "center_admin" || ctx === "org_admin" ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-muted">تواصل مع محفّظي مراكزك وأمرائها، وارفع شعارات مؤسساتك لتُطبع على الشهادات.</p>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/dashboard/staff-messages" className="btn btn-primary">رسائل الإدارة</Link>
+              <Link href="/dashboard/institutions" className="btn btn-secondary">مؤسساتي وشعاراتها</Link>
+            </div>
+            <Alert tone="info">بقية أدوات «{CONTEXT_LABELS[ctx]}» (توزيع الطلاب والتقارير الإدارية) ضمن المرحلة القادمة.</Alert>
+          </div>
+        ) : (
+          <Alert tone="info">
+            لوحة «{CONTEXT_LABELS[ctx]}» قيد التطوير ضمن المراحل القادمة، ولم تُفعَّل وظائفها بعد. يمكنك التبديل إلى دور آخر من أعلى الصفحة.
+          </Alert>
+        )}
       </Card>
     );
   }

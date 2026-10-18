@@ -10,7 +10,7 @@ const AUDIENCES = [
 export default function HomePage() {
   return (
     <div className="flex flex-col gap-10">
-      <section className="hero-card !block !px-6 !py-10 sm:!px-10 sm:!py-14">
+      <section className="hero-card is-dark !block !px-6 !py-10 sm:!px-10 sm:!py-14">
         <div className="relative">
         <p className="mb-2 font-semibold text-[#f3dfae]">رحلتك مع القرآن</p>
         <h1 className="text-3xl font-bold leading-snug sm:text-4xl">حلقتي: منصة واحدة لحلقات التحفيظ والمراجعة</h1>

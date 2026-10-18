@@ -17,6 +17,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
+    "exceljs": "^4.4.0",
+    "html-to-image": "^1.11.13",
     "next": "16.4.2",
     "qrcode": "^1.5.4",
     "react": "19.3.0",
@@ -40,5 +42,8 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.0.5"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   }
 }

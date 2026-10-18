@@ -1,3 +1,4 @@
+import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import { OverviewStats } from "@/components/OverviewStats";
 import { ProgressList, type RecordWithErrors } from "@/components/ProgressList";
@@ -30,6 +31,7 @@ export default async function JourneyPage({ searchParams }: PageProps<"/dashboar
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title="رحلتي القرآنية" description="كل مؤشر يُقاس منفصلًا: المقدار، والإتقان، وجودة التلاوة، والالتزام، والحضور." />
+      <ExportBar type="records" fileName="رحلتي-القرآنية" />
       {o && <OverviewStats o={o} />}
       <section>
         <h2 className="mb-3 text-lg font-bold text-brand-800">سجل التسميع المعتمد</h2>
