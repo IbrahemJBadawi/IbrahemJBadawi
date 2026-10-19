@@ -75,6 +75,7 @@ export type ShippingOption = {
   min_days: number;
   max_days: number;
   cod_available: boolean;
+  fee_on_confirmation: boolean;
 };
 
 export const SORTS = ["newest", "price_asc", "price_desc", "name"] as const;
@@ -284,7 +285,7 @@ export const getShippingOptions = cache(async (): Promise<ShippingOption[]> =>
   asAnon((tx) =>
     tx.query<ShippingOption>(
       `select z.id, z.country_code, c.name_ar as country_name, z.governorate_id, g.name_ar as governorate_name,
-              z.currency_code, z.rate::text, z.free_shipping_threshold::text, z.min_days, z.max_days, z.cod_available
+              z.currency_code, z.rate::text, z.free_shipping_threshold::text, z.min_days, z.max_days, z.cod_available, z.fee_on_confirmation
        from public.shipping_zones z join public.countries c on c.code = z.country_code
        left join public.governorates g on g.id = z.governorate_id
        where z.is_active and c.is_active

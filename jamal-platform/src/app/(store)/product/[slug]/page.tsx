@@ -36,36 +36,36 @@ async function Favorite({ id, slug }: { id: string; slug: string }) {
 async function Delivery({ currency, overrides }: { currency: string; overrides: Record<string, { min: number; max: number }> }) {
   const zones = (await getShippingOptions()).filter((z) => z.currency_code === currency);
   if (!zones.length) {
-    return <p className="text-sm leading-7 text-muted">لم نفعّل التوصيل لمنطقة بعد. تواصل معنا للاستفسار.</p>;
+    return <p className="text-sm leading-7 text-muted">راسلنا وسنرتب التوصيل إلى منطقتك.</p>;
   }
+  const days = zones.map((z) => {
+    const o = overrides[z.country_code];
+    return { min: Math.max(z.min_days, o?.min ?? 0), max: Math.max(z.max_days, o?.max ?? 0) };
+  });
+  const min = Math.min(...days.map((d) => d.min));
+  const max = Math.max(...days.map((d) => d.max));
+  const fee = (z: (typeof zones)[number]) =>
+    z.fee_on_confirmation ? "حسب العنوان" : Number(z.rate) === 0 ? "مجاني" : formatMoney(z.rate, z.currency_code);
   return (
-    <table className="w-full text-sm">
-      <caption className="sr-only">مدة التوصيل التقديرية وتكلفة الشحن حسب الدولة</caption>
-      <thead>
-        <tr className="text-start text-xs text-muted">
-          <th className="pb-2 text-start font-medium">المنطقة</th>
-          <th className="pb-2 text-start font-medium">مدة التوصيل</th>
-          <th className="pb-2 text-start font-medium">الشحن</th>
-        </tr>
-      </thead>
-      <tbody>
-        {zones.map((z) => {
-          const o = overrides[z.country_code];
-          const min = Math.max(z.min_days, o?.min ?? 0);
-          const max = Math.max(z.max_days, o?.max ?? 0);
-          return (
-            <tr key={z.id} className="border-t border-line">
-              <td className="py-2">{z.governorate_name ?? z.country_name}</td>
-              <td className="py-2">{min}–{max} يوم بعد الدفع</td>
-              <td className="py-2">
-                {Number(z.rate) === 0 ? "مجاني" : formatMoney(z.rate, z.currency_code)}
-                {z.free_shipping_threshold && <span className="block text-xs text-muted">مجاني فوق {formatMoney(z.free_shipping_threshold, z.currency_code)}</span>}
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="space-y-3 text-sm">
+      <p className="leading-7 text-ink-soft">
+        نوصل إلى <strong className="text-ink">جميع محافظات الضفة الغربية وقطاع غزة</strong> خلال {min}–{max} أيام عمل من تأكيد الدفع.
+      </p>
+      <details className="rounded-2xl border border-line bg-paper px-4 py-2">
+        <summary className="cursor-pointer py-1 text-xs font-semibold text-beige-deep">رسوم التوصيل حسب المحافظة</summary>
+        <ul className="mt-2 divide-y divide-line">
+          {zones.map((z) => (
+            <li key={z.id} className="flex items-center justify-between gap-3 py-2">
+              <span>{z.governorate_name ?? z.country_name}</span>
+              <span className="text-xs text-muted">
+                {fee(z)}
+                {z.free_shipping_threshold && !z.fee_on_confirmation && <> · مجاني فوق {formatMoney(z.free_shipping_threshold, z.currency_code)}</>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </details>
+    </div>
   );
 }
 
@@ -137,7 +137,7 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
             </div>
           </div>
           <p className="mt-4 text-xs leading-6 text-muted">
-            المنتج يُوفَّر من مورد محلي. نؤكد التوفر والمقاس والسعر النهائي مع رسوم التوصيل قبل أن نطلب منك أي دفعة.
+            <strong className="text-ink">اطلب الآن وادفع لاحقًا:</strong> نحجز مقاسك لدى المورد المحلي ونرسل لك السعر النهائي مع التوصيل، ثم تدفع بكل راحة.
           </p>
           <div className="mt-4">
             <Suspense fallback={<span className="inline-block size-12" />}>

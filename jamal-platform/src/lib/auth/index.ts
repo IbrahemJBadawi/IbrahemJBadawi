@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect, notFound } from "next/navigation";
 import { asUser } from "@/lib/db";
-import { ensureAdmin, getDatabase } from "@/lib/db/core";
+import { ensureAdmin, getDatabase, OWNER_EMAIL } from "@/lib/db/core";
 import { supabaseAnonKey } from "./supabase";
 import { localGetSession, localSignIn, localSignOut, localSignUp } from "./local";
 import { supabaseGetSession, supabaseSignIn, supabaseSignOut, supabaseSignUp } from "./supabase";
@@ -34,8 +34,8 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
     });
   let profile = await read();
   // The owner's account (ADMIN_EMAIL) becomes admin as soon as it is eligible.
-  const owner = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (profile && owner && profile.role !== "admin" && session.email?.toLowerCase() === owner) {
+  const owner = (process.env.ADMIN_EMAIL || OWNER_EMAIL).trim().toLowerCase();
+  if (profile && profile.role !== "admin" && session.email?.toLowerCase() === owner) {
     await ensureAdmin(await getDatabase());
     profile = await read();
   }

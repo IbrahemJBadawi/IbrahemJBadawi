@@ -83,7 +83,7 @@ export function CheckoutForm({ zones, prefill, loggedIn }: { zones: ShippingOpti
           <span className="flex gap-2">
             <Info className="mt-1 size-4 shrink-0" />
             <span>
-              لا تدفع الآن. بعد إرسال الطلب نتأكد من توفر المنتج لدى المورد ونعتمد السعر النهائي مع رسوم التوصيل، ثم تظهر لك تعليمات التحويل البنكي في صفحة الطلب.
+              اطلب الآن وادفع لاحقًا. نحجز منتجاتك ونرسل لك السعر النهائي مع التوصيل، ثم تحوّل المبلغ بسهولة عبر بنك فلسطين.
             </span>
           </span>
         </Notice>
@@ -119,7 +119,7 @@ export function CheckoutForm({ zones, prefill, loggedIn }: { zones: ShippingOpti
                 </Field>
               )}
               {needsGovernorate && (
-                <Field label="المحافظة" htmlFor="governorateId" error={fe.governorateId} hint="تظهر فقط المناطق التي نوصل إليها حاليًا">
+                <Field label="المحافظة" htmlFor="governorateId" error={fe.governorateId} hint="نوصل إلى جميع محافظات الضفة الغربية وقطاع غزة">
                   <Select id="governorateId" name="governorateId" required value={governorateId} onChange={(e) => setGovernorateId(e.target.value)}>
                     <option value="">اختر المحافظة</option>
                     {governorates.map((z) => <option key={z.id} value={z.governorate_id!}>{z.governorate_name}</option>)}
@@ -152,10 +152,10 @@ export function CheckoutForm({ zones, prefill, loggedIn }: { zones: ShippingOpti
               <label key={m} className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-control)] border border-line bg-paper p-4 has-[:checked]:border-ink">
                 <input type="radio" name="paymentMethod" value={m} defaultChecked={v.paymentMethod ? v.paymentMethod === m : i === 0} className="mt-1 accent-ink" />
                 <span className="text-sm">
-                  <strong className="block">{m === "bank_transfer" ? "تحويل بنكي بعد اعتماد الطلب" : "الدفع عند الاستلام"}</strong>
+                  <strong className="block">{m === "bank_transfer" ? "تحويل عبر بنك فلسطين" : "الدفع عند الاستلام"}</strong>
                   <span className="text-muted">
                     {m === "bank_transfer"
-                      ? "تحوّل المبلغ النهائي بعد أن نؤكد التوفر والسعر، وترفع إثبات التحويل من صفحة الطلب."
+                      ? "حوّل عبر بنك فلسطين بعد تثبيت طلبك، وارفع صورة الإيصال من صفحة طلبك."
                       : "تدفع نقدًا عند الاستلام."}
                   </span>
                 </span>
@@ -164,7 +164,7 @@ export function CheckoutForm({ zones, prefill, loggedIn }: { zones: ShippingOpti
           )}
           {fe.paymentMethod && <p className="text-xs text-danger">{fe.paymentMethod[0]}</p>}
           <p className="flex items-center gap-2 text-xs text-muted">
-            <Lock className="size-3.5" /> لا نطلب بيانات بطاقتك ولا كلمات مرور بنكية أبدًا.
+            <Lock className="size-3.5" /> دفع آمن: لا نطلب بيانات بطاقتك أبدًا.
           </p>
         </fieldset>
 
@@ -200,18 +200,18 @@ export function CheckoutForm({ zones, prefill, loggedIn }: { zones: ShippingOpti
         <dl className="space-y-2 border-t border-line pt-4 text-sm">
           <div className="flex justify-between"><dt className="text-muted">المنتجات</dt><dd>{(quote ?? baseQuote)?.currency ? formatMoney((quote ?? baseQuote)!.subtotal, (quote ?? baseQuote)!.currency!) : "—"}</dd></div>
           <div className="flex justify-between">
-            <dt className="text-muted">رسوم التوصيل (تقديرية)</dt>
-            <dd>{quote?.shipping != null && quote.currency ? (Number(quote.shipping) === 0 ? "مجاني" : formatMoney(quote.shipping, quote.currency)) : "اختر المنطقة"}</dd>
+            <dt className="text-muted">التوصيل</dt>
+            <dd>{quote?.shippingToConfirm ? "نرسلها لك مع تأكيد الطلب" : quote?.shipping != null && quote.currency ? (Number(quote.shipping) === 0 ? "مجاني" : formatMoney(quote.shipping, quote.currency)) : "اختر المحافظة"}</dd>
           </div>
           {quote?.estimate && (
             <div className="flex justify-between"><dt className="text-muted">مدة التوصيل المتوقعة</dt><dd>{quote.estimate.min}–{quote.estimate.max} يوم عمل</dd></div>
           )}
           <div className="flex justify-between border-t border-line pt-3 text-base font-bold">
-            <dt>الإجمالي التقديري</dt>
+            <dt>الإجمالي</dt>
             <dd>{quote?.currency && quote.ok ? formatMoney(quote.total, quote.currency) : "—"}</dd>
           </div>
         </dl>
-        <p className="text-xs leading-6 text-muted">السعر النهائي (مع أي رسوم معلنة) يُعتمد بعد تأكيد التوفر ويظهر لك قبل أن تحوّل أي مبلغ.</p>
+        <p className="text-xs leading-6 text-muted">نرسل لك السعر النهائي للموافقة قبل الدفع، بدون أي مفاجآت.</p>
         {quote?.error && areaReady && <Notice tone="warning">{quote.error}</Notice>}
         <Button type="submit" size="lg" className="w-full" disabled={!canSubmit || pending} aria-busy={pending}>
           {pending ? "جارٍ إرسال الطلب…" : "إرسال الطلب"}

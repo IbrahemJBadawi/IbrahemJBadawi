@@ -106,9 +106,11 @@ async function applyEnvPaymentDefaults(db: Database) {
  * - Local auth: with ADMIN_PASSWORD the account is created if missing; an
  *   existing account is promoted only if that password matches it.
  */
+/** The store owner's account; ADMIN_EMAIL overrides it. */
+export const OWNER_EMAIL = "ibrahim918648@gmail.com";
+
 export async function ensureAdmin(db: Database) {
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!email) return;
+  const email = (process.env.ADMIN_EMAIL || OWNER_EMAIL).trim().toLowerCase();
   await db.transaction(async (tx) => {
     const [{ supabase }] = await tx.query<{ supabase: boolean }>(
       `select exists (select 1 from information_schema.columns

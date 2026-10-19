@@ -29,7 +29,7 @@ function secret() {
   return new TextEncoder().encode(s);
 }
 
-async function setSession(user: SessionIdentity) {
+export async function setSession(user: SessionIdentity) {
   const token = await new SignJWT({ email: user.email })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)

@@ -49,10 +49,10 @@ export const ar = {
   /** Customer-facing wording (hides internal supplier steps). */
   customerStatus: {
     new: "تم استلام الطلب",
-    under_review: "قيد المراجعة",
-    awaiting_stock: "نتأكد من التوفر لدى المورد",
-    awaiting_payment: "بانتظار التحويل البنكي",
-    payment_review: "إثبات الدفع قيد المراجعة",
+    under_review: "نجهّز تأكيد طلبك",
+    awaiting_stock: "نحجز منتجاتك لدى المورد",
+    awaiting_payment: "جاهز للدفع",
+    payment_review: "نتحقق من تحويلك",
     paid: "تم تأكيد الدفع",
     awaiting_supplier_payout: "قيد التجهيز",
     supplier_paid: "قيد التجهيز",

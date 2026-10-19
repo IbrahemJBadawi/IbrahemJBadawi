@@ -50,7 +50,11 @@ export async function removeDemo(tx: Tx) {
   // Orders keep their own snapshots; product references become null.
   const p = await tx.query("delete from public.products where is_demo returning id");
   await tx.query("delete from public.suppliers where name = $1", [DEMO_SUPPLIER]);
-  const z = await tx.query("delete from public.shipping_zones where notes = $1 returning id", [DEMO_NOTE]);
+  // Zones stay (every governorate is served); only the demo fees are cleared.
+  const z = await tx.query(
+    "update public.shipping_zones set rate = 0, estimated_cost = null, fee_on_confirmation = true, notes = null where notes = $1 returning id",
+    [DEMO_NOTE],
+  );
   return { products: p.length, zones: z.length };
 }
 
@@ -71,11 +75,12 @@ export async function seedDemo(tx: Tx) {
     };
     for (const g of govs) {
       const [fee, cost, min, max] = fees[g.name_ar];
+      // Every governorate already has a zone (migration 0008): give the demo ones real-looking fees.
       await tx.query(
-        `insert into public.shipping_zones (country_code, currency_code, governorate_id, name_ar, rate, estimated_cost, min_days, max_days, cod_available, is_active, notes)
-         values ('PS', 'ILS', $1, $2, $3, $4, $5, $6, false, true, $7)
-         on conflict do nothing`,
-        [g.id, `${g.name_ar} — تجريبي`, fee, cost, min, max, DEMO_NOTE],
+        `update public.shipping_zones set rate = $2, estimated_cost = $3, min_days = $4, max_days = $5,
+           fee_on_confirmation = false, notes = $6
+         where country_code = 'PS' and currency_code = 'ILS' and governorate_id = $1`,
+        [g.id, fee, cost, min, max, DEMO_NOTE],
       );
     }
     await tx.query(

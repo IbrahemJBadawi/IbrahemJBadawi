@@ -26,7 +26,7 @@ async function Content() {
 export default function Page() {
   return (
     <>
-      <PageHeader eyebrow="تجريبي" title="مساعد التسوق" description="اسأل عن المنتجات والمقاسات والتوصيل. لا يمكن للمساعد تعديل الطلبات أو تأكيد الدفع." />
+      <PageHeader eyebrow="جديد" title="مساعد التسوق" description="اسأل عن المنتجات والمقاسات والتوصيل. لا يمكن للمساعد تعديل الطلبات أو تأكيد الدفع." />
       <div className="container-page max-w-3xl py-6">
         <Suspense fallback={<Skeleton className="h-96" />}><Content /></Suspense>
       </div>

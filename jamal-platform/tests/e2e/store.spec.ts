@@ -58,12 +58,12 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
 
   test("1. customer places an order without paying (prices from the server)", async ({ page }) => {
     await page.goto("/product/demo-linen-midi-dress");
-    await expect(page.getByText("نؤكد التوفر والمقاس والسعر النهائي")).toBeVisible();
+    await expect(page.getByText("اطلب الآن وادفع لاحقًا:")).toBeVisible();
     await page.getByRole("button", { name: "بيج" }).click();
     await page.getByRole("button", { name: "M", exact: true }).click();
     await page.getByRole("button", { name: "أضف إلى السلة" }).click();
     await page.goto("/checkout");
-    await expect(page.getByText("لا تدفع الآن")).toBeVisible();
+    await expect(page.getByText(/اطلب الآن وادفع لاحقًا\. نحجز منتجاتك/)).toBeVisible();
     await page.getByLabel("الاسم الكامل").fill("عميلة تجريبية");
     await page.getByLabel(/رقم الهاتف/).fill(phone);
     await page.getByLabel("المحافظة").selectOption({ label: "رام الله والبيرة" });
@@ -71,7 +71,7 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     await page.getByLabel("العنوان التفصيلي").fill("شارع القدس، عمارة 5");
     // 165 ₪ dress + 20 ₪ demo delivery fee for Ramallah
     await expect(page.getByText("₪").first()).toBeVisible();
-    await expect(page.getByText("تحويل بنكي بعد اعتماد الطلب")).toBeVisible();
+    await expect(page.getByText("تحويل عبر بنك فلسطين")).toBeVisible();
     await page.getByRole("checkbox").check();
     await noHorizontalOverflow(page);
     await page.getByRole("button", { name: "إرسال الطلب" }).click();
@@ -79,7 +79,7 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     orderUrl = page.url().replace("&new=1", "");
     orderNumber = decodeURIComponent(new URL(orderUrl).pathname.split("/").pop()!);
     await expect(page.getByText("تم استلام طلبك").first()).toBeVisible();
-    await expect(page.getByText("لا تحوّل أي مبلغ الآن")).toBeVisible();
+    await expect(page.getByText(/لا حاجة لأي دفع الآن/)).toBeVisible();
     await expect(page.getByRole("heading", { name: "تعليمات التحويل البنكي" })).toHaveCount(0);
   });
 
@@ -124,9 +124,9 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     await page.locator('input[name="file"]').setInputFiles({ name: "receipt.png", mimeType: "image/png", buffer: PNG });
     await page.getByLabel("رقم مرجع الحوالة (إن وجد)").fill("TX-WRONG");
     await page.getByRole("button", { name: "إرسال الإثبات" }).click();
-    await expect(page.getByText(/تم استلام الإثبات وهو قيد المراجعة/)).toBeVisible();
+    await expect(page.getByText(/تم استلام الإيصال/)).toBeVisible();
     await page.reload();
-    await expect(page.getByText("إثبات الدفع قيد المراجعة").first()).toBeVisible();
+    await expect(page.getByText("نتحقق من تحويلك").first()).toBeVisible();
     await expect(page.getByText("مدفوع ومؤكد")).toHaveCount(0);
 
     await login(page, adminEmail);
@@ -139,14 +139,14 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
 
     await page.goto(orderUrl);
     await expect(page.getByText("سبب الرفض: المبلغ لا يظهر في كشف الحساب")).toBeVisible();
-    await expect(page.getByText("بانتظار التحويل البنكي").first()).toBeVisible();
+    await expect(page.getByText("جاهز للدفع").first()).toBeVisible();
   });
 
   test("6. admin confirms the money actually arrived", async ({ page }) => {
     await page.goto(orderUrl);
     await page.getByLabel("رقم مرجع الحوالة (إن وجد)").fill("TX-OK-777");
     await page.getByRole("button", { name: "إرسال الإثبات" }).click();
-    await expect(page.getByText(/تم استلام الإثبات/)).toBeVisible();
+    await expect(page.getByText(/تم استلام الإيصال/)).toBeVisible();
 
     await login(page, adminEmail);
     await page.goto(adminOrderUrl);

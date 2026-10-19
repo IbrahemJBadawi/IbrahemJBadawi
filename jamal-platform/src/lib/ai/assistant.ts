@@ -95,7 +95,7 @@ async function runTool(name: string, input: unknown): Promise<string> {
       cash_on_delivery_enabled: settings.cod_enabled,
       zones: zones.map((z) => ({
         area: z.governorate_name ?? z.country_name,
-        fee: formatMoney(z.rate, z.currency_code),
+        fee: z.fee_on_confirmation ? "confirmed with the order" : formatMoney(z.rate, z.currency_code),
         free_over: z.free_shipping_threshold ? formatMoney(z.free_shipping_threshold, z.currency_code) : null,
         days: `${z.min_days}-${z.max_days}`,
         cod: z.cod_available,

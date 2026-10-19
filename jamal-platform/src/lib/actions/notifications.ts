@@ -14,6 +14,13 @@ export async function markNotificationRead(id: string) {
   refresh();
 }
 
+/** Same as markAllReadAction, for the bell menu (no form state). */
+export async function markAllReadQuick() {
+  const user = await requireUser();
+  await asUser(user, (tx) => tx.query("update public.notifications set is_read = true, read_at = now() where user_id = $1 and not is_read", [user.id]));
+  refresh();
+}
+
 export async function markAllReadAction(): Promise<FormState> {
   const user = await requireUser();
   await asUser(user, (tx) => tx.query("update public.notifications set is_read = true, read_at = now() where user_id = $1 and not is_read", [user.id]));

@@ -62,9 +62,44 @@ function PaymentBox({ order }: { order: OrderDetail }) {
           {p.contact && <p className="text-xs text-muted">للاستفسار: <span className="ltr">{p.contact}</span></p>}
         </dl>
       ) : (
-        <Notice tone="warning">بيانات التحويل لم تُنشر بعد. سنتواصل معك على رقم هاتفك بتعليمات الدفع — لا تحوّل لأي حساب لم يظهر هنا أو لم نرسله لك نحن.</Notice>
+        <Notice tone="warning">نرسل لك تفاصيل الدفع على رقم هاتفك خلال وقت قصير. للأمان: حوّل فقط للحساب الذي نرسله لك نحن.</Notice>
       )}
     </section>
+  );
+}
+
+const STEPS = [
+  { label: "استلمنا طلبك", statuses: ["new", "under_review", "awaiting_stock"] },
+  { label: "السعر جاهز", statuses: ["awaiting_payment"] },
+  { label: "الدفع", statuses: ["payment_review", "paid"] },
+  { label: "التجهيز", statuses: ["awaiting_supplier_payout", "supplier_paid", "processing"] },
+  { label: "في الطريق", statuses: ["shipped"] },
+  { label: "وصلك", statuses: ["delivered"] },
+];
+
+/** Where the order is, at a glance (hidden for cancelled/refund paths). */
+export function OrderProgress({ status }: { status: string }) {
+  const current = STEPS.findIndex((s) => s.statuses.includes(status));
+  if (current < 0) return null;
+  return (
+    <ol className="flex items-start gap-1" aria-label="مراحل الطلب">
+      {STEPS.map((s, i) => {
+        const done = i < current || status === "delivered";
+        const now = i === current && status !== "delivered";
+        return (
+          <li key={s.label} className="flex flex-1 flex-col items-center gap-1.5 text-center" aria-current={now ? "step" : undefined}>
+            <span className="flex w-full items-center">
+              <span className={`h-0.5 flex-1 ${i === 0 ? "opacity-0" : i <= current ? "bg-ink" : "bg-line"}`} />
+              <span className={`flex size-7 shrink-0 items-center justify-center rounded-full text-[0.7rem] font-bold ${done ? "bg-ink text-ivory" : now ? "bg-ivory text-ink ring-2 ring-ink" : "bg-sand text-muted"}`}>
+                {done ? "✓" : i + 1}
+              </span>
+              <span className={`h-0.5 flex-1 ${i === STEPS.length - 1 ? "opacity-0" : i < current ? "bg-ink" : "bg-line"}`} />
+            </span>
+            <span className={`text-[0.66rem] leading-4 ${now ? "font-bold text-ink" : done ? "text-ink-soft" : "text-muted"}`}>{s.label}</span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -78,14 +113,15 @@ export function OrderDetailView({ order, actions }: { order: OrderDetail; action
         {order.is_test && <Badge tone="warning">طلب اختبار</Badge>}
       </div>
       <p className="-mt-6 text-sm text-muted">{formatDate(order.created_at)} · الدفع: {label(t.paymentStatus, order.payment_status)}</p>
+      <OrderProgress status={order.status} />
 
       {!approved && !["cancelled", "cancel_requested"].includes(order.status) && (
         <Notice>
-          <span className="flex gap-2"><Info className="mt-1 size-4 shrink-0" /> لا تحوّل أي مبلغ الآن. نتأكد من توفر المنتجات لدى المورد ثم نعتمد السعر النهائي ونعرض لك تعليمات الدفع هنا.</span>
+          <span className="flex gap-2"><Info className="mt-1 size-4 shrink-0" /> طلبك وصلنا ✨ نحجز منتجاتك ونثبّت السعر النهائي، ثم تصلك تعليمات الدفع هنا وبإشعار. لا حاجة لأي دفع الآن.</span>
         </Notice>
       )}
       {order.status === "payment_review" && (
-        <Notice>استلمنا إثبات التحويل. يُعتبر الطلب مدفوعًا فقط بعد تحققنا من وصول المبلغ فعليًا إلى الحساب.</Notice>
+        <Notice>استلمنا إيصالك، شكرًا لك! نتحقق من وصول المبلغ ونرسل لك التأكيد بإشعار.</Notice>
       )}
       {order.status === "cancelled" && order.cancel_reason && <p className="text-sm text-danger">سبب الإلغاء: {order.cancel_reason}</p>}
 
@@ -110,9 +146,9 @@ export function OrderDetailView({ order, actions }: { order: OrderDetail; action
         <dl className="ms-auto mt-4 max-w-sm space-y-1.5 text-sm">
           <Row k="المنتجات" v={formatMoney(order.subtotal, order.currency_code)} />
           {toMills(order.discount_total) > 0 && <Row k="الخصم" v={`− ${formatMoney(order.discount_total, order.currency_code)}`} />}
-          <Row k={approved ? "رسوم التوصيل" : "رسوم التوصيل (تقديرية)"} v={formatMoney(order.shipping_cost, order.currency_code)} />
+          <Row k={approved ? "رسوم التوصيل" : "رسوم التوصيل"} v={formatMoney(order.shipping_cost, order.currency_code)} />
           {toMills(order.fees_total) > 0 && <Row k={order.fees_label || "رسوم معلنة"} v={formatMoney(order.fees_total, order.currency_code)} />}
-          <Row k={approved ? "الإجمالي النهائي المعتمد" : "الإجمالي التقديري"} v={formatMoney(order.total, order.currency_code)} strong />
+          <Row k={approved ? "الإجمالي النهائي المعتمد" : "الإجمالي"} v={formatMoney(order.total, order.currency_code)} strong />
           {toMills(order.amount_collected) > 0 && <Row k="المبلغ المؤكد وصوله" v={formatMoney(order.amount_collected, order.currency_code)} />}
         </dl>
       </section>
@@ -190,7 +226,7 @@ export function OrderDetailView({ order, actions }: { order: OrderDetail; action
         {order.estimated_min_days != null && (
           <div className="rounded-[var(--radius-card)] border border-line bg-paper p-5">
             <h2 className="mb-2 font-bold">التوصيل المتوقع</h2>
-            <p>{order.estimated_min_days}–{order.estimated_max_days} يوم عمل بعد تأكيد الدفع (تقديري).</p>
+            <p>{order.estimated_min_days}–{order.estimated_max_days} يوم عمل تقريبًا بعد تأكيد الدفع.</p>
           </div>
         )}
       </section>

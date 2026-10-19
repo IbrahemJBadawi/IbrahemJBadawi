@@ -8,6 +8,8 @@ import { PushToggle } from "@/components/pwa/Engage";
 export async function NotificationsPage({ next }: { next: string }) {
   const user = await requireUser(next);
   const [items, prefs] = await Promise.all([listNotifications(user), notificationPrefs(user)]);
+  // The e-mail column appears once an e-mail provider is connected.
+  const emailOn = Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -22,7 +24,7 @@ export async function NotificationsPage({ next }: { next: string }) {
       <NotificationList items={items} />
       <section>
         <h2 className="mb-1 text-base font-bold">تفضيلات الإشعارات</h2>
-        <p className="mb-4 text-xs leading-6 text-muted">رسائل البريد تُرسل فقط بعد ربط مزود بريد إلكتروني بالمنصة؛ حتى ذلك الحين تبقى في الطابور.</p>
+        <p className="mb-4 text-xs leading-6 text-muted">اختر ما يصلك. تحديثات الطلبات تصلك دائمًا حتى لا يفوتك شيء.</p>
         <ActionForm action={savePreferencesAction} submitLabel="حفظ التفضيلات" className="space-y-3">
           <ul className="divide-y divide-line rounded-[var(--radius-card)] border border-line bg-paper">
             {prefs.map((p) => (
@@ -38,9 +40,13 @@ export async function NotificationsPage({ next }: { next: string }) {
                     داخل المنصة
                     {p.is_mandatory && <input type="hidden" name={`in_app:${p.kind}`} value="on" />}
                   </label>
-                  <label className="flex items-center gap-1.5">
-                    <input type="checkbox" name={`email:${p.kind}`} defaultChecked={p.email} className="accent-ink" /> بريد
-                  </label>
+                  {emailOn ? (
+                    <label className="flex items-center gap-1.5">
+                      <input type="checkbox" name={`email:${p.kind}`} defaultChecked={p.email} className="accent-ink" /> بريد
+                    </label>
+                  ) : (
+                    p.email && <input type="hidden" name={`email:${p.kind}`} value="on" />
+                  )}
                 </span>
               </li>
             ))}

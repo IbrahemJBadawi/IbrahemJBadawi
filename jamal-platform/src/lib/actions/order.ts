@@ -47,7 +47,7 @@ export async function uploadProofAction(_: FormState, form: FormData): Promise<F
     return handle(e);
   }
   refresh();
-  return { ok: true, message: "تم استلام الإثبات وهو قيد المراجعة. سنؤكد الدفع بعد التحقق من وصول المبلغ إلى الحساب." };
+  return { ok: true, message: "تم استلام الإيصال، شكرًا لك! نتحقق من التحويل ونرسل لك التأكيد بإشعار." };
 }
 
 export async function customerCancelAction(_: FormState, form: FormData): Promise<FormState> {

@@ -80,7 +80,7 @@ export function CartView() {
           <span className="text-muted">المجموع الفرعي</span>
           {loading || !quote ? <Skeleton className="h-4 w-20" /> : <strong>{quote.currency ? formatMoney(quote.subtotal, quote.currency) : "—"}</strong>}
         </div>
-        <p className="text-xs leading-6 text-muted">تُحسب تكلفة الشحن وطرق الطلب المتاحة حسب الدولة في الخطوة التالية.</p>
+        <p className="text-xs leading-6 text-muted">التوصيل لكل محافظات الضفة وغزة، ورسومه تظهر في الخطوة التالية. لا دفع الآن.</p>
         <Link
           href="/checkout"
           aria-disabled={loading || hasProblems || !quote?.currency}

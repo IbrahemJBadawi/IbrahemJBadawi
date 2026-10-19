@@ -1,5 +1,6 @@
 import "server-only";
-import { after, connection } from "next/server";
+import { connection } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import { withContext, type DbContext, type Tx } from "./core";
 import { drainPushOutbox, hasQueuedPush } from "@/lib/push/server";
 
@@ -12,14 +13,9 @@ export type { Tx } from "./core";
 async function run<T>(ctx: DbContext, fn: (tx: Tx) => Promise<T>) {
   await connection();
   const result = await withContext(ctx, fn);
-  // Writes can create notifications (DB triggers): send pushes after the response.
-  if (ctx.role !== "anon") {
-    try {
-      after(sendQueuedPush);
-    } catch {
-      // Outside a request (scripts): the cron endpoint drains instead.
-    }
-  }
+  // Writes can create notifications (DB triggers): send pushes in the background.
+  // (Next's after() breaks refresh() in server actions, so the platform's waitUntil is used.)
+  if (ctx.role !== "anon") waitUntil(sendQueuedPush());
   return result;
 }
 

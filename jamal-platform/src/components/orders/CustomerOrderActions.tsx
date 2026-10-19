@@ -50,7 +50,7 @@ export function CustomerOrderActions({ order, token, phone }: { order: OrderDeta
       {canUpload && (
         <section>
           <h2 className="mb-1 text-base font-bold">رفع إثبات التحويل</h2>
-          <p className="mb-4 text-xs leading-6 text-muted">بعد التحويل ارفع صورة الإيصال أو اكتب رقم مرجع الحوالة. رفع الإثبات لا يعني تأكيد الدفع؛ نؤكده بعد التحقق من وصول المبلغ.</p>
+          <p className="mb-4 text-xs leading-6 text-muted">بعد التحويل ارفع صورة الإيصال أو اكتب رقم الحوالة، ونرسل لك تأكيد استلام المبلغ بإشعار.</p>
           <ActionForm action={uploadProofAction} submitLabel="إرسال الإثبات" pendingLabel="جارٍ الرفع…" resetOnSuccess className="space-y-4">
             <Access order={order} token={token} phone={phone} />
             <div className="grid gap-4 sm:grid-cols-2">
@@ -69,18 +69,19 @@ export function CustomerOrderActions({ order, token, phone }: { order: OrderDeta
         </section>
       )}
       {(freeCancel || requestCancel) && (
-        <section>
+        <details className="group rounded-[var(--radius-card)] border border-line bg-paper px-4 py-3">
+          <summary className="cursor-pointer list-none text-sm text-muted group-open:mb-3">تحتاج إلى إلغاء الطلب؟</summary>
           <h2 className="mb-1 text-base font-bold">{freeCancel && toMills(order.amount_collected) === 0 ? "إلغاء الطلب" : "طلب إلغاء"}</h2>
           <p className="mb-3 text-xs leading-6 text-muted">
             {freeCancel && toMills(order.amount_collected) === 0
-              ? "يمكنك الإلغاء مباشرة لأنك لم تدفع بعد. إذا كنت قد حوّلت مبلغًا ولم نؤكده بعد، سيُرسل كطلب إلغاء للمراجعة."
+              ? "يمكنك الإلغاء بضغطة لأنك لم تدفع بعد. وإن كنت حوّلت مبلغًا، نراجع طلبك ونعيده لك."
               : "سنراجع طلب الإلغاء وفق سياسة الإرجاع. أي استرداد يُسجّل كمعلّق حتى تنفيذه فعليًا."}
           </p>
           <ActionForm action={customerCancelAction} submitLabel={freeCancel ? "إلغاء الطلب" : "إرسال طلب الإلغاء"} variant="outline" confirm="هل تريد المتابعة في إلغاء الطلب؟" className="space-y-3">
             <Access order={order} token={token} phone={phone} />
             <Field label="السبب (اختياري)"><Input name="reason" maxLength={500} /></Field>
           </ActionForm>
-        </section>
+        </details>
       )}
       {order.status === "delivered" && !openReturn && (
         <section>
