@@ -4,12 +4,15 @@ import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { InstallBanner } from "@/components/pwa/InstallApp";
 import { hasDemoProducts } from "@/lib/data/catalog";
+import { isDemoRuntime } from "@/lib/db/core";
 
 async function DemoBanner() {
   if (!(await hasDemoProducts())) return null;
   return (
     <div className="border-b border-warning/20 bg-warning/5 px-4 py-2 text-center text-xs leading-6 text-warning">
-      يعرض المتجر حاليًا منتجات تجريبية لأغراض الاختبار فقط — ليست معروضة للبيع، والطلبات عليها تُسجّل كطلبات اختبار.
+      {isDemoRuntime()
+        ? "نسخة عرض تجريبية: المنتجات للعرض فقط، لا تحوّل أي مبلغ، والبيانات تُمسح تلقائيًا."
+        : "منتجات تجريبية للاختبار فقط — ليست للبيع، والطلبات عليها طلبات اختبار."}
     </div>
   );
 }

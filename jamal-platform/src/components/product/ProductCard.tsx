@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpLeft } from "lucide-react";
+import { ShoppingBag } from "lucide-react";
 import type { ProductCard as Card } from "@/lib/data/catalog";
 import { Price } from "./Price";
 import { ProductImage } from "./ProductImage";
@@ -26,8 +26,8 @@ export function ProductCard({ product, priority = false }: { product: Card; prio
             )}
           </div>
           {!unavailable && (
-            <span className="absolute bottom-2.5 end-2.5 flex size-9 items-center justify-center rounded-full bg-ink text-ivory shadow-sm transition-transform group-hover:scale-110" aria-hidden>
-              <ArrowUpLeft className="size-4" />
+            <span className="absolute bottom-2.5 end-2.5 flex size-10 items-center justify-center rounded-full bg-paper/95 text-ink shadow-md ring-1 ring-ink/5 transition-colors group-hover:bg-ink group-hover:text-ivory" aria-hidden>
+              <ShoppingBag className="size-4" />
             </span>
           )}
           {unavailable && (

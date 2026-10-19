@@ -3,6 +3,10 @@
  * Node scripts). Two drivers behind one tiny interface:
  *   - DATABASE_URL set   → postgres.js (Supabase Postgres or any Postgres)
  *   - DATABASE_URL unset → PGlite (embedded Postgres, stored in .data/pglite)
+ *
+ * Demo runtime: on Vercel without DATABASE_URL the filesystem is read-only, so
+ * PGlite runs in memory and is filled with the marked demo catalog on every
+ * cold start. Nothing persists there — it is a showcase, not a store.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -28,6 +32,10 @@ export type DbContext =
 
 type GlobalWithDb = typeof globalThis & { __jamalDb?: Promise<Database> };
 
+export function isDemoRuntime() {
+  return !process.env.DATABASE_URL && (process.env.JAMAL_DEMO === "1" || Boolean(process.env.VERCEL));
+}
+
 export function projectRoot() {
   return process.env.JAMAL_ROOT || process.cwd();
 }
@@ -35,7 +43,7 @@ export function projectRoot() {
 async function createPglite(): Promise<Database> {
   const { PGlite } = await import("@electric-sql/pglite");
   const dataDir =
-    process.env.PGLITE_DATA_DIR || path.join(projectRoot(), ".data", "pglite");
+    process.env.PGLITE_DATA_DIR || (isDemoRuntime() ? "memory://" : path.join(projectRoot(), ".data", "pglite"));
   if (dataDir !== "memory://") fs.mkdirSync(dataDir, { recursive: true });
   const pg = new PGlite(dataDir === "memory://" ? undefined : dataDir);
   await pg.waitReady;
@@ -63,7 +71,46 @@ async function createPglite(): Promise<Database> {
     close: () => pg.close(),
   };
   await runMigrations(db);
+  if (isDemoRuntime()) await bootstrapDemo(db);
   return db;
+}
+
+/**
+ * Optional first-run bank details from the environment (BANK_*), written only
+ * while the admin hasn't entered any yet; afterwards the admin settings win.
+ * Never used by demo deployments, so real account details never sit next to
+ * demo products.
+ */
+async function applyEnvPaymentDefaults(db: Database) {
+  const details = process.env.BANK_TRANSFER_DETAILS?.trim();
+  if (!details) return;
+  await db.transaction((tx) =>
+    tx.query(
+      `update public.payment_settings set bank_transfer_enabled = true, beneficiary_name = $1, bank_name = $2,
+         transfer_details = $3, instructions = coalesce($4, instructions)
+       where id = 1 and beneficiary_name is null and transfer_details is null`,
+      [process.env.BANK_BENEFICIARY_NAME?.trim() || null, process.env.BANK_NAME?.trim() || null, details, process.env.BANK_INSTRUCTIONS?.trim() || null],
+    ),
+  );
+}
+
+async function bootstrapDemo(db: Database) {
+  const { seedDemo } = await import("../demo/seed");
+  await db.transaction(async (tx) => {
+    await seedDemo(tx);
+    // Optional demo admin, only when the deployer sets a password in the environment.
+    const pw = process.env.DEMO_ADMIN_PASSWORD;
+    if (pw && pw.length >= 10) {
+      const bcrypt = (await import("bcryptjs")).default;
+      const [u] = await tx.query<{ id: string }>(
+        `insert into auth.users (email, encrypted_password, raw_user_meta_data)
+         values ('admin@jamal.demo', $1, '{"full_name":"مدير تجريبي"}'::jsonb)
+         on conflict (email) do update set encrypted_password = excluded.encrypted_password returning id`,
+        [await bcrypt.hash(pw, 10)],
+      );
+      await tx.query("update public.profiles set role = 'admin' where id = $1", [u.id]);
+    }
+  });
 }
 
 async function createPostgres(url: string): Promise<Database> {
@@ -99,7 +146,10 @@ export function getDatabase(): Promise<Database> {
   const g = globalThis as GlobalWithDb;
   if (!g.__jamalDb) {
     const url = process.env.DATABASE_URL;
-    g.__jamalDb = url ? createPostgres(url) : createPglite();
+    g.__jamalDb = (url ? createPostgres(url) : createPglite()).then(async (db) => {
+      if (!isDemoRuntime()) await applyEnvPaymentDefaults(db);
+      return db;
+    });
     g.__jamalDb.catch(() => {
       g.__jamalDb = undefined;
     });

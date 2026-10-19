@@ -2,6 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getStoreSettings } from "@/lib/data/catalog";
 import { Monogram } from "@/components/ui/Logo";
+import { assistantAvailable } from "@/lib/ai/availability";
+
+async function AssistantLink() {
+  if (!(await assistantAvailable())) return null;
+  return <li><Link className="hover:text-ivory" href="/assistant">مساعد التسوق الذكي</Link></li>;
+}
 
 async function Contact() {
   const s = await getStoreSettings();
@@ -48,7 +54,7 @@ export function Footer() {
           <h2 className="mb-4 text-sm font-bold">المساعدة والسياسات</h2>
           <ul className={col}>
             <li><Link className="hover:text-ivory" href="/support">الدعم وتذاكر خدمة العملاء</Link></li>
-            <li><Link className="hover:text-ivory" href="/assistant">مساعد التسوق الذكي</Link></li>
+            <Suspense fallback={null}><AssistantLink /></Suspense>
             <li><Link className="hover:text-ivory" href="/faq">الأسئلة الشائعة</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/shipping">سياسة التوصيل</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/returns">الاستبدال والإرجاع</Link></li>

@@ -4,8 +4,9 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { asSystem, asUser } from "@/lib/db";
-import { assistantConfigured, runAssistant, type ChatTurn } from "@/lib/ai/assistant";
-import { aiEnabled, appendExchange, createThread, ownsThread, recordCall, threadMessages, usedLast24h } from "@/lib/ai/store";
+import { runAssistant, type ChatTurn } from "@/lib/ai/assistant";
+import { assistantAvailable } from "@/lib/ai/availability";
+import { appendExchange, createThread, ownsThread, recordCall, threadMessages, usedLast24h } from "@/lib/ai/store";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export type AssistantReply = { ok: true; reply: string; threadId: string | null } | { ok: false; error: string };
@@ -23,7 +24,7 @@ const limitFor = (user: boolean) =>
 export async function askAssistantAction(raw: unknown): Promise<AssistantReply> {
   const p = input.safeParse(raw);
   if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "طلب غير صالح" };
-  if (!assistantConfigured() || !(await asSystem(aiEnabled))) return { ok: false, error: "المساعد الذكي غير مفعّل حاليًا." };
+  if (!(await assistantAvailable())) return { ok: false, error: "المساعد الذكي غير مفعّل حاليًا." };
   if (!(await rateLimit("ai", 8, 60_000))) return { ok: false, error: "رسائل كثيرة خلال دقيقة. انتظر قليلًا." };
 
   const user = await getCurrentUser();

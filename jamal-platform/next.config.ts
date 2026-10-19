@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
   },
   // PGlite ships WASM + data files and must not be bundled.
   serverExternalPackages: ["@electric-sql/pglite"],
+  // Migrations are read at runtime (demo deployments build their database on start).
+  outputFileTracingIncludes: {
+    "/**": ["./supabase/migrations/*.sql", "./db/local/*.sql", "./node_modules/@electric-sql/pglite/dist/**"],
+  },
   images: {
     // Product images can come from any host the admin adds (supplier CDN,
     // Supabase Storage…). Unoptimized avoids paid image-optimization quotas

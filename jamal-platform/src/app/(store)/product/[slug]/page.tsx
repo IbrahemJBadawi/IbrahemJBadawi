@@ -127,11 +127,12 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
           </div>
           <h1 className="mt-3 text-2xl font-bold leading-[1.5] md:text-3xl">{p.name_ar}</h1>
           {p.name_en && <p className="mt-1 text-sm text-muted" dir="ltr">{p.name_en}</p>}
-          <div className="mt-5">
+          <div className="mt-5 mb-8 md:mb-0">
             <Price price={p.price} salePrice={p.sale_price} currency={p.currency_code} size="lg" />
           </div>
-          <div className="mt-8 flex items-start gap-3">
-            <div className="flex-1">
+          {/* On phones these wrappers dissolve so the add-to-cart bar can stay in view while scrolling. */}
+          <div className="max-md:contents md:mt-8 md:flex md:items-start md:gap-3">
+            <div className="max-md:contents md:flex-1">
               <AddToCart productId={p.id} variants={p.variants} available={available} currency={p.currency_code} />
             </div>
           </div>

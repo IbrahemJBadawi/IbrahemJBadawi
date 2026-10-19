@@ -5,6 +5,7 @@ import { getCategories, getStoreSettings } from "@/lib/data/catalog";
 import { Logo } from "@/components/ui/Logo";
 import { CartButton } from "@/components/cart/CartButton";
 import { MobileMenu } from "./MobileMenu";
+import { assistantAvailable } from "@/lib/ai/availability";
 import { NotificationBell } from "@/components/notifications/Bell";
 
 async function Announcement() {
@@ -34,8 +35,8 @@ async function CategoryNav() {
 }
 
 async function MobileMenuLoader() {
-  const categories = await getCategories();
-  return <MobileMenu categories={categories.map((c) => ({ slug: c.slug, name: c.name_ar }))} />;
+  const [categories, assistant] = await Promise.all([getCategories(), assistantAvailable()]);
+  return <MobileMenu categories={categories.map((c) => ({ slug: c.slug, name: c.name_ar }))} assistant={assistant} />;
 }
 
 const iconLink = "inline-flex size-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-sand";

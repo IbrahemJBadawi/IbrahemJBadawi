@@ -153,7 +153,7 @@ describe("AI assistant storage", () => {
   it("threads are private to their owner and the daily quota counts per person or guest key", async () => {
     const thread = await as(customer, async (tx) => {
       const id = await createThread(tx, customer, "سؤال عن عباية");
-      await appendExchange(tx, id, "عندكم عبايات؟", "نعم، هذه بعض الخيارات…", "claude-opus-5-5");
+      await appendExchange(tx, id, "عندكم عبايات؟", "نعم، هذه بعض الخيارات…", "gemini-2.5-flash");
       return id;
     });
     const msgs = await as(customer, (tx) => threadMessages(tx, thread));
@@ -163,9 +163,9 @@ describe("AI assistant storage", () => {
     await expect(as(other, (tx) => createThread(tx, customer, "انتحال"))).rejects.toThrow();
 
     await sys(async (tx) => {
-      await recordCall(tx, { userId: customer, clientKey: "k1", model: "claude-opus-5-5", inputTokens: 100, outputTokens: 50 });
-      await recordCall(tx, { userId: null, clientKey: "guest-a", model: "claude-opus-5-5", inputTokens: 10, outputTokens: 5 });
-      await recordCall(tx, { userId: null, clientKey: "guest-a", model: "claude-opus-5-5", inputTokens: 10, outputTokens: 5 });
+      await recordCall(tx, { userId: customer, clientKey: "k1", model: "gemini-2.5-flash", inputTokens: 100, outputTokens: 50 });
+      await recordCall(tx, { userId: null, clientKey: "guest-a", model: "gemini-2.5-flash", inputTokens: 10, outputTokens: 5 });
+      await recordCall(tx, { userId: null, clientKey: "guest-a", model: "gemini-2.5-flash", inputTokens: 10, outputTokens: 5 });
       expect(await usedLast24h(tx, { userId: customer, clientKey: "ignored" })).toBe(1);
       expect(await usedLast24h(tx, { userId: null, clientKey: "guest-a" })).toBe(2);
       expect(await usedLast24h(tx, { userId: null, clientKey: "guest-b" })).toBe(0);

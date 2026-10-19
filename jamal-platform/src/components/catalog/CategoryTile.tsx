@@ -21,3 +21,21 @@ export function CategoryTile({ slug, name, count, image }: { slug: string; name:
     </Link>
   );
 }
+
+/** Round category shortcut for phones (horizontal row). */
+export function CategoryCircle({ slug, name, image }: { slug: string; name: string; image?: string | null }) {
+  return (
+    <Link href={`/category/${slug}`} className="group flex w-20 flex-col items-center gap-2 text-center">
+      <span className="relative block size-20 overflow-hidden rounded-full bg-sand ring-1 ring-line transition-shadow group-hover:ring-2 group-hover:ring-ink">
+        {image ? (
+          <Image src={image} alt="" fill sizes="80px" className="object-cover" />
+        ) : (
+          <svg viewBox="0 0 200 260" className="absolute inset-0 m-auto h-[72%] w-[72%] text-beige-deep" aria-hidden>
+            <path d={artFor(slug)} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      <span className="line-clamp-2 text-xs font-semibold leading-5 text-ink-soft">{name}</span>
+    </Link>
+  );
+}

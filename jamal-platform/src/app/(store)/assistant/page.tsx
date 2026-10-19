@@ -1,25 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
-import { asSystem, asUser } from "@/lib/db";
-import { assistantConfigured } from "@/lib/ai/assistant";
-import { aiEnabled, latestThread, threadMessages } from "@/lib/ai/store";
+import { asUser } from "@/lib/db";
+import { assistantAvailable } from "@/lib/ai/availability";
+import { latestThread, threadMessages } from "@/lib/ai/store";
 import { AssistantChat } from "@/components/assistant/AssistantChat";
-import { Notice, PageHeader, Skeleton } from "@/components/ui/States";
+import { PageHeader, Skeleton } from "@/components/ui/States";
 
 export const metadata: Metadata = { title: "مساعد التسوق", robots: { index: false } };
 
 async function Content() {
-  const enabled = assistantConfigured() && (await asSystem(aiEnabled));
-  if (!enabled) {
-    return (
-      <Notice tone="info">
-        مساعد التسوق الذكي غير متاح حاليًا. يمكنك <Link href="/products" className="underline">تصفح المنتجات</Link> أو{" "}
-        <Link href="/support" className="underline">التواصل مع الدعم</Link>.
-      </Notice>
-    );
-  }
+  // Hidden entirely until a Gemini key is configured.
+  if (!(await assistantAvailable())) notFound();
   const user = await getCurrentUser();
   const { threadId, messages } = user
     ? await asUser(user, async (tx) => {

@@ -45,7 +45,7 @@ export default async function AdminSettings() {
             <legend className="px-1 text-sm font-bold">المساعد الذكي</legend>
             <Checkbox name="ai_assistant_enabled" defaultChecked={!!s.ai_assistant_enabled} label="تفعيل مساعد التسوق الذكي للعملاء" />
             <p className="text-xs leading-6 text-muted">
-              يتطلب مفتاح ANTHROPIC_API_KEY في إعدادات الخادم ({process.env.ANTHROPIC_API_KEY ? "موجود" : "غير موجود — المساعد سيظهر كغير متاح"}). الاستخدام مدفوع حسب عدد الرسائل، مع حد يومي لكل مستخدم.
+              يتطلب مفتاح GEMINI_API_KEY في إعدادات الخادم ({process.env.GEMINI_API_KEY ? "موجود" : "غير موجود — المساعد مخفي عن العملاء"}). خطة Gemini المجانية لها حد يومي من Google، وهنا أيضًا حد يومي لكل مستخدم.
             </p>
           </fieldset>
           <fieldset className="space-y-2 rounded-md border border-line p-4">

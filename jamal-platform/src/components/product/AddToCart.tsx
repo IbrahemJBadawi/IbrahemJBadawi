@@ -53,7 +53,7 @@ export function AddToCart({
     } ${disabled ? "text-muted line-through opacity-60" : ""}`;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-md:contents">
       {colors.length > 0 && (
         <fieldset>
           <legend className="mb-3 text-sm font-bold">
@@ -89,8 +89,8 @@ export function AddToCart({
       {match?.price_override && (
         <p className="text-sm text-muted">سعر هذا الخيار: <strong className="text-ink">{formatMoney(match.price_override, currency)}</strong></p>
       )}
-      <div className="flex items-stretch gap-3">
-        <div className="flex items-center rounded-[var(--radius-card)] border border-line bg-paper">
+      <div className="z-30 flex items-stretch gap-3 max-md:sticky max-md:bottom-[calc(5.5rem+env(safe-area-inset-bottom))] max-md:-mx-2 max-md:rounded-full max-md:bg-ivory/90 max-md:p-2 max-md:shadow-[0_8px_24px_-12px_rgba(29,27,24,0.35)] max-md:backdrop-blur">
+        <div className="flex items-center rounded-full border border-line bg-paper">
           <button type="button" className="flex size-11 items-center justify-center disabled:opacity-40" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label="إنقاص الكمية">
             <Minus className="size-4" />
           </button>

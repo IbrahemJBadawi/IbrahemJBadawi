@@ -259,10 +259,11 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     await guest.close();
   });
 
-  test("assistant is honest when not configured; the store installs as an app", async ({ page, request }) => {
-    await page.goto("/assistant");
-    await expect(page.getByText(/غير متاح حاليًا/)).toBeVisible();
-    await noHorizontalOverflow(page);
+  test("assistant stays hidden without a Gemini key; the store installs as an app", async ({ page, request }) => {
+    expect((await request.get("/assistant")).status()).toBe(404);
+    await page.goto("/");
+    await page.getByRole("button", { name: "فتح القائمة" }).click();
+    await expect(page.getByRole("dialog").getByRole("link", { name: "مساعد التسوق الذكي" })).toHaveCount(0);
     const manifest = await (await request.get("/manifest.webmanifest")).json();
     expect(manifest).toMatchObject({ dir: "rtl", lang: "ar", display: "standalone" });
     const sw = await request.get("/sw.js");
