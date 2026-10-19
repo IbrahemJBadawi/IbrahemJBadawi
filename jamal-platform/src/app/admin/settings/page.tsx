@@ -81,7 +81,7 @@ export default async function AdminSettings() {
       <Card title="حالة التكاملات">
         <ul className="space-y-1 text-sm">
           <li>المصادقة: <strong>{authProvider() === "supabase" ? "Supabase Auth" : "محلية (بريد + كلمة مرور)"}</strong></li>
-          <li>قاعدة البيانات: <strong>{process.env.DATABASE_URL ? "Postgres خارجي (DATABASE_URL)" : "PGlite محلية — للتطوير فقط"}</strong></li>
+          <li>قاعدة البيانات: <strong>{process.env.DATABASE_URL || process.env.POSTGRES_URL ? "Postgres خارجي (دائم)" : "مؤقتة — نسخة عرض/تطوير، لا تُحفظ البيانات"}</strong></li>
           <li>تخزين الصور: <strong>{storageMode() === "supabase" ? "Supabase Storage" : "مجلد محلي .data/uploads — للتطوير فقط"}</strong></li>
           <li>الدفع: <strong>تحويل بنكي يُتحقق منه يدويًا</strong> — لا بوابة دفع ولا ربط مصرفي.</li>
           <li>التكامل مع الموردين وشركات التوصيل: <strong>غير موجود (يدوي)</strong></li>
