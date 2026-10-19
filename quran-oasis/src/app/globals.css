@@ -24,6 +24,14 @@
   --danger: #a33a2a;
   --success: #3f6b48;
   --quran-scale: 1;
+  /* درجات ناعمة لبطاقات الوصول السريع */
+  --tint-sand: #f6ecd8;
+  --tint-sage: #e6ede0;
+  --tint-mint: #dfeee7;
+  --tint-apricot: #f9e5d3;
+  --tint-sky: #e1ebf0;
+  --tint-rose: #f5e1e1;
+  --shadow-soft: 0 1px 2px rgb(35 67 52 / 0.04), 0 8px 24px -12px rgb(35 67 52 / 0.18);
   color-scheme: light;
 }
 
@@ -42,6 +50,13 @@
   --gold-fg: #d9c08a;
   --danger: #e08a7a;
   --success: #8fc19a;
+  --tint-sand: #2c281c;
+  --tint-sage: #1f2d24;
+  --tint-mint: #1b2f28;
+  --tint-apricot: #30251c;
+  --tint-sky: #1c2a30;
+  --tint-rose: #2f2224;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px -12px rgb(0 0 0 / 0.5);
   color-scheme: dark;
 }
 
@@ -68,6 +83,13 @@
   --font-quran: var(--font-amiri-quran), "Amiri Quran", "Scheherazade New", serif;
   --font-naskh: var(--font-amiri), "Amiri", "Noto Naskh Arabic", serif;
   --radius-card: 1.25rem;
+  --color-tint-sand: var(--tint-sand);
+  --color-tint-sage: var(--tint-sage);
+  --color-tint-mint: var(--tint-mint);
+  --color-tint-apricot: var(--tint-apricot);
+  --color-tint-sky: var(--tint-sky);
+  --color-tint-rose: var(--tint-rose);
+  --shadow-soft: var(--shadow-soft);
 }
 
 html {
@@ -160,4 +182,52 @@ dialog::backdrop {
 .ring-value {
   stroke: var(--accent);
   transition: stroke-dashoffset 0.5s ease;
+}
+
+/* بطاقة البطل الدافئة: أخضر عميق مع توهج ذهبي هادئ */
+.hero-gradient {
+  background:
+    radial-gradient(120% 90% at 85% 0%, rgb(196 166 106 / 0.45), transparent 55%),
+    radial-gradient(90% 80% at 0% 100%, rgb(113 134 106 / 0.55), transparent 60%),
+    linear-gradient(160deg, #2b5040 0%, #234334 55%, #1b3529 100%);
+  color: #f8f6ef;
+}
+
+.hero-sunrise {
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgb(196 166 106 / 0.55), transparent 65%),
+    linear-gradient(180deg, #f7ecd6 0%, #f8f6ef 70%);
+}
+.dark .hero-sunrise {
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgb(196 166 106 / 0.25), transparent 65%),
+    linear-gradient(180deg, #23291f 0%, #0f1914 70%);
+}
+
+.card-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.animate-pop {
+  animation: pop 0.25s ease-out;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
+
+.hero-gradient .ring-track {
+  stroke: rgb(255 255 255 / 0.14);
+}
+.hero-gradient .ring-value {
+  stroke: var(--gold);
 }

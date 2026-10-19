@@ -32,6 +32,8 @@ export function emptyState(): UserState {
     journal: {},
     oasisFavorites: {},
     oasisSeen: {},
+    tasbih: {},
+    prayerLog: {},
   };
 }
 
@@ -65,5 +67,7 @@ export function hydrate(raw: unknown): UserState {
     journal: isObj(r.journal) ? r.journal : {},
     oasisFavorites: isObj(r.oasisFavorites) ? r.oasisFavorites : {},
     oasisSeen: isObj(r.oasisSeen) ? r.oasisSeen : {},
+    tasbih: isObj(r.tasbih) ? r.tasbih : {},
+    prayerLog: isObj(r.prayerLog) ? r.prayerLog : {},
   };
 }

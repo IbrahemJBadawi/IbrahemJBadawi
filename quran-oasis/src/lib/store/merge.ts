@@ -51,6 +51,8 @@ export function mergeSlice<K extends SyncSlice>(slice: K, a: UserState[K], b: Us
       return mergeReading(a as UserState["readingLog"], b as UserState["readingLog"]) as UserState[K];
     case "adhkarLog":
       return mergeNested(a as UserState["adhkarLog"], b as UserState["adhkarLog"]) as UserState[K];
+    case "tasbih":
+    case "prayerLog":
     case "taskLog":
       return mergeNested(a as UserState["taskLog"], b as UserState["taskLog"]) as UserState[K];
     case "oasisSeen":

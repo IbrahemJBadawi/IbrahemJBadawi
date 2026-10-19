@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ToastProvider } from "@/components/ui/Toast";
 import { useStore } from "@/lib/store/store";
 import { reportError } from "@/lib/errors";
+import { startLocalPersistence } from "@/lib/store/persist";
 import { ReminderWatcher } from "./ReminderWatcher";
 
 function ThemeController() {
@@ -29,6 +30,13 @@ function ThemeController() {
   useEffect(() => {
     document.documentElement.style.setProperty("--quran-scale", String(scale));
   }, [scale]);
+  return null;
+}
+
+function LocalPersistence() {
+  useEffect(() => {
+    void startLocalPersistence();
+  }, []);
   return null;
 }
 
@@ -59,6 +67,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <ToastProvider>
       <AuthProvider>
         <ThemeController />
+        <LocalPersistence />
         <ServiceWorker />
         <ErrorReporter />
         <ReminderWatcher />

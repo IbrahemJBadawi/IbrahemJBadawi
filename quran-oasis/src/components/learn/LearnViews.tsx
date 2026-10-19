@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Check, ChevronLeft, Clock, Target } from "lucide-react";
+import { ArrowRight, Check, Clock, Target } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import type { LearningPath } from "@/content/learning";
@@ -97,28 +97,63 @@ export function PathDetail({ path }: { path: LearningPath }) {
           </ButtonLink>
         )}
       </header>
-      <ol className="space-y-3">
+      <ol className="relative mx-auto max-w-sm py-2" aria-label="مسار الدروس">
         {path.lessons.map((l, i) => {
           const complete = isDone(path.id, l.id);
+          const current = !complete && nextLesson?.id === l.id;
+          // تعرّج المسار: يمين، وسط، يسار، وسط…
+          const offset = [0, -1, 0, 1][i % 4] * 28;
           return (
-            <li key={l.id}>
-              <Link href={`/learn/${path.id}/${l.id}`} className="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 hover:border-accent focus-ring">
-                <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-full font-bold", complete ? "bg-success text-white" : "bg-surface-2")}>
-                  {complete ? <Check className="h-5 w-5" aria-label="مكتمل" /> : toArabicDigits(i + 1)}
+            <li key={l.id} className="relative flex flex-col items-center pb-10 last:pb-0" style={{ transform: `translateX(${offset}%)` }}>
+              {i < path.lessons.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute top-20 h-12 w-0 border-r-[3px] border-dotted border-line"
+                  style={{ transform: `rotate(${([0, -1, 0, 1][(i + 1) % 4] - [0, -1, 0, 1][i % 4]) * -24}deg)`, transformOrigin: "top" }}
+                />
+              )}
+              <Link
+                href={`/learn/${path.id}/${l.id}`}
+                className="group flex flex-col items-center text-center focus-ring rounded-3xl"
+                aria-label={`الدرس ${i + 1}: ${l.title}${complete ? " — مكتمل" : current ? " — التالي" : ""}`}
+              >
+                <span className="relative">
+                  {current && <span className="absolute inset-0 animate-ping rounded-[1.6rem] bg-primary/20" aria-hidden="true" />}
+                  <span
+                    className={cn(
+                      "card-soft relative grid h-20 w-20 rotate-45 place-items-center rounded-[1.6rem] border-4 transition-transform group-hover:scale-105",
+                      complete ? "border-[#5d8a54] bg-[#7da672]" : current ? "border-primary bg-accent" : "border-line bg-surface-2",
+                    )}
+                  >
+                    <span className="-rotate-45">
+                      {complete ? (
+                        <Check className="h-8 w-8 text-white" aria-hidden="true" />
+                      ) : (
+                        <span className={cn("text-2xl font-bold", current ? "text-white" : "text-muted")}>{toArabicDigits(i + 1)}</span>
+                      )}
+                    </span>
+                  </span>
+                  {complete && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-sm text-gold" aria-hidden="true">
+                      ★★★
+                    </span>
+                  )}
                 </span>
-                <span className="flex-1">
-                  <span className="block font-bold">{l.title}</span>
-                  <span className="block text-sm text-muted">{l.summary}</span>
+                <span className={cn("mt-4 max-w-[12rem] font-bold leading-snug", current ? "text-primary" : "text-fg")}>{l.title}</span>
+                <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
+                  <Clock className="h-3 w-3" aria-hidden="true" />
+                  {toArabicDigits(l.minutes)} دقائق
                 </span>
-                <span className="hidden items-center gap-1 text-xs text-muted sm:flex">
-                  <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                  {toArabicDigits(l.minutes)} د
-                </span>
-                <ChevronLeft className="h-5 w-5 text-muted" aria-hidden="true" />
               </Link>
             </li>
           );
         })}
+        <li className="flex flex-col items-center pt-6" aria-label="نهاية المسار">
+          <span className={cn("grid h-16 w-16 place-items-center rounded-full text-2xl", done === path.lessons.length ? "bg-gold-soft" : "bg-surface-2 grayscale")} aria-hidden="true">
+            🏅
+          </span>
+          <span className="mt-2 text-sm font-semibold text-muted">{done === path.lessons.length ? "أتممتَ المسار" : "إتمام المسار"}</span>
+        </li>
       </ol>
     </div>
   );

@@ -8,7 +8,7 @@ import { Logo } from "@/components/Logo";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { cn } from "@/components/ui/cn";
 import { useStore } from "@/lib/store/store";
-import { ADMIN_NAV, isActive, PRIMARY_NAV, SECONDARY_NAV } from "./nav";
+import { ADMIN_NAV, DESKTOP_EXTRA, isActive, PRIMARY_NAV, SECONDARY_NAV } from "./nav";
 import { OfflineBanner } from "./OnlineStatus";
 
 function AccountButton() {
@@ -35,7 +35,7 @@ export function AppHeader() {
   const isReader = /^\/quran\/\d+/.test(pathname);
   const staff = profile?.role === "admin" || profile?.role === "editor";
   if (focus && isReader) return null;
-  const desktopNav = [...PRIMARY_NAV, ...SECONDARY_NAV.slice(0, 3)];
+  const desktopNav = [...PRIMARY_NAV, ...DESKTOP_EXTRA];
   return (
     <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
       <OfflineBanner />
@@ -50,7 +50,7 @@ export function AppHeader() {
               href={item.href}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
               className={cn(
-                "rounded-full px-3.5 py-2 text-[15px] font-semibold transition-colors focus-ring",
+                "rounded-full px-3 py-2 text-[14px] font-semibold transition-colors focus-ring",
                 isActive(pathname, item.href) ? "bg-accent-soft text-fg" : "text-muted hover:text-fg",
               )}
             >
@@ -60,7 +60,7 @@ export function AppHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-1 lg:flex">
-            {[...SECONDARY_NAV.slice(3), ...(staff ? [ADMIN_NAV] : [])].map((item) => (
+            {[...SECONDARY_NAV.filter((i) => ["/stats", "/saved", "/profile", "/tasbih", "/qibla"].includes(i.href)), ...(staff ? [ADMIN_NAV] : [])].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -110,7 +110,7 @@ export function BottomNav() {
       <div
         id="more-menu"
         className={cn(
-          "fixed inset-x-3 bottom-[4.75rem] z-50 rounded-3xl border border-line bg-surface p-3 shadow-xl transition-all lg:hidden",
+          "fixed inset-x-3 bottom-[5.5rem] z-50 rounded-3xl border border-line bg-surface p-3 shadow-xl transition-all lg:hidden",
           open ? "visible translate-y-0 opacity-100" : "invisible translate-y-4 opacity-0",
         )}
       >
@@ -133,9 +133,9 @@ export function BottomNav() {
       </div>
       <nav
         aria-label="التنقل السفلي"
-        className="safe-bottom fixed inset-x-0 bottom-0 z-50 border-t border-line bg-surface/95 backdrop-blur lg:hidden"
+        className="safe-bottom fixed inset-x-3 bottom-3 z-50 mx-auto max-w-lg rounded-[1.75rem] border border-line/70 bg-surface/90 shadow-[0_12px_32px_-12px_rgba(35,67,52,.35)] backdrop-blur-md lg:hidden"
       >
-        <ul className="mx-auto grid h-16 max-w-lg grid-cols-5">
+        <ul className="grid h-16 grid-cols-5 px-1">
           {PRIMARY_NAV.map((item) => {
             const active = isActive(pathname, item.href);
             return (

@@ -4,14 +4,14 @@
  * - لا يُخزَّن أي طلب إلى خوادم خارجية (مثل Supabase) ولا أي بيانات مصادقة.
  * - تنزيل المصحف للقراءة دون اتصال يتم فقط بطلب صريح من المستخدم (رسالة DOWNLOAD_QURAN).
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const STATIC_CACHE = `qo-static-${VERSION}`;
 const PAGES_CACHE = `qo-pages-${VERSION}`;
 // اسم ذاكرة بيانات القرآن مرتبط ببصمة النص؛ يتغير فقط إذا تغيّر النص المعتمد
 const DATA_CACHE = "qo-data-6ab95356";
 const KEEP = [STATIC_CACHE, PAGES_CACHE, DATA_CACHE];
 const PRECACHE = ["/offline", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon.svg"];
-const OFFLINE_PAGES = ["/today", "/quran", "/adhkar", "/adhkar/morning", "/adhkar/evening", "/adhkar/sleep", "/adhkar/after-prayer", "/adhkar/waking", "/adhkar/duas", "/oasis", "/plan", "/hifz", "/saved"];
+const OFFLINE_PAGES = ["/today", "/quran", "/adhkar", "/adhkar/morning", "/adhkar/evening", "/adhkar/sleep", "/adhkar/after-prayer", "/adhkar/waking", "/adhkar/duas", "/oasis", "/plan", "/hifz", "/saved", "/prayer", "/qibla", "/tasbih"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

@@ -24,7 +24,7 @@ function prune(s: UserState): UserState {
     const keep = new Set(keys.slice(-MAX_LOG_DAYS));
     return Object.fromEntries(Object.entries(obj).filter(([k]) => keep.has(k)));
   };
-  return { ...s, adhkarLog: trim(s.adhkarLog), taskLog: trim(s.taskLog) };
+  return { ...s, adhkarLog: trim(s.adhkarLog), taskLog: trim(s.taskLog), tasbih: trim(s.tasbih), prayerLog: trim(s.prayerLog) };
 }
 
 function load() {

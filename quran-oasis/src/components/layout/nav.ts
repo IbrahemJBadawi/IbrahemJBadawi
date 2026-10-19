@@ -1,4 +1,7 @@
 import {
+  CircleDot,
+  Clock,
+  Compass,
   Award,
   BookMarked,
   BookOpen,
@@ -22,11 +25,22 @@ export interface NavItem {
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/today", label: "اليوم", icon: Home },
   { href: "/quran", label: "القرآن", icon: BookOpen },
+  { href: "/prayer", label: "الصلاة", icon: Clock },
   { href: "/adhkar", label: "الأذكار", icon: Sparkles },
+];
+
+/** روابط إضافية في القائمة العلوية للحاسوب */
+export const DESKTOP_EXTRA: NavItem[] = [
   { href: "/oasis", label: "لحظة واحة", icon: Leaf },
+  { href: "/plan", label: "الورد", icon: CalendarCheck },
+  { href: "/hifz", label: "الحفظ", icon: BookMarked },
+  { href: "/learn", label: "التعلّم", icon: GraduationCap },
 ];
 
 export const SECONDARY_NAV: NavItem[] = [
+  { href: "/oasis", label: "لحظة واحة", icon: Leaf },
+  { href: "/tasbih", label: "المسبحة", icon: CircleDot },
+  { href: "/qibla", label: "القبلة", icon: Compass },
   { href: "/plan", label: "الورد والخطة", icon: CalendarCheck },
   { href: "/hifz", label: "الحفظ والمراجعة", icon: BookMarked },
   { href: "/learn", label: "التعلّم", icon: GraduationCap },

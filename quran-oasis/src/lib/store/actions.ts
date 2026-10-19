@@ -315,3 +315,25 @@ export function markOasisSeen(day: string, momentId: string) {
   if (getState().oasisSeen[day] === momentId) return;
   setState((s) => ({ ...s, oasisSeen: { ...s.oasisSeen, [day]: momentId } }), ["oasisSeen"]);
 }
+
+// ───────── المسبحة ─────────
+export function setTasbihCount(phraseId: string, count: number, day: string = dayKey()) {
+  setState(
+    (s) => ({
+      ...s,
+      tasbih: { ...s.tasbih, [day]: { ...(s.tasbih[day] ?? {}), [phraseId]: { c: Math.max(0, Math.round(count)), updatedAt: now() } } },
+    }),
+    ["tasbih"],
+  );
+}
+
+// ───────── متابعة الصلوات (اختيارية) ─────────
+export function markPrayer(key: string, done: boolean, day: string = dayKey()) {
+  setState(
+    (s) => ({
+      ...s,
+      prayerLog: { ...s.prayerLog, [day]: { ...(s.prayerLog[day] ?? {}), [key]: { done, updatedAt: now() } } },
+    }),
+    ["prayerLog"],
+  );
+}

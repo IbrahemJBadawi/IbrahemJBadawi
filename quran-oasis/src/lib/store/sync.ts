@@ -10,6 +10,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 import { emptyState, hydrate } from "./defaults";
 import { mergeStates } from "./merge";
+import { clearLocalBackups } from "./persist";
 import { getState, onDirty, replaceState } from "./store";
 import { SYNC_SLICES, type SyncSlice, type UserState } from "./types";
 
@@ -172,7 +173,10 @@ export async function stopSync({ clearLocal }: { clearLocal: boolean }) {
   stopSyncListeners();
   session = null;
   dirty.clear();
-  if (clearLocal) replaceState(emptyState());
+  if (clearLocal) {
+    replaceState(emptyState());
+    await clearLocalBackups();
+  }
   setInfo({ status: "disabled", importedGuestData: false, error: null });
 }
 

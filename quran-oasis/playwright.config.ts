@@ -8,7 +8,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [["list"]],
-  use: { baseURL: `http://localhost:${PORT}`, locale: "ar", timezoneId: "Asia/Riyadh" },
+  use: { baseURL: `http://localhost:${PORT}`, locale: "ar", timezoneId: "Asia/Riyadh", storageState: "e2e/storage-onboarded.json" },
   projects: [
     { name: "mobile", use: { ...devices["Pixel 7"], browserName: "chromium" } },
     { name: "desktop", use: { viewport: { width: 1366, height: 900 } }, testMatch: /layout\.spec/ },

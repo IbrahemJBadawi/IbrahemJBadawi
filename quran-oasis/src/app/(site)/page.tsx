@@ -1,4 +1,6 @@
 import {
+  CircleDot,
+  Clock,
   BookMarked,
   BookOpen,
   CalendarCheck,
@@ -31,6 +33,8 @@ const SECTIONS: { href: string; title: string; text: string; icon: LucideIcon }[
   { href: "/adhkar", title: "الأذكار والأدعية", text: "أذكار الصباح والمساء والنوم وبعد الصلاة، مع عدّاد وتخريج لكل ذكر.", icon: Sparkles },
   { href: "/oasis", title: "لحظة واحة", text: "آية كل يوم، ومعناها من تفسير معتمد، وسؤال للتفكّر ومساحة لخواطرك.", icon: Leaf },
   { href: "/plan", title: "الورد والختمة", text: "هدف يومي مرن وخطة ختمة تُحسب من صفحات المصحف الفعلية.", icon: CalendarCheck },
+  { href: "/prayer", title: "مواقيت الصلاة والقبلة", text: "مواقيت محسوبة على جهازك لمدينتك، مع عدّ تنازلي وبوصلة للقبلة — دون إنترنت.", icon: Clock },
+  { href: "/tasbih", title: "المسبحة", text: "عدّاد تسبيح هادئ بدورات ٣٣ و١٠٠، يحفظ عدّك تلقائيًا.", icon: CircleDot },
   { href: "/hifz", title: "الحفظ والمراجعة", text: "سجّل محفوظك، ودوّن ملاحظاتك، واعرف ما يحين وقت مراجعته.", icon: BookMarked },
   { href: "/learn", title: "التعلّم", text: "مسارات قصيرة في التجويد والقراءة الصحيحة والحفظ والتدبّر.", icon: GraduationCap },
 ];
@@ -143,7 +147,7 @@ export default async function HomePage() {
           كل ما تحتاجه لصحبة القرآن
         </h2>
         <p className="mt-2 text-muted">أقسام مترابطة، كل منها يخدم وردك اليومي.</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {SECTIONS.map((s) => (
             <Link
               key={s.href}

@@ -127,6 +127,10 @@ export interface UserState {
   oasisFavorites: Record<string, Stamped>;
   /** سجل لحظات واحة التي عُرضت: اليوم ← معرف اللحظة */
   oasisSeen: Record<string, string>;
+  /** المسبحة: اليوم ← معرف الذكر ← العدد */
+  tasbih: Record<string, Record<string, DhikrCount>>;
+  /** متابعة اختيارية للصلوات: اليوم ← الصلاة ← تمت */
+  prayerLog: Record<string, Record<string, TaskMark>>;
 }
 
 /** الشرائح التي تُخزّن كل منها كوثيقة مستقلة في قاعدة البيانات. */
@@ -145,6 +149,8 @@ export const SYNC_SLICES = [
   "journal",
   "oasisFavorites",
   "oasisSeen",
+  "tasbih",
+  "prayerLog",
 ] as const;
 
 export type SyncSlice = (typeof SYNC_SLICES)[number];
