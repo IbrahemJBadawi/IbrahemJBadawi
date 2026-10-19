@@ -1,0 +1,10 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { SESSION_COOKIE } from "@/lib/auth";
+import { ACTIVE_ORG_COOKIE } from "@/lib/session";
+
+export async function POST(request: NextRequest) {
+  const res = NextResponse.redirect(new URL("/", request.url), { status: 303 });
+  res.cookies.delete(SESSION_COOKIE);
+  res.cookies.delete(ACTIVE_ORG_COOKIE);
+  return res;
+}

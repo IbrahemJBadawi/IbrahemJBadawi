@@ -35,9 +35,29 @@ export function projectRoot() {
   return process.env.GROWTH_ROOT || process.cwd();
 }
 
+/** Serverless hosts (Vercel) have no persistent disk: only /tmp is writable. */
+export function isEphemeralHost() {
+  return Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+}
+
+function localDataDir() {
+  if (process.env.PGLITE_DATA_DIR) return process.env.PGLITE_DATA_DIR;
+  if (isEphemeralHost()) return "/tmp/techmood-growth-pglite";
+  return path.join(projectRoot(), ".data", "pglite");
+}
+
+/**
+ * "demo" = local storage on a serverless host: the app works but data is
+ * temporary (lost when the instance is recycled). The UI says so plainly.
+ */
+export function storageMode(): "postgres" | "local" | "demo" {
+  if (process.env.DATABASE_URL) return "postgres";
+  return isEphemeralHost() ? "demo" : "local";
+}
+
 async function createPglite(): Promise<Database> {
   const { PGlite } = await import("@electric-sql/pglite");
-  const dataDir = process.env.PGLITE_DATA_DIR || path.join(projectRoot(), ".data", "pglite");
+  const dataDir = localDataDir();
   const memory = dataDir === "memory://";
   if (!memory) fs.mkdirSync(dataDir, { recursive: true });
   const pg = new PGlite(memory ? undefined : dataDir);
