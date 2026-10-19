@@ -42,6 +42,8 @@ export function dbError(e: unknown): string {
   if (err?.code === "23503") return "لا يمكن تنفيذ العملية لوجود بيانات مرتبطة.";
   if (err?.code === "23514") return "إحدى القيم غير مقبولة (تحقق من الأسعار والقيود).";
   if (err?.code === "42501") return "ليست لديك صلاحية لتنفيذ هذه العملية.";
+  // Business rules raised by database triggers carry an Arabic message.
+  if (err?.code === "P0001" && err.message) return err.message;
   console.error(e);
   return "تعذّر حفظ التغييرات.";
 }

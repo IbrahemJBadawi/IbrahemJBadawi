@@ -36,14 +36,14 @@ async function Favorite({ id, slug }: { id: string; slug: string }) {
 async function Delivery({ currency, overrides }: { currency: string; overrides: Record<string, { min: number; max: number }> }) {
   const zones = (await getShippingOptions()).filter((z) => z.currency_code === currency);
   if (!zones.length) {
-    return <p className="text-sm leading-7 text-muted">لم يتم تفعيل الشحن لهذا المنتج بعد. تواصل معنا للاستفسار.</p>;
+    return <p className="text-sm leading-7 text-muted">لم نفعّل التوصيل لمنطقة بعد. تواصل معنا للاستفسار.</p>;
   }
   return (
     <table className="w-full text-sm">
       <caption className="sr-only">مدة التوصيل التقديرية وتكلفة الشحن حسب الدولة</caption>
       <thead>
         <tr className="text-start text-xs text-muted">
-          <th className="pb-2 text-start font-medium">الدولة</th>
+          <th className="pb-2 text-start font-medium">المنطقة</th>
           <th className="pb-2 text-start font-medium">مدة التوصيل</th>
           <th className="pb-2 text-start font-medium">الشحن</th>
         </tr>
@@ -55,8 +55,8 @@ async function Delivery({ currency, overrides }: { currency: string; overrides: 
           const max = Math.max(z.max_days, o?.max ?? 0);
           return (
             <tr key={z.id} className="border-t border-line">
-              <td className="py-2">{z.country_name}</td>
-              <td className="py-2">{min}–{max} يوم عمل</td>
+              <td className="py-2">{z.governorate_name ?? z.country_name}</td>
+              <td className="py-2">{min}–{max} يوم بعد الدفع</td>
               <td className="py-2">
                 {Number(z.rate) === 0 ? "مجاني" : formatMoney(z.rate, z.currency_code)}
                 {z.free_shipping_threshold && <span className="block text-xs text-muted">مجاني فوق {formatMoney(z.free_shipping_threshold, z.currency_code)}</span>}
@@ -127,14 +127,18 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
           </div>
           <h1 className="mt-3 text-2xl font-bold leading-[1.5] md:text-3xl">{p.name_ar}</h1>
           {p.name_en && <p className="mt-1 text-sm text-muted" dir="ltr">{p.name_en}</p>}
-          <div className="mt-5">
+          <div className="mt-5 mb-8 md:mb-0">
             <Price price={p.price} salePrice={p.sale_price} currency={p.currency_code} size="lg" />
           </div>
-          <div className="mt-8 flex items-start gap-3">
-            <div className="flex-1">
+          {/* On phones these wrappers dissolve so the add-to-cart bar can stay in view while scrolling. */}
+          <div className="max-md:contents md:mt-8 md:flex md:items-start md:gap-3">
+            <div className="max-md:contents md:flex-1">
               <AddToCart productId={p.id} variants={p.variants} available={available} currency={p.currency_code} />
             </div>
           </div>
+          <p className="mt-4 text-xs leading-6 text-muted">
+            المنتج يُوفَّر من مورد محلي. نؤكد التوفر والمقاس والسعر النهائي مع رسوم التوصيل قبل أن نطلب منك أي دفعة.
+          </p>
           <div className="mt-4">
             <Suspense fallback={<span className="inline-block size-12" />}>
               <Favorite id={p.id} slug={p.slug} />
@@ -152,7 +156,7 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
           )}
           <details className="group mt-6 border-t border-line pt-5" open>
             <summary className="flex cursor-pointer list-none items-center gap-2 text-sm font-bold">
-              <Truck className="size-4 text-beige-deep" /> الشحن والتوصيل
+              <Truck className="size-4 text-beige-deep" /> التوصيل
             </summary>
             <div className="mt-4">
               <Suspense fallback={<p className="text-sm text-muted">جارٍ التحميل…</p>}>

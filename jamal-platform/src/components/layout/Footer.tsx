@@ -2,6 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getStoreSettings } from "@/lib/data/catalog";
 import { Monogram } from "@/components/ui/Logo";
+import { assistantAvailable } from "@/lib/ai/availability";
+
+async function AssistantLink() {
+  if (!(await assistantAvailable())) return null;
+  return <li><Link className="hover:text-ivory" href="/assistant">مساعد التسوق الذكي</Link></li>;
+}
 
 async function Contact() {
   const s = await getStoreSettings();
@@ -25,13 +31,13 @@ async function Contact() {
 export function Footer() {
   const col = "space-y-2 text-sm text-ivory/70";
   return (
-    <footer className="mt-auto bg-ink text-ivory">
+    <footer className="mt-auto bg-ink text-ivory print:hidden">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-3" dir="ltr"><Monogram variant="outline-light" className="w-9" /><p className="font-display text-3xl tracking-[0.4em]">JAMAL</p></div>
           <p className="mt-1 text-xs tracking-[0.2em] text-beige">منصة الجمال</p>
           <p className="mt-4 max-w-xs text-sm leading-7 text-ivory/70">
-            أزياء معاصرة مختارة بعناية للشرق الأوسط وبلاد الشام والخليج.
+            ملابس يومية أساسية من موردين محليين في فلسطين. نؤكد التوفر والسعر قبل الدفع.
           </p>
         </div>
         <div>
@@ -41,13 +47,16 @@ export function Footer() {
             <li><Link className="hover:text-ivory" href="/offers">العروض والتخفيضات</Link></li>
             <li><Link className="hover:text-ivory" href="/favorites">المفضلة</Link></li>
             <li><Link className="hover:text-ivory" href="/track">تتبع الطلب</Link></li>
+            <li><Link className="hover:text-ivory" href="/app">تطبيق الهاتف</Link></li>
           </ul>
         </div>
         <div>
           <h2 className="mb-4 text-sm font-bold">المساعدة والسياسات</h2>
           <ul className={col}>
+            <li><Link className="hover:text-ivory" href="/support">الدعم وتذاكر خدمة العملاء</Link></li>
+            <Suspense fallback={null}><AssistantLink /></Suspense>
             <li><Link className="hover:text-ivory" href="/faq">الأسئلة الشائعة</Link></li>
-            <li><Link className="hover:text-ivory" href="/policies/shipping">سياسة الشحن</Link></li>
+            <li><Link className="hover:text-ivory" href="/policies/shipping">سياسة التوصيل</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/returns">الاستبدال والإرجاع</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/privacy">الخصوصية</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/terms">الشروط والأحكام</Link></li>
@@ -62,8 +71,8 @@ export function Footer() {
       </div>
       <div className="border-t border-ivory/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-ivory/50 sm:flex-row sm:justify-between">
-          <p>© منصة الجمال — JAMAL</p>
-          <p>لا يتم تنفيذ أي دفع إلكتروني عبر الموقع حاليًا.</p>
+          <p>© منصة الجمال | Al Jamal</p>
+          <p>الدفع بالتحويل البنكي بعد اعتماد الطلب فقط — لا نطلب بيانات بطاقات.</p>
         </div>
       </div>
     </footer>

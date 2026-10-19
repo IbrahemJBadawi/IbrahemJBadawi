@@ -19,6 +19,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <ul className="flex gap-5 overflow-x-auto border-b border-line md:block md:border-b-0 md:border-e md:pe-6">
           <li><Link href="/account" className="block py-2">بياناتي</Link></li>
           <li><Link href="/account/orders" className="block py-2">طلباتي</Link></li>
+          <li><Link href="/account/notifications" className="block py-2">الإشعارات</Link></li>
+          <li><Link href="/support" className="block py-2">الدعم</Link></li>
           <li><Link href="/favorites" className="block py-2">المفضلة</Link></li>
           <Suspense fallback={null}><AdminLink /></Suspense>
           <li>

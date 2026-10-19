@@ -27,6 +27,7 @@ const productSchema = z
     origin_country: z.string().trim().max(60).transform((v) => v || null),
     return_policy: z.string().trim().max(2000).transform((v) => v || null),
     is_featured: z.boolean(),
+    processing_days: z.union([z.literal(""), z.coerce.number().int().min(0).max(60)]).transform((v) => (v === "" ? null : v)),
   })
   .refine((d) => d.sale_price === null || Number(d.sale_price) < Number(d.price), {
     message: "سعر التخفيض يجب أن يكون أقل من السعر الأصلي",
@@ -71,8 +72,10 @@ export async function saveProductAction(_: ActionResult, form: FormData): Promis
     origin_country: f.str(form, "origin_country"),
     return_policy: f.str(form, "return_policy"),
     is_featured: f.bool(form, "is_featured"),
+    processing_days: f.str(form, "processing_days"),
   });
   if (!parsed.success) return { fieldErrors: fieldErrors(parsed.error) };
+  const confirmStock = f.bool(form, "confirm_stock");
 
   let images: { url: string; alt?: string }[];
   let overrides: Record<string, { min: number; max: number }>;
@@ -93,6 +96,7 @@ export async function saveProductAction(_: ActionResult, form: FormData): Promis
   const values = [
     d.name_ar, d.name_en, d.slug, d.category_id, d.description_ar, d.price, d.sale_price, d.currency_code,
     JSON.stringify(images), d.availability, d.status, d.origin_country, d.return_policy, JSON.stringify(overrides), d.is_featured,
+    d.processing_days, confirmStock,
   ];
   let newId: string | null = null;
   try {
@@ -101,8 +105,9 @@ export async function saveProductAction(_: ActionResult, form: FormData): Promis
         const rows = await tx.query(
           `update public.products set name_ar=$1, name_en=$2, slug=$3, category_id=$4, description_ar=$5, price=$6, sale_price=$7,
              currency_code=$8, images=$9::text::jsonb, availability=$10, status=$11, origin_country=$12, return_policy=$13,
-             delivery_overrides=$14::text::jsonb, is_featured=$15
-           where id = $16 returning id`,
+             delivery_overrides=$14::text::jsonb, is_featured=$15, processing_days=$16,
+             stock_confirmed_at = case when $17::boolean then now() else stock_confirmed_at end
+           where id = $18 returning id`,
           [...values, id],
         );
         if (!rows.length) throw new Error("not found");
@@ -110,8 +115,8 @@ export async function saveProductAction(_: ActionResult, form: FormData): Promis
       } else {
         const [row] = await tx.query<{ id: string }>(
           `insert into public.products (name_ar, name_en, slug, category_id, description_ar, price, sale_price, currency_code,
-             images, availability, status, origin_country, return_policy, delivery_overrides, is_featured)
-           values ($1,$2,$3,$4,$5,$6,$7,$8,$9::text::jsonb,$10,$11,$12,$13,$14::text::jsonb,$15) returning id`,
+             images, availability, status, origin_country, return_policy, delivery_overrides, is_featured, processing_days, stock_confirmed_at)
+           values ($1,$2,$3,$4,$5,$6,$7,$8,$9::text::jsonb,$10,$11,$12,$13,$14::text::jsonb,$15,$16, case when $17::boolean then now() end) returning id`,
           values,
         );
         newId = row.id;
