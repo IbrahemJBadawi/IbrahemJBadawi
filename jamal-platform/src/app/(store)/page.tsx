@@ -21,7 +21,7 @@ function Hero() {
             <span className="text-beige-deep">لكل يوم.</span>
           </h1>
           <p className="mt-4 max-w-md text-[0.95rem] leading-8 text-muted">
-            ملابس يومية أساسية من موردين محليين في فلسطين، نؤكد توفرها وسعرها قبل أن تدفع.
+            قطع يومية مختارة من موردين محليين في فلسطين. اطلب الآن وادفع بعد تثبيت طلبك.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ButtonLink href="/products" size="lg">
@@ -64,7 +64,7 @@ async function PromoCard() {
       ) : (
         <p className="mt-3 max-w-[14rem] text-2xl font-bold leading-snug">قطع يومية مختارة بعناية</p>
       )}
-      <p className="mt-3 max-w-[15rem] text-xs leading-6 text-ivory/70">على منتجات مختارة، والسعر النهائي يُؤكد قبل الدفع.</p>
+      <p className="mt-3 max-w-[15rem] text-xs leading-6 text-ivory/70">على قطع مختارة من المجموعة.</p>
       <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-bold text-ink transition-transform group-hover:-translate-x-1">
         {hasOffers ? "تسوّق العروض" : "اكتشف المجموعة"} <ArrowLeft className="size-4" />
       </span>
@@ -142,7 +142,7 @@ function Section({ title, href, compact = false, children }: { title: string; hr
 
 function Promises() {
   const items = [
-    { icon: PackageCheck, title: "نتأكد قبل الدفع", text: "نؤكد التوفر والمقاس والسعر مع المورد قبل أن تدفع." },
+    { icon: PackageCheck, title: "اطلب الآن وادفع لاحقًا", text: "نحجز مقاسك ونثبّت السعر النهائي قبل أن تدفع." },
     { icon: ShieldCheck, title: "تحويل بنكي آمن", text: "تحوّل بعد اعتماد السعر، ونؤكد الدفع بعد التحقق من وصوله." },
     { icon: Truck, title: "توصيل لمحافظات مختارة", text: "الرسوم والمدة تظهر لمنطقتك قبل الدفع." },
     { icon: RotateCcw, title: "استبدال وإرجاع", text: "حسب سياسة كل منتج والموضحة في صفحته." },

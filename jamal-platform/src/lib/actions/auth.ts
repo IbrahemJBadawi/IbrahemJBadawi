@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { signIn, signOut, signUp } from "@/lib/auth";
+import { authProvider, signIn, signOut, signUp } from "@/lib/auth";
+import { googleAvailable, googleStartUrl } from "@/lib/auth/google";
 import { rateLimit } from "@/lib/rate-limit";
 
 export type AuthState = { error?: string; fieldErrors?: Record<string, string[] | undefined>; info?: string; email?: string };
@@ -51,4 +52,17 @@ export async function registerAction(_: AuthState, form: FormData): Promise<Auth
 export async function logoutAction() {
   await signOut();
   redirect("/");
+}
+
+export async function googleSignInAction(form: FormData) {
+  if (!(await rateLimit("google", 20, 15 * 60_000))) redirect("/login?error=rate");
+  const provider = authProvider();
+  if (!(await googleAvailable(provider))) redirect("/login?error=google");
+  let url: string;
+  try {
+    url = await googleStartUrl(provider, safeNext(form.get("next")));
+  } catch {
+    redirect("/login?error=google");
+  }
+  redirect(url);
 }

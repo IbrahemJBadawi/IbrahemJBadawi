@@ -37,7 +37,7 @@ export function Footer() {
           <div className="flex items-center gap-3" dir="ltr"><Monogram variant="outline-light" className="w-9" /><p className="font-display text-3xl tracking-[0.4em]">JAMAL</p></div>
           <p className="mt-1 text-xs tracking-[0.2em] text-beige">منصة الجمال</p>
           <p className="mt-4 max-w-xs text-sm leading-7 text-ivory/70">
-            ملابس يومية أساسية من موردين محليين في فلسطين. نؤكد التوفر والسعر قبل الدفع.
+            قطع يومية مختارة من موردين محليين في فلسطين. اطلب الآن وادفع بعد تثبيت طلبك.
           </p>
         </div>
         <div>
@@ -72,7 +72,7 @@ export function Footer() {
       <div className="border-t border-ivory/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-ivory/50 sm:flex-row sm:justify-between">
           <p>© منصة الجمال | Al Jamal</p>
-          <p>الدفع بالتحويل البنكي بعد اعتماد الطلب فقط — لا نطلب بيانات بطاقات.</p>
+          <p>الدفع آمن عبر بنك فلسطين — ولا نطلب بيانات بطاقات أبدًا.</p>
         </div>
       </div>
     </footer>

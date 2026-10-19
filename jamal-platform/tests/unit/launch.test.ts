@@ -38,6 +38,7 @@ beforeAll(async () => {
     customer = await mk("customer@test.dev");
     await tx.query("update public.profiles set role = 'admin' where id = $1", [admin]);
     [{ id: govId }] = await tx.query<{ id: string }>("select id from public.governorates where name_ar = 'رام الله والبيرة'");
+    await tx.query("delete from public.shipping_zones where governorate_id = $1", [govId]);
     await tx.query("insert into public.shipping_zones (country_code, currency_code, governorate_id, name_ar, rate, min_days, max_days, is_active) values ('PS','ILS',$1,'رام الله',20,1,3,true)", [govId]);
     const [{ id: s }] = await tx.query<{ id: string }>("insert into public.suppliers (name, agreement_status, ships_to, terms_confirmed_at) values ('مورد', 'approved', '{PS}', now()) returning id");
     [{ id: productId }] = await tx.query<{ id: string }>("insert into public.products (slug, name_ar, price, currency_code) values ('p-1', 'منتج', 50, 'ILS') returning id");

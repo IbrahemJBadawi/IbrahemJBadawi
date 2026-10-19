@@ -5,7 +5,7 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { getDatabase, withContext, type DbContext, type Tx } from "@/lib/db/core";
-import { placeOrderTx, type CheckoutInput } from "@/lib/orders/core";
+import { placeOrderTx, quoteTx, type CheckoutInput } from "@/lib/orders/core";
 import * as wf from "@/lib/orders/workflow";
 import { computeFinancials } from "@/lib/finance";
 
@@ -90,6 +90,7 @@ beforeAll(async () => {
     other = await mk("other@test.dev");
     await tx.query("update public.profiles set role = 'admin' where id = $1", [admin]);
     [{ id: govId }] = await tx.query<{ id: string }>("select id from public.governorates where name_ar = 'رام الله والبيرة'");
+    await tx.query("delete from public.shipping_zones where governorate_id = $1", [govId]);
     await tx.query(
       `insert into public.shipping_zones (country_code, currency_code, governorate_id, name_ar, rate, estimated_cost, min_days, max_days, is_active)
        values ('PS', 'ILS', $1, 'رام الله', 20, 15, 1, 3, true)`,
@@ -340,10 +341,18 @@ describe("security and robustness", () => {
     expect((await order(r.orderId)).subtotal).toBe("100.000");
   });
 
-  it("refuses delivery to an area without an active zone", async () => {
+  it("delivers to Gaza with the fee confirmed alongside the final price, and refuses switched-off areas", async () => {
     const [{ id: gaza }] = await sys((tx) => tx.query<{ id: string }>("select id from public.governorates where name_ar = 'غزة'"));
+    const q = await sys((tx) => quoteTx(tx, checkout().items, "PS", gaza));
+    expect(q).toMatchObject({ ok: true, shipping: "0.000", shippingToConfirm: true });
     const r = await sys((tx) => placeOrderTx(tx, checkout({ governorateId: gaza }), null));
-    expect(r.ok).toBe(false);
+    expect(r.ok).toBe(true);
+    // Setting a real fee clears the "to confirm" flag.
+    await sys((tx) => tx.query("update public.shipping_zones set rate = 35 where governorate_id = $1", [gaza]));
+    expect(await sys((tx) => quoteTx(tx, checkout().items, "PS", gaza))).toMatchObject({ shipping: "35.000", shippingToConfirm: false });
+    await sys((tx) => tx.query("update public.shipping_zones set is_active = false where governorate_id = $1", [gaza]));
+    const off = await sys((tx) => placeOrderTx(tx, checkout({ governorateId: gaza }), null));
+    expect(off.ok).toBe(false);
   });
 });
 

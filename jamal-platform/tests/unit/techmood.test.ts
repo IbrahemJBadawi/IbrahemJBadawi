@@ -48,6 +48,7 @@ beforeAll(async () => {
     other = await mk("other@test.dev");
     await tx.query("update public.profiles set role = 'admin' where id = $1", [admin]);
     [{ id: govId }] = await tx.query<{ id: string }>("select id from public.governorates where name_ar = 'رام الله والبيرة'");
+    await tx.query("delete from public.shipping_zones where governorate_id = $1", [govId]);
     await tx.query(
       `insert into public.shipping_zones (country_code, currency_code, governorate_id, name_ar, rate, estimated_cost, min_days, max_days, is_active)
        values ('PS', 'ILS', $1, 'رام الله', 20, 15, 1, 3, true)`,

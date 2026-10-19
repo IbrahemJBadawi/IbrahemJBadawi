@@ -154,14 +154,14 @@ async function loadLines(tx: Tx, items: CartItem[]): Promise<LoadedLine[]> {
 type ZoneRow = {
   id: string; country_code: string; currency_code: string; rate: string; estimated_cost: string | null;
   free_shipping_threshold: string | null; min_days: number; max_days: number; cod_available: boolean;
-  governorate_id: string | null; governorate_name: string | null;
+  governorate_id: string | null; governorate_name: string | null; fee_on_confirmation: boolean;
 };
 
 /** Delivery zone for an area: exact governorate first, then a country-wide zone. */
 async function findZone(tx: Tx, country: string, currency: string, governorateId: string | null) {
   const rows = await tx.query<ZoneRow>(
     `select z.id, z.country_code, z.currency_code, z.rate::text, z.estimated_cost::text, z.free_shipping_threshold::text,
-            z.min_days, z.max_days, z.cod_available, z.governorate_id, g.name_ar as governorate_name
+            z.min_days, z.max_days, z.cod_available, z.governorate_id, g.name_ar as governorate_name, z.fee_on_confirmation
      from public.shipping_zones z join public.countries c on c.code = z.country_code
      left join public.governorates g on g.id = z.governorate_id
      where z.country_code = $1 and z.currency_code = $2 and z.is_active and c.is_active
@@ -191,6 +191,8 @@ export type Quote = {
   currency: string | null;
   subtotal: string;
   shipping: string | null;
+  /** The delivery fee for this area is set together with the final price. */
+  shippingToConfirm: boolean;
   total: string;
   country: string | null;
   governorateId: string | null;
@@ -208,7 +210,7 @@ async function buildQuote(tx: Tx, items: CartItem[], country: string | null, gov
     return l;
   });
   const base: Quote = {
-    lines: publicLines, ok: false, error: null, currency: null, subtotal: "0", shipping: null,
+    lines: publicLines, ok: false, error: null, currency: null, subtotal: "0", shipping: null, shippingToConfirm: false,
     total: "0", country, governorateId, estimate: null, paymentMethods: { bank_transfer: false, cod: false },
   };
   const blocking = lines.find((l) => l.problem);
@@ -238,6 +240,7 @@ async function buildQuote(tx: Tx, items: CartItem[], country: string | null, gov
         currency: q.currency,
         subtotal: fromMills(q.subtotalMills),
         shipping: zone ? fromMills(q.shippingMills) : null,
+        shippingToConfirm: !!zone?.fee_on_confirmation,
         total: fromMills(q.totalMills),
         estimate: zone
           ? deliveryEstimate({ minDays: zone.min_days, maxDays: zone.max_days }, lines.map((l) => l.overrides[country!]))
