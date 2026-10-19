@@ -1,4 +1,5 @@
-import { customerCancelAction, requestReturnAction, uploadProofAction } from "@/lib/actions/order";
+import Link from "next/link";
+import { customerCancelAction, refundAccountAction, requestReturnAction, uploadProofAction } from "@/lib/actions/order";
 import type { OrderDetail } from "@/lib/data/orders";
 import { fromMills, toMills } from "@/lib/money";
 import { CUSTOMER_CANCEL_REQUEST, CUSTOMER_FREE_CANCEL } from "@/lib/orders/states";
@@ -23,8 +24,29 @@ export function CustomerOrderActions({ order, token, phone }: { order: OrderDeta
   const freeCancel = CUSTOMER_FREE_CANCEL.includes(order.status);
   const requestCancel = CUSTOMER_CANCEL_REQUEST.includes(order.status);
   const openReturn = order.returns.some((r) => ["requested", "approved", "received"].includes(r.status));
+  const pendingRefund = order.refunds.some((r) => r.status === "pending");
+  const hasInvoice = ["paid", "partially_refunded", "refunded"].includes(order.payment_status);
+  const invoiceHref = token ? `/order/${order.order_number}/invoice?t=${token}` : `/account/orders/${order.order_number}/invoice`;
   return (
     <div className="space-y-8 border-t border-line pt-6">
+      <div className="flex flex-wrap gap-4 text-sm">
+        {hasInvoice && (token || !phone) && <Link href={invoiceHref} className="font-semibold text-beige-deep underline underline-offset-4">عرض الفاتورة</Link>}
+        <Link href={`/support?order=${order.order_number}`} className="font-semibold text-beige-deep underline underline-offset-4">مساعدة بخصوص هذا الطلب</Link>
+      </div>
+      {pendingRefund && (
+        <section>
+          <h2 className="mb-1 text-base font-bold">بيانات استلام الاسترداد</h2>
+          <p className="mb-3 text-xs leading-6 text-muted">أين تريد استلام المبلغ المسترد؟ تظهر هذه البيانات لفريق الإدارة فقط. لا ترسل كلمات مرور أو رموز تحقق أبدًا.</p>
+          <ActionForm action={refundAccountAction} submitLabel="حفظ البيانات" variant="secondary" resetOnSuccess className="space-y-3">
+            <Access order={order} token={token} phone={phone} />
+            <div className="grid gap-3 sm:grid-cols-3">
+              <Field label="اسم صاحب الحساب"><Input name="holderName" required maxLength={120} /></Field>
+              <Field label="الوسيلة"><Input name="methodLabel" required maxLength={80} placeholder="مثل: بنك فلسطين / محفظة" /></Field>
+              <Field label="رقم الحساب أو المحفظة"><Input name="accountRef" dir="ltr" required maxLength={120} /></Field>
+            </div>
+          </ActionForm>
+        </section>
+      )}
       {canUpload && (
         <section>
           <h2 className="mb-1 text-base font-bold">رفع إثبات التحويل</h2>

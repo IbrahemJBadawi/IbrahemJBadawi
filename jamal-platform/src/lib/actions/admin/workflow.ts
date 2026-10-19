@@ -10,6 +10,7 @@ import {
 } from "@/lib/orders/workflow";
 import { ORDER_STATUSES, FULFILLMENT_STATUSES, SETTLEMENT_STATUSES } from "@/lib/orders/states";
 import type { ActionResult } from "@/components/forms/ActionForm";
+import { staffReply, updateTicket, TicketError, TICKET_PRIORITIES, TICKET_STATUSES } from "@/lib/support/tickets";
 
 type AdminTx = Parameters<Parameters<typeof withAdmin>[0]>;
 
@@ -198,4 +199,35 @@ export async function updateReturnAction(_: ActionResult, form: FormData): Promi
     }
     await tx.query("insert into public.audit_log (actor_id, action, entity, entity_id, details) values ($1,'return_update','order',$2,$3::text::jsonb)", [admin.id, r.order_id, JSON.stringify({ return: d.id, status: d.status, cost_party: d.costParty })]);
   }, "تم تحديث طلب الإرجاع.");
+}
+
+// ---------------------------------------------------------------------------
+// Support tickets (staff)
+// ---------------------------------------------------------------------------
+
+export async function staffReplyAction(_: ActionResult, form: FormData): Promise<ActionResult> {
+  const id = uuid.safeParse(f.str(form, "ticketId"));
+  const body = f.str(form, "body");
+  if (!id.success || body.length < 2 || body.length > 4000) return { error: "اكتب الرد." };
+  const internal = f.bool(form, "internal");
+  try {
+    await withAdmin((tx, admin) => staffReply(tx, admin.id, id.data, body, internal));
+  } catch (e) {
+    return { error: e instanceof TicketError ? e.message : dbError(e) };
+  }
+  refresh();
+  return { ok: true, message: internal ? "تمت إضافة الملاحظة الداخلية." : "تم إرسال الرد للعميل." };
+}
+
+export async function updateTicketAction(_: ActionResult, form: FormData): Promise<ActionResult> {
+  const p = z.object({ ticketId: uuid, status: z.enum(TICKET_STATUSES), priority: z.enum(TICKET_PRIORITIES) })
+    .safeParse({ ticketId: f.str(form, "ticketId"), status: f.str(form, "status"), priority: f.str(form, "priority") });
+  if (!p.success) return { error: "قيم غير صالحة." };
+  try {
+    await withAdmin((tx, admin) => updateTicket(tx, admin.id, p.data.ticketId, { status: p.data.status, priority: p.data.priority, assignToMe: f.bool(form, "assignToMe") }));
+  } catch (e) {
+    return { error: e instanceof TicketError ? e.message : dbError(e) };
+  }
+  refresh();
+  return { ok: true, message: "تم تحديث التذكرة." };
 }

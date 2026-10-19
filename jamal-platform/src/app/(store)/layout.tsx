@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { InstallBanner } from "@/components/pwa/InstallApp";
 import { hasDemoProducts } from "@/lib/data/catalog";
 
 async function DemoBanner() {
@@ -30,6 +31,7 @@ export default function StoreLayout({ children }: LayoutProps<"/">) {
       <Suspense fallback={null}>
         <BottomNav />
       </Suspense>
+      <InstallBanner />
     </>
   );
 }

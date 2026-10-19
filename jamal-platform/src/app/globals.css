@@ -87,6 +87,10 @@
   body { padding-bottom: 0; }
 }
 
+@media print {
+  body { padding-bottom: 0; background: #fff; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

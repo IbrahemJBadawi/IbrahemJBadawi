@@ -5,6 +5,7 @@ import { getCategories, getStoreSettings } from "@/lib/data/catalog";
 import { Logo } from "@/components/ui/Logo";
 import { CartButton } from "@/components/cart/CartButton";
 import { MobileMenu } from "./MobileMenu";
+import { NotificationBell } from "@/components/notifications/Bell";
 
 async function Announcement() {
   const s = await getStoreSettings();
@@ -45,7 +46,7 @@ export function Header() {
       <Suspense fallback={null}>
         <Announcement />
       </Suspense>
-      <header className="sticky top-0 z-40 border-b border-line bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/85">
+      <header className="sticky top-0 z-40 print:hidden border-b border-line bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/85">
         <div className="container-page grid h-16 grid-cols-[1fr_auto_1fr] items-center md:h-20">
           <div className="flex items-center gap-1">
             <Suspense fallback={<span className="size-10 md:hidden" />}>
@@ -57,6 +58,9 @@ export function Header() {
           </div>
           <Logo />
           <div className="flex items-center justify-end gap-0.5">
+            <Suspense fallback={null}>
+              <NotificationBell className={iconLink} />
+            </Suspense>
             <Link href="/favorites" className={`${iconLink} max-sm:hidden`} aria-label="المفضلة">
               <Heart className="size-5" strokeWidth={1.6} />
             </Link>

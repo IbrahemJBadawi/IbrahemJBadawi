@@ -35,6 +35,19 @@ export default async function AdminSettings() {
               <Select name="default_currency" defaultValue={v("default_currency")}>{currencies.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}</Select>
             </Field>
           </div>
+          <fieldset className="grid gap-4 rounded-md border border-line p-4 md:grid-cols-2">
+            <legend className="px-1 text-sm font-bold">الفواتير</legend>
+            <Field label="الاسم القانوني للبائع"><Input name="legal_name" defaultValue={v("legal_name")} /></Field>
+            <Field label="الرقم الضريبي (إن وجد)" hint="بدونه تظهر الفاتورة «ليست فاتورة ضريبية»"><Input name="tax_number" dir="ltr" defaultValue={v("tax_number")} /></Field>
+            <Field label="تذييل الفاتورة" className="md:col-span-2"><Input name="invoice_footer" defaultValue={v("invoice_footer")} placeholder="مثل: سياسة الإرجاع خلال 7 أيام…" /></Field>
+          </fieldset>
+          <fieldset className="space-y-2 rounded-md border border-line p-4">
+            <legend className="px-1 text-sm font-bold">المساعد الذكي</legend>
+            <Checkbox name="ai_assistant_enabled" defaultChecked={!!s.ai_assistant_enabled} label="تفعيل مساعد التسوق الذكي للعملاء" />
+            <p className="text-xs leading-6 text-muted">
+              يتطلب مفتاح ANTHROPIC_API_KEY في إعدادات الخادم ({process.env.ANTHROPIC_API_KEY ? "موجود" : "غير موجود — المساعد سيظهر كغير متاح"}). الاستخدام مدفوع حسب عدد الرسائل، مع حد يومي لكل مستخدم.
+            </p>
+          </fieldset>
           <fieldset className="space-y-2 rounded-md border border-line p-4">
             <legend className="px-1 text-sm font-bold">طرق الطلب</legend>
             <Checkbox name="cod_enabled" defaultChecked={!!s.cod_enabled} label="تفعيل الدفع عند الاستلام (يظهر فقط إذا كانت منطقة الشحن والمورد يدعمانه أيضًا)" />
@@ -72,6 +85,7 @@ export default async function AdminSettings() {
           <li>تخزين الصور: <strong>{storageMode() === "supabase" ? "Supabase Storage" : "مجلد محلي .data/uploads — للتطوير فقط"}</strong></li>
           <li>الدفع: <strong>تحويل بنكي يُتحقق منه يدويًا</strong> — لا بوابة دفع ولا ربط مصرفي.</li>
           <li>التكامل مع الموردين وشركات التوصيل: <strong>غير موجود (يدوي)</strong></li>
+          <li>البريد الإلكتروني للإشعارات: <strong>{process.env.RESEND_API_KEY && process.env.EMAIL_FROM ? "مزود Resend مُعد — تُرسل الرسائل عند تشغيل الجدولة" : "غير مُعد — الإشعارات داخل المنصة فقط والرسائل تبقى في الطابور"}</strong></li>
         </ul>
       </Card>
     </div>

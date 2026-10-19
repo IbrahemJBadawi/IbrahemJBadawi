@@ -314,6 +314,10 @@ export async function saveSettingsAction(_: ActionResult, form: FormData): Promi
       default_currency: currency,
       cod_enabled: z.boolean(),
       manual_orders_enabled: z.boolean(),
+      legal_name: z.string().trim().max(160).transform((v) => v || null),
+      tax_number: z.string().trim().max(40).transform((v) => v || null),
+      invoice_footer: z.string().trim().max(500).transform((v) => v || null),
+      ai_assistant_enabled: z.boolean(),
     })
     .safeParse({
       store_name_ar: f.str(form, "store_name_ar"),
@@ -326,16 +330,21 @@ export async function saveSettingsAction(_: ActionResult, form: FormData): Promi
       default_currency: f.str(form, "default_currency"),
       cod_enabled: f.bool(form, "cod_enabled"),
       manual_orders_enabled: f.bool(form, "manual_orders_enabled"),
+      legal_name: f.str(form, "legal_name"),
+      tax_number: f.str(form, "tax_number"),
+      invoice_footer: f.str(form, "invoice_footer"),
+      ai_assistant_enabled: f.bool(form, "ai_assistant_enabled"),
     });
   if (!p.success) return { fieldErrors: fieldErrors(p.error) };
   const d = p.data;
   return run(async (tx, admin) => {
     await tx.query(
       `update public.store_settings set store_name_ar=$1, store_name_en=$2, tagline_ar=$3, announcement_ar=$4, contact_email=$5,
-         contact_phone=$6, whatsapp=$7, default_currency=$8, cod_enabled=$9, manual_orders_enabled=$10 where id = 1`,
-      [d.store_name_ar, d.store_name_en, d.tagline_ar, d.announcement_ar, d.contact_email, d.contact_phone, d.whatsapp, d.default_currency, d.cod_enabled, d.manual_orders_enabled],
+         contact_phone=$6, whatsapp=$7, default_currency=$8, cod_enabled=$9, manual_orders_enabled=$10, legal_name=$11, tax_number=$12,
+         invoice_footer=$13, ai_assistant_enabled=$14 where id = 1`,
+      [d.store_name_ar, d.store_name_en, d.tagline_ar, d.announcement_ar, d.contact_email, d.contact_phone, d.whatsapp, d.default_currency, d.cod_enabled, d.manual_orders_enabled, d.legal_name, d.tax_number, d.invoice_footer, d.ai_assistant_enabled],
     );
-    await audit(tx, admin, "update", "store_settings", "1", { cod_enabled: d.cod_enabled, manual_orders_enabled: d.manual_orders_enabled });
+    await audit(tx, admin, "update", "store_settings", "1", { cod_enabled: d.cod_enabled, manual_orders_enabled: d.manual_orders_enabled, ai_assistant_enabled: d.ai_assistant_enabled });
   }, "تم حفظ الإعدادات.");
 }
 

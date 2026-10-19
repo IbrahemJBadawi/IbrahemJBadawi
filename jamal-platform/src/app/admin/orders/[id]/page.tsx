@@ -123,13 +123,16 @@ export default async function AdminOrder({ params }: PageProps<"/admin/orders/[i
          from public.order_events e left join public.profiles p on p.id = e.actor_id where e.order_id = $1 order by e.created_at`),
       returns: await q<Return>("select id, kind, status, reason, cost_party, admin_notes, created_at::text from public.return_requests where order_id = $1 order by created_at"),
       refunds: await q<Refund>("select id, amount::text, status, reason, method, reference, completed_at::text, created_at::text from public.refunds where order_id = $1 order by created_at"),
+      refundAccounts: await q<{ id: string; holder_name: string; method_label: string; account_ref: string; created_at: string }>(
+        "select id, holder_name, method_label, account_ref, created_at::text from public.refund_accounts where order_id = $1 order by created_at desc"),
+      invoice: (await q<{ invoice_no: string; status: string }>("select invoice_no, status from public.invoices where order_id = $1"))[0] ?? null,
       expenses: await q<Expense>("select id, kind, amount::text, currency_code, note, created_at::text from public.order_expenses where order_id = $1 order by created_at"),
       suppliers: await tx.query<{ id: string; name: string }>("select id, name from public.suppliers order by name"),
       currencies: await tx.query<{ code: string }>("select code from public.currencies where is_active order by code"),
     };
   });
   if (!data) notFound();
-  const { order: o, items, fulfillments, proofs, events, returns, refunds, expenses, suppliers, currencies } = data;
+  const { order: o, items, fulfillments, proofs, events, returns, refunds, expenses, suppliers, currencies, refundAccounts, invoice } = data;
   const cur = o.currency_code;
   const preApproval = PRE_APPROVAL.includes(o.status);
   const paid = o.payment_status === "paid";
@@ -161,6 +164,7 @@ export default async function AdminOrder({ params }: PageProps<"/admin/orders/[i
             <Badge tone={paid ? "success" : "warning"}>الدفع: {label(t.paymentStatus, o.payment_status)}</Badge>
             <span>{label(t.paymentMethod, o.payment_method)} · {formatDate(o.created_at)}</span>
             {o.is_test && <Badge tone="warning">طلب اختبار — مستثنى من المبيعات</Badge>}
+            {invoice && <Link href={`/admin/invoices/${o.id}`} className="text-xs underline">فاتورة {invoice.invoice_no}</Link>}
           </span>
         }
         action={<Link href="/admin/orders" className="text-sm text-muted hover:underline">كل الطلبات</Link>}
@@ -388,6 +392,12 @@ export default async function AdminOrder({ params }: PageProps<"/admin/orders/[i
           {/* 5. Refunds and returns */}
           <Card title="5) الاستردادات والمرتجعات">
             {refunds.length === 0 && <p className="mb-3 text-sm text-muted">لا توجد استردادات.</p>}
+            {refundAccounts.length > 0 && (
+              <div className="mb-3 rounded-md bg-sand/50 p-3 text-sm">
+                <p className="mb-1 font-semibold">بيانات استلام الاسترداد من العميل</p>
+                {refundAccounts.map((a) => <p key={a.id}>{a.holder_name} · {a.method_label} · <span className="ltr font-mono">{a.account_ref}</span> <span className="text-xs text-muted">({formatDate(a.created_at)})</span></p>)}
+              </div>
+            )}
             <ul className="space-y-3">
               {refunds.map((r) => (
                 <li key={r.id} className="rounded-md border border-line p-3 text-sm">

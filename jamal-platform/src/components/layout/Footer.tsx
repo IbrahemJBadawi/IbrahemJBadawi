@@ -25,7 +25,7 @@ async function Contact() {
 export function Footer() {
   const col = "space-y-2 text-sm text-ivory/70";
   return (
-    <footer className="mt-auto bg-ink text-ivory">
+    <footer className="mt-auto bg-ink text-ivory print:hidden">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-3" dir="ltr"><Monogram variant="outline-light" className="w-9" /><p className="font-display text-3xl tracking-[0.4em]">JAMAL</p></div>
@@ -41,11 +41,14 @@ export function Footer() {
             <li><Link className="hover:text-ivory" href="/offers">العروض والتخفيضات</Link></li>
             <li><Link className="hover:text-ivory" href="/favorites">المفضلة</Link></li>
             <li><Link className="hover:text-ivory" href="/track">تتبع الطلب</Link></li>
+            <li><Link className="hover:text-ivory" href="/app">تطبيق الهاتف</Link></li>
           </ul>
         </div>
         <div>
           <h2 className="mb-4 text-sm font-bold">المساعدة والسياسات</h2>
           <ul className={col}>
+            <li><Link className="hover:text-ivory" href="/support">الدعم وتذاكر خدمة العملاء</Link></li>
+            <li><Link className="hover:text-ivory" href="/assistant">مساعد التسوق الذكي</Link></li>
             <li><Link className="hover:text-ivory" href="/faq">الأسئلة الشائعة</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/shipping">سياسة التوصيل</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/returns">الاستبدال والإرجاع</Link></li>

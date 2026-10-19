@@ -16,6 +16,7 @@
     "admin:grant": "tsx --env-file-if-exists=.env.local scripts/grant-admin.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
     "@electric-sql/pglite": "^0.5.10",
     "@fontsource-variable/cairo": "^5.3.0",
     "@fontsource/cormorant-garamond": "^5.3.0",

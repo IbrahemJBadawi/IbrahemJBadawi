@@ -97,3 +97,35 @@ export async function requestReturnAction(_: FormState, form: FormData): Promise
   refresh();
   return { ok: true, message: "تم إرسال طلبك، سنتواصل معك قريبًا." };
 }
+
+const refundAccountSchema = z.object({
+  holderName: z.string().trim().min(2, "اسم صاحب الحساب مطلوب").max(120),
+  methodLabel: z.string().trim().min(2, "اكتب الوسيلة").max(80),
+  accountRef: z.string().trim().min(3, "رقم الحساب أو المحفظة مطلوب").max(120),
+});
+
+/** Where the customer wants a pending refund sent (stored for admins only). */
+export async function refundAccountAction(_: FormState, form: FormData): Promise<FormState> {
+  if (!(await rateLimit("refund-account", 5, 60 * 60_000))) return { error: "محاولات كثيرة. حاول لاحقًا." };
+  const orderId = await access(form);
+  if (!orderId) return { error: "لا يمكن الوصول إلى هذا الطلب." };
+  const p = refundAccountSchema.safeParse({ holderName: form.get("holderName"), methodLabel: form.get("methodLabel"), accountRef: form.get("accountRef") });
+  if (!p.success) return { fieldErrors: z.flattenError(p.error).fieldErrors };
+  try {
+    await asSystem(async (tx) => {
+      const pending = await tx.query("select 1 from public.refunds where order_id = $1 and status = 'pending'", [orderId]);
+      if (!pending.length) throw new WorkflowError("لا يوجد استرداد معلّق لهذا الطلب.");
+      const [{ n }] = await tx.query<{ n: number }>("select count(*)::int as n from public.refund_accounts where order_id = $1", [orderId]);
+      if (n >= 3) throw new WorkflowError("تم استلام بياناتك مسبقًا. تواصل مع الدعم لتعديلها.");
+      await tx.query(
+        "insert into public.refund_accounts (order_id, holder_name, method_label, account_ref) values ($1, $2, $3, $4)",
+        [orderId, p.data.holderName, p.data.methodLabel, p.data.accountRef],
+      );
+      await tx.query("insert into public.order_events (order_id, note, visible_to_customer) values ($1, 'أرسل العميل بيانات استلام الاسترداد.', false)", [orderId]);
+    });
+  } catch (e) {
+    return handle(e);
+  }
+  refresh();
+  return { ok: true, message: "تم حفظ بيانات الاسترداد." };
+}

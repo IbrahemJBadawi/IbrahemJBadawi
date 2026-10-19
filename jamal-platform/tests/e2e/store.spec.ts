@@ -216,6 +216,61 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     await expect(page.getByText("طلب إرجاع أو استبدال")).toBeVisible();
   });
 
+  test("invoice is issued only after the payment was confirmed", async ({ page }) => {
+    await page.goto(orderUrl);
+    await page.getByRole("link", { name: "عرض الفاتورة" }).click();
+    await expect(page.getByText(/فاتورة INV-\d{4}-\d{6}/)).toBeVisible();
+    await expect(page.getByText("فاتورة مبيعات — ليست فاتورة ضريبية")).toBeVisible();
+    await noHorizontalOverflow(page);
+  });
+
+  test("guest support ticket: staff reply is visible, internal note is not", async ({ page, browser }) => {
+    const guest = await browser.newPage({ viewport: { width: 360, height: 740 } });
+    await guest.goto("/support");
+    await guest.getByLabel("الاسم", { exact: true }).fill("زائرة تجريبية");
+    await guest.getByLabel("رقم الهاتف").fill("0599111222");
+    await guest.getByLabel("نوع المشكلة").selectOption("product");
+    await guest.getByLabel("العنوان", { exact: true }).fill("سؤال عن المقاس");
+    await guest.getByLabel("التفاصيل").fill("هل المقاس M يناسب طول 165 سم؟");
+    await guest.getByRole("button", { name: "إرسال التذكرة" }).click();
+    await expect(guest).toHaveURL(/\/support\/TK-\d+\?t=/);
+    await expect(guest.getByText(/تم فتح التذكرة/)).toBeVisible();
+    const ticketUrl = guest.url().replace("&new=1", "");
+    const code = new URL(ticketUrl).pathname.split("/").pop()!;
+    await noHorizontalOverflow(guest);
+
+    await login(page, adminEmail);
+    await page.goto("/admin/tickets");
+    await page.getByRole("link", { name: new RegExp(code) }).click();
+    await page.getByLabel("الرد").fill("ملاحظة سرية للفريق فقط");
+    await page.getByLabel("ملاحظة داخلية (لا يراها العميل)").check();
+    await page.getByRole("button", { name: "إرسال", exact: true }).click();
+    await expect(page.getByText("ملاحظة سرية للفريق فقط")).toBeVisible();
+    await page.getByLabel("الرد").fill("نعم، المقاس M مناسب غالبًا");
+    await page.getByRole("button", { name: "إرسال", exact: true }).click();
+    await expect(page.getByText("نعم، المقاس M مناسب غالبًا")).toBeVisible();
+    await noHorizontalOverflow(page);
+
+    await guest.goto(ticketUrl);
+    await expect(guest.getByText("نعم، المقاس M مناسب غالبًا")).toBeVisible();
+    await expect(guest.getByText("ملاحظة سرية للفريق فقط")).toHaveCount(0);
+    await guest.goto(`/support/${code}?t=wrong`);
+    await expect(guest.getByText("لا يمكن عرض هذه التذكرة")).toBeVisible();
+    await guest.close();
+  });
+
+  test("assistant is honest when not configured; the store installs as an app", async ({ page, request }) => {
+    await page.goto("/assistant");
+    await expect(page.getByText(/غير متاح حاليًا/)).toBeVisible();
+    await noHorizontalOverflow(page);
+    const manifest = await (await request.get("/manifest.webmanifest")).json();
+    expect(manifest).toMatchObject({ dir: "rtl", lang: "ar", display: "standalone" });
+    const sw = await request.get("/sw.js");
+    expect(sw.ok()).toBe(true);
+    await page.goto("/app");
+    await noHorizontalOverflow(page);
+  });
+
   test("contact form stores a message", async ({ page }) => {
     await page.goto("/contact");
     await page.getByLabel("الاسم").fill("زائر");

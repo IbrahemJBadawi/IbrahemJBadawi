@@ -17,7 +17,7 @@ export function BottomNav() {
     { href: "/account", label: "حسابي", icon: User, match: (p: string) => /^\/(account|login|register)/.test(p) },
   ];
   return (
-    <nav aria-label="التنقل السريع" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
+    <nav aria-label="التنقل السريع" className="fixed inset-x-0 bottom-0 z-40 print:hidden border-t border-line bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
       <ul className="grid grid-cols-5">
         {items.map(({ href, label, icon: Icon, match, badge }) => {
           const active = match(pathname);

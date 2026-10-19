@@ -117,6 +117,9 @@ export const ar = {
     exchanged: "تم الاستبدال",
     closed: "مغلق",
   },
+  ticketCategory: { order: "طلب", payment: "الدفع والتحويل", delivery: "التوصيل", return: "إرجاع واستبدال", product: "استفسار عن منتج", account: "الحساب", other: "أخرى" },
+  ticketStatus: { open: "مفتوحة", waiting_staff: "بانتظار فريق الدعم", waiting_customer: "بانتظار ردك", resolved: "تم الحل", closed: "مغلقة" },
+  ticketPriority: { low: "منخفضة", normal: "عادية", high: "مرتفعة", urgent: "عاجلة" },
   sort: {
     newest: "الأحدث",
     price_asc: "السعر: من الأقل",
