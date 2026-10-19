@@ -5,6 +5,8 @@ import { CONTEXT_LABELS, type ContextKey } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import { dismissOnboardingAction } from "../feature-actions";
 import { SummaryChips } from "@/components/motivation/SummaryChips";
+import { Crescent, Skyline } from "@/components/brand/Skyline";
+import { todayDates } from "@/lib/time";
 import type { MemberSummary } from "@/lib/data/summary";
 
 const THEME: Partial<Record<ContextKey, { action: { href: string; label: string } }>> = {
@@ -14,20 +16,37 @@ const THEME: Partial<Record<ContextKey, { action: { href: string; label: string 
   platform_admin: { action: { href: "/dashboard/admin/tickets", label: "البلاغات المفتوحة" } },
 };
 
-/** Greeting hero with the single most useful action for the active role. */
-export function WelcomeCard({ user, summary }: { user: CurrentUser; summary?: MemberSummary | null }) {
+/** Greeting hero: dawn sky over a mosque skyline, the date in both calendars, and the member's summary. */
+export function WelcomeCard({ user, summary, avatar }: { user: CurrentUser; summary?: MemberSummary | null; avatar?: string | null }) {
   const ctx = user.activeContext;
   const theme = (ctx && THEME[ctx]) || { action: { href: "/dashboard/profile", label: "حسابي" } };
+  const name = user.displayName || user.fullName;
+  const d = todayDates();
   return (
-    <div className="hero-card">
-      <div className="relative">
-        <p className="text-sm text-muted">السلام عليكم ورحمة الله{ctx ? ` · ${CONTEXT_LABELS[ctx]}` : ""}</p>
-        <h1 className="text-2xl font-bold text-brand-900 sm:text-[1.75rem]">{user.displayName || user.fullName}</h1>
-        <p className="mt-0.5 text-sm text-gold-dark">رحلتك مع القرآن</p>
-        {summary && <div className="mt-4"><SummaryChips s={summary} tone="hero" /></div>}
+    <section className="dawn flex flex-col gap-4 p-5 pb-8 sm:p-6 sm:pb-10" aria-label="الترحيب">
+      <Skyline />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="flex items-center gap-1.5 rounded-full bg-panel/70 px-3 py-1 text-sm font-bold text-gold-dark shadow-[var(--shadow-1)]">
+          <Crescent className="size-4" />{d.hijri}
+          <span className="font-normal text-muted">· {d.gregorian}</span>
+        </p>
+        {ctx && <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold text-brand-900">{CONTEXT_LABELS[ctx]}</span>}
       </div>
-      <ButtonLink href={theme.action.href} variant="primary" className="relative shrink-0">{theme.action.label}</ButtonLink>
-    </div>
+      <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {avatar ? <img src={avatar} alt="" className="size-16 shrink-0 rounded-full border-[3px] border-panel object-cover shadow-[var(--shadow-2)]" />
+          : <span className="grid size-16 shrink-0 place-items-center rounded-full border-[3px] border-panel bg-brand-100 text-2xl font-bold text-brand-900 shadow-[var(--shadow-2)]" aria-hidden>{name.trim().charAt(0)}</span>}
+        <div className="min-w-0">
+          <p className="text-sm text-muted">السلام عليكم ورحمة الله</p>
+          <h1 className="text-2xl font-bold leading-tight text-brand-900 sm:text-[1.75rem]">{name}</h1>
+        </div>
+      </div>
+      {summary && <SummaryChips s={summary} tone="hero" />}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-gold-dark">رحلتك مع القرآن</p>
+        <ButtonLink href={theme.action.href} variant="primary">{theme.action.label}</ButtonLink>
+      </div>
+    </section>
   );
 }
 

@@ -1,10 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { localRedirect } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  const res = NextResponse.redirect(new URL("/", request.url), { status: 303 });
+  const res = localRedirect("/", 303);
   res.cookies.delete("halaqati_ctx");
   return res;
 }

@@ -25,6 +25,7 @@ export async function updateSession(request: NextRequest) {
 
   // A redirect must carry any cookies the refresh just wrote: the old refresh
   // token is already spent, so dropping them would sign the person out.
+  // (The proxy needs an absolute URL; nextUrl already reflects the browser's host.)
   const redirect = (pathname: string, search = "") => {
     const url = request.nextUrl.clone();
     url.pathname = pathname;

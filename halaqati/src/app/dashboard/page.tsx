@@ -9,6 +9,8 @@ import { OnboardingChecklist, WelcomeCard } from "./_home/Welcome";
 import { TeacherHome } from "./_home/TeacherHome";
 import { studentSummary } from "@/lib/data/summary";
 import { createClient } from "@/lib/supabase/server";
+import { loadImages } from "@/lib/data/images";
+import { QuickActions } from "@/components/motivation/QuickActions";
 
 export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
   const user = await requireUser();
@@ -53,10 +55,12 @@ export default async function DashboardPage({ searchParams }: PageProps<"/dashbo
   const summary = ctx && user.roles.includes("student") && (ctx === "student" || ctx === "quran_teacher" || ctx === "parent")
     ? await studentSummary(await createClient(), user.id, true)
     : null;
+  const avatar = (await loadImages(await createClient(), "profile", [user.id])).get(user.id) ?? null;
   return (
     <div className="flex flex-col gap-5">
       {banner}
-      {ctx && <WelcomeCard user={user} summary={summary} />}
+      {ctx && <WelcomeCard user={user} summary={summary} avatar={avatar} />}
+      <QuickActions ctx={ctx} />
       <OnboardingChecklist user={user} />
       {body}
     </div>

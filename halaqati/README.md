@@ -7,7 +7,15 @@
 - **Supabase**: المصادقة + PostgreSQL مع **Row Level Security** على كل الجداول
 - **Zod** للتحقق على الخادم، **Vitest** و **Playwright** للاختبارات
 
-## البدء السريع
+## التشغيل على جهازك (حفظ محلي) — الطريقة الحالية
+```bash
+cd halaqati && npm install
+npm run local:setup -- بريدك@example.com
+npm run local:up               # http://localhost:3000
+```
+النسخ الاحتياطي والاستعادة وبقية التفاصيل في [docs/LOCAL.md](docs/LOCAL.md).
+
+## البدء السريع للتطوير
 ```bash
 cd halaqati
 npm install

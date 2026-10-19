@@ -2,7 +2,8 @@ import { ExportBar } from "@/components/export/ExportBar";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { setLeagueVisibilityAction } from "@/app/dashboard/motivation-actions";
-import { LeagueTable } from "@/components/motivation/LeagueTable";
+import { LeaguePodium, LeagueTable } from "@/components/motivation/LeagueTable";
+import { loadImages } from "@/lib/data/images";
 import { Alert, Button, Card, EmptyState, PageHeader, cx } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import type { LeagueRow } from "@/lib/data/motivation";
@@ -39,6 +40,8 @@ export default async function LeaguePage({ searchParams }: PageProps<"/dashboard
     if (res.error) error = "تعذّر تحميل الدوري.";
   }
   const visible = profile?.league_visible ?? true;
+  // Photos only for names shown (hidden names stay anonymous).
+  const images = await loadImages(supabase, "profile", rows.filter((r) => r.name !== "مشارك").map((r) => r.student_id));
 
   return (
     <>
@@ -64,7 +67,7 @@ export default async function LeaguePage({ searchParams }: PageProps<"/dashboard
                 ))}
               </div>
             </div>
-            {error ? <Alert tone="error">{error}</Alert> : rows.length ? <LeagueTable rows={rows} /> : <p className="text-muted">{selected?.league_enabled ? "لا يوجد طلاب في الدوري بعد." : "أوقف المعلّم الدوري في هذه الحلقة."}</p>}
+            {error ? <Alert tone="error">{error}</Alert> : rows.length ? <><LeaguePodium rows={rows} images={images} /><LeagueTable rows={rows} images={images} skipPodium /></> : <p className="text-muted">{selected?.league_enabled ? "لا يوجد طلاب في الدوري بعد." : "أوقف المعلّم الدوري في هذه الحلقة."}</p>}
           </Card>
           {user.roles.includes("student") && (
             <Card className="flex flex-wrap items-center justify-between gap-3">

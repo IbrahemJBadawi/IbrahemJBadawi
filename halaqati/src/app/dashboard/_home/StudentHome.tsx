@@ -6,6 +6,7 @@ import { LeagueTable } from "@/components/motivation/LeagueTable";
 import { WeekStrip } from "@/components/motivation/WeekStrip";
 import { BadgesPreview, TasksPreview, WeekPointsChart } from "@/components/motivation/HomeWidgets";
 import { LevelCard } from "@/components/motivation/LevelCard";
+import { DailyGoal } from "@/components/motivation/DailyGoal";
 import { Alert, ButtonLink, Card, EmptyState, Stat } from "@/components/ui";
 import type { CurrentUser } from "@/lib/auth";
 import { studentMemberships } from "@/lib/data/halaqat";
@@ -59,10 +60,11 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
     <div className="flex flex-col gap-5">
       {m && (
         <section aria-label="الحماسة والنقاط" className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
-          <Card className="flex flex-col gap-4">
+          <Card className="flex flex-col gap-4" id="wird">
+            <DailyGoal today={m.last7[m.last7.length - 1]?.points ?? 0} streak={m.current_streak} />
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="grid size-14 place-items-center rounded-[20px] bg-gold-50 text-3xl" aria-hidden>🔥</span>
+                <span className="grid size-14 place-items-center rounded-full bg-[var(--tint-peach)] text-3xl shadow-[0_0_0_6px_var(--tint-sand)]" aria-hidden>🔥</span>
                 <div>
                   <p className="text-sm text-muted">الحماسة</p>
                   <p className="text-2xl font-bold tabular-nums">{m.current_streak} <span className="text-base font-semibold">{m.current_streak === 1 ? "يوم" : "أيام"} متتالية</span></p>

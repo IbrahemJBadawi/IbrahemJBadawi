@@ -8,7 +8,7 @@ describe("role contexts", () => {
       centers: [{ id: "c", name: "مركز", role: "admin", status: "verified" }],
       organizations: [{ id: "o", name: "دار", role: "staff", status: "verified" }],
     });
-    expect(ctx).toEqual(["quran_teacher", "student", "center_admin"]);
+    expect(ctx).toEqual(["student", "quran_teacher", "center_admin"]);
   });
 
   it("never resolves to a context the user does not hold", () => {

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { ACTIVE_CONTEXT_COOKIE, requireUser } from "@/lib/auth";
 import { toUserMessage } from "@/lib/errors";
+import { publicEnv } from "@/lib/env";
 import { SELF_SERVICE_ROLES, isContextKey } from "@/lib/roles";
 import { createClient } from "@/lib/supabase/server";
 import { invalid, optionalText, uuid, type FormState } from "@/lib/validation/common";
@@ -19,7 +20,8 @@ export async function switchContextAction(fd: FormData) {
     (await cookies()).set(ACTIVE_CONTEXT_COOKIE, requested, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      // Secure whenever the site is served over HTTPS (a home server on plain HTTP still works).
+      secure: publicEnv.siteUrl.startsWith("https://"),
       path: "/",
       maxAge: 60 * 60 * 24 * 180,
     });

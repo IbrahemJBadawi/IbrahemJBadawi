@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { localRedirect } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/validation/auth";
 
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(next, request.url));
+    if (!error) return localRedirect(next);
   }
-  return NextResponse.redirect(new URL("/login?error=link", request.url));
+  return localRedirect("/login?error=link");
 }

@@ -45,8 +45,8 @@ export default async function AchievementsPage({ searchParams }: PageProps<"/das
           <h2 id="badges-h" className="mb-3 text-lg font-bold">الأوسمة</h2>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {badges.map((b) => (
-              <li key={b.key} className={cx("surface flex flex-col items-center gap-1 p-4 text-center", !b.earned && "opacity-70")}>
-                <span className={cx("grid size-14 place-items-center rounded-full text-3xl", b.earned ? "bg-gold-50" : "bg-deep grayscale")} aria-hidden>{b.icon}</span>
+              <li key={b.key} className="surface flex flex-col items-center gap-1 p-4 text-center">
+                <span className={cx("hex", b.earned ? "is-earned" : "is-locked")} aria-hidden>{b.icon}</span>
                 <p className="font-bold">{b.title}</p>
                 <p className="text-xs text-muted">{b.hint}</p>
                 {b.earned ? <p className="text-sm font-semibold text-brand-800">✓ حصلت عليه</p> : (

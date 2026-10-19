@@ -65,3 +65,12 @@ export function weekdayIn(timeZone: string): number {
 export function todayUtc(): string {
   return new Date().toISOString().slice(0, 10);
 }
+
+/** Today's Hijri (Umm al-Qura) and Gregorian dates, in Arabic with Latin digits. */
+export function todayDates(timeZone = "Asia/Riyadh") {
+  const now = new Date();
+  return {
+    hijri: new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-latn", { day: "numeric", month: "long", year: "numeric", timeZone }).format(now),
+    gregorian: new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { weekday: "long", day: "numeric", month: "long", timeZone }).format(now),
+  };
+}
