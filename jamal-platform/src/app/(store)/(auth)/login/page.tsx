@@ -3,7 +3,8 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { LoginForm } from "@/components/forms/AuthForms";
-import { Skeleton } from "@/components/ui/States";
+import { GoogleButton } from "@/components/forms/GoogleButton";
+import { Notice, Skeleton } from "@/components/ui/States";
 
 export const metadata: Metadata = { title: "تسجيل الدخول", robots: { index: false } };
 
@@ -12,7 +13,15 @@ async function Content({ searchParams }: { searchParams: PageProps<"/login">["se
   const raw = typeof sp.next === "string" ? sp.next : "/account";
   const next = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/account";
   if (await getCurrentUser()) redirect(next);
-  return <LoginForm next={next} />;
+  return (
+    <>
+      {sp.error === "google" && <Notice tone="error">تعذّر الدخول بحساب Google. حاول مرة أخرى أو استخدم البريد الإلكتروني.</Notice>}
+      <div className={sp.error === "google" ? "mt-4" : ""}>
+        <GoogleButton next={next} />
+      </div>
+      <LoginForm next={next} />
+    </>
+  );
 }
 
 export default function Page({ searchParams }: PageProps<"/login">) {

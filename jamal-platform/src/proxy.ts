@@ -17,8 +17,12 @@ export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   let response = NextResponse.next({ request });
 
-  if (process.env.AUTH_PROVIDER === "supabase" && process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  // Same rule as authProvider(): explicit AUTH_PROVIDER, else Supabase when its keys exist.
+  const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const sbKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const useSupabase = process.env.AUTH_PROVIDER === "supabase" || (process.env.AUTH_PROVIDER !== "local" && !!sbUrl && !!sbKey);
+  if (useSupabase && sbUrl && sbKey) {
+    const supabase = createServerClient(sbUrl, sbKey, {
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (list) => {
@@ -41,5 +45,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|demo/|media/|icon.svg|robots.txt|sitemap.xml).*)"],
+  matcher: ["/((?!_next/static|_next/image|demo/|demo-art/|media/|icon.png|apple-icon.png|manifest.webmanifest|sw.js|robots.txt|sitemap.xml|api/).*)"],
 };

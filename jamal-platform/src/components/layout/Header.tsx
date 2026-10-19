@@ -5,6 +5,8 @@ import { getCategories, getStoreSettings } from "@/lib/data/catalog";
 import { Logo } from "@/components/ui/Logo";
 import { CartButton } from "@/components/cart/CartButton";
 import { MobileMenu } from "./MobileMenu";
+import { assistantAvailable } from "@/lib/ai/availability";
+import { NotificationBell } from "@/components/notifications/Bell";
 
 async function Announcement() {
   const s = await getStoreSettings();
@@ -33,8 +35,8 @@ async function CategoryNav() {
 }
 
 async function MobileMenuLoader() {
-  const categories = await getCategories();
-  return <MobileMenu categories={categories.map((c) => ({ slug: c.slug, name: c.name_ar }))} />;
+  const [categories, assistant] = await Promise.all([getCategories(), assistantAvailable()]);
+  return <MobileMenu categories={categories.map((c) => ({ slug: c.slug, name: c.name_ar }))} assistant={assistant} />;
 }
 
 const iconLink = "inline-flex size-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-sand";
@@ -45,7 +47,7 @@ export function Header() {
       <Suspense fallback={null}>
         <Announcement />
       </Suspense>
-      <header className="sticky top-0 z-40 border-b border-line bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/85">
+      <header className="sticky top-0 z-40 print:hidden border-b border-line bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/85">
         <div className="container-page grid h-16 grid-cols-[1fr_auto_1fr] items-center md:h-20">
           <div className="flex items-center gap-1">
             <Suspense fallback={<span className="size-10 md:hidden" />}>
@@ -57,6 +59,9 @@ export function Header() {
           </div>
           <Logo />
           <div className="flex items-center justify-end gap-0.5">
+            <Suspense fallback={null}>
+              <NotificationBell className={iconLink} />
+            </Suspense>
             <Link href="/favorites" className={`${iconLink} max-sm:hidden`} aria-label="المفضلة">
               <Heart className="size-5" strokeWidth={1.6} />
             </Link>

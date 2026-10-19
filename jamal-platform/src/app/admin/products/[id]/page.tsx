@@ -19,7 +19,7 @@ import { Notice } from "@/components/ui/States";
 export const metadata = { title: "تعديل منتج" };
 
 type VariantRow = { id: string; color_name: string | null; color_hex: string | null; size: string | null; sku: string | null; price_override: string | null; availability: string };
-type LinkRow = { id: string; supplier_id: string; supplier_name: string; variant_id: string | null; supplier_sku: string | null; supplier_url: string | null; cost: string; shipping_cost: string; currency_code: string; is_primary: boolean; notes: string | null };
+type LinkRow = { id: string; supplier_id: string; supplier_name: string; agreement_status: string; variant_id: string | null; supplier_sku: string | null; supplier_url: string | null; cost: string; shipping_cost: string; currency_code: string; is_primary: boolean; notes: string | null };
 
 const small = "h-9 py-1 text-sm";
 
@@ -44,7 +44,8 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
   const data = await withAdmin(async (tx) => {
     const [product] = await tx.query<ProductRow>(
       `select id, slug, name_ar, name_en, description_ar, category_id, price::text, sale_price::text, currency_code, images,
-              availability, status, origin_country, return_policy, delivery_overrides, is_featured, is_demo
+              availability, status, origin_country, return_policy, delivery_overrides, is_featured, is_demo,
+              processing_days, stock_confirmed_at::text
        from public.products where id = $1`,
       [id],
     );
@@ -54,7 +55,7 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
       [id],
     );
     const links = await tx.query<LinkRow>(
-      `select sp.id, sp.supplier_id, s.name as supplier_name, sp.variant_id, sp.supplier_sku, sp.supplier_url, sp.cost::text,
+      `select sp.id, sp.supplier_id, s.name as supplier_name, s.agreement_status, sp.variant_id, sp.supplier_sku, sp.supplier_url, sp.cost::text,
               sp.shipping_cost::text, sp.currency_code, sp.is_primary, sp.notes
        from public.supplier_products sp join public.suppliers s on s.id = sp.supplier_id
        where sp.product_id = $1 order by sp.is_primary desc, s.name`,
@@ -120,6 +121,7 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
                 <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
                   <strong>{l.supplier_name}</strong>
                   {l.is_primary && <Badge tone="dark">أساسي</Badge>}
+                  <Badge tone={l.agreement_status === "approved" ? "success" : "warning"}>{label(t.supplierStatus, l.agreement_status)}</Badge>
                   <span className="text-muted">· {variantLabel(l.variant_id)}</span>
                   {l.supplier_url && <a href={l.supplier_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-beige-deep hover:underline">رابط المورد <ExternalLink className="size-3" /></a>}
                   <span className="ms-auto">
@@ -187,8 +189,8 @@ function SupplierLinkForm({
         <Input name="supplier_sku" placeholder="SKU لدى المورد" defaultValue={link?.supplier_sku ?? ""} className={small} dir="ltr" aria-label="SKU لدى المورد" />
         <Input name="supplier_url" placeholder="https://رابط المنتج لدى المورد" defaultValue={link?.supplier_url ?? ""} className={small} dir="ltr" aria-label="رابط المنتج لدى المورد" />
         <Input name="cost" placeholder="تكلفة المورد" defaultValue={link?.cost ?? ""} className={small} dir="ltr" aria-label="تكلفة المورد للوحدة" required />
-        <Input name="shipping_cost" placeholder="تكلفة الشحن المقدرة" defaultValue={link?.shipping_cost ?? ""} className={small} dir="ltr" aria-label="تكلفة الشحن المقدرة للوحدة" />
-        <Select name="currency_code" defaultValue={link?.currency_code ?? defaultCurrency ?? "USD"} className={small} aria-label="عملة التكلفة">
+        <Input name="shipping_cost" placeholder="رسوم إضافية للقطعة (تغليف…)" defaultValue={link?.shipping_cost ?? ""} className={small} dir="ltr" aria-label="رسوم إضافية يتقاضاها المورد للقطعة — تكلفة التوصيل تُسجل لكل طلب" />
+        <Select name="currency_code" defaultValue={link?.currency_code ?? defaultCurrency ?? "ILS"} className={small} aria-label="عملة التكلفة">
           {currencies.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
         </Select>
         <Input name="notes" placeholder="ملاحظات" defaultValue={link?.notes ?? ""} className={small} aria-label="ملاحظات" />

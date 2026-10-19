@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { trackOrder } from "@/lib/data/orders";
+import { getCustomerOrder } from "@/lib/data/orders";
+import { CustomerOrderActions } from "@/components/orders/CustomerOrderActions";
 import { rateLimit } from "@/lib/rate-limit";
 import { Button } from "@/components/ui/Button";
 import { Field, Input } from "@/components/ui/Field";
@@ -17,7 +18,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/track">["se
   let limited = false;
   if (number && phone) {
     limited = !(await rateLimit("track", 20, 15 * 60_000));
-    if (!limited) order = await trackOrder(number, phone);
+    if (!limited) order = await getCustomerOrder({ number, phone });
   }
   return (
     <>
@@ -33,7 +34,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/track">["se
       <div className="mt-10">
         {limited && <Notice tone="error">محاولات كثيرة. حاول بعد قليل.</Notice>}
         {number && phone && !limited && !order && <Notice tone="warning">لم نجد طلبًا بهذه البيانات. تأكد من رقم الطلب ورقم الهاتف.</Notice>}
-        {order && <OrderDetailView order={order} />}
+        {order && <OrderDetailView order={order} actions={<CustomerOrderActions order={order} phone={phone} />} />}
       </div>
     </>
   );

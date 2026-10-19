@@ -2,7 +2,9 @@ import "server-only";
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { randomBytes } from "node:crypto";
 import { asSystem } from "@/lib/db";
+import { isDemoRuntime } from "@/lib/db/core";
 import type { AuthResult, SessionIdentity } from "./types";
 
 /**
@@ -13,8 +15,12 @@ import type { AuthResult, SessionIdentity } from "./types";
 const COOKIE = "jamal_session";
 const MAX_AGE = 60 * 60 * 24 * 7;
 
+// Demo deployments without AUTH_SECRET get a per-instance random key: sessions
+// may end when the instance restarts, which is acceptable for a showcase.
+const demoSecret = isDemoRuntime() && !process.env.AUTH_SECRET ? randomBytes(32).toString("hex") : null;
+
 function secret() {
-  const s = process.env.AUTH_SECRET;
+  const s = process.env.AUTH_SECRET || demoSecret;
   if (!s || s.length < 32) {
     throw new Error(
       "AUTH_SECRET is missing or shorter than 32 characters. Run `npm run setup` or set it in .env.local",
@@ -23,7 +29,7 @@ function secret() {
   return new TextEncoder().encode(s);
 }
 
-async function setSession(user: SessionIdentity) {
+export async function setSession(user: SessionIdentity) {
   const token = await new SignJWT({ email: user.email })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)

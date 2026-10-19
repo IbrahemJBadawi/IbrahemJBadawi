@@ -6,14 +6,14 @@ import type { Quote } from "@/lib/orders/service";
 import type { CartLine } from "./cart-store";
 
 /** Server-computed quote for the current cart (prices never come from the client). */
-export function useQuote(lines: CartLine[], country: string | null) {
+export function useQuote(lines: CartLine[], country: string | null, governorateId: string | null = null) {
   const [state, setState] = useState<{ key: string; quote: Quote | null; error: boolean } | null>(null);
-  const key = JSON.stringify([lines, country]);
+  const key = JSON.stringify([lines, country, governorateId]);
 
   useEffect(() => {
     if (!lines.length) return;
     let cancelled = false;
-    quoteAction(lines, country)
+    quoteAction(lines, country, governorateId)
       .then((quote) => !cancelled && setState({ key, quote, error: false }))
       .catch(() => !cancelled && setState({ key, quote: null, error: true }));
     return () => {

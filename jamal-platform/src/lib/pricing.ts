@@ -105,17 +105,3 @@ export function expectedMargin(opts: {
   if (opts.cost === null || !opts.costCurrency || opts.costCurrency !== opts.priceCurrency) return null;
   return toMills(opts.price) - toMills(opts.cost) - toMills(opts.shippingCost);
 }
-
-export const ORDER_STATUS_FLOW: Record<string, string[]> = {
-  pending: ["confirmed", "cancelled"],
-  confirmed: ["processing", "cancelled"],
-  processing: ["shipped", "cancelled"],
-  shipped: ["delivered", "returned"],
-  delivered: ["returned"],
-  cancelled: [],
-  returned: [],
-};
-
-export function canTransition(from: string, to: string) {
-  return ORDER_STATUS_FLOW[from]?.includes(to) ?? false;
-}
