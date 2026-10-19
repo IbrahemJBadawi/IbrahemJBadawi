@@ -2,7 +2,8 @@ import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { InstallBanner } from "@/components/pwa/InstallApp";
+import { EngagePrompt } from "@/components/pwa/Engage";
+import { getSession } from "@/lib/auth";
 import { hasDemoProducts } from "@/lib/data/catalog";
 import { isDemoRuntime } from "@/lib/db/core";
 
@@ -15,6 +16,11 @@ async function DemoBanner() {
         : "منتجات تجريبية للاختبار فقط — ليست للبيع، والطلبات عليها طلبات اختبار."}
     </div>
   );
+}
+
+async function Engage() {
+  const session = await getSession();
+  return <EngagePrompt signedIn={!!session} />;
 }
 
 export default function StoreLayout({ children }: LayoutProps<"/">) {
@@ -34,7 +40,9 @@ export default function StoreLayout({ children }: LayoutProps<"/">) {
       <Suspense fallback={null}>
         <BottomNav />
       </Suspense>
-      <InstallBanner />
+      <Suspense fallback={null}>
+        <Engage />
+      </Suspense>
     </>
   );
 }

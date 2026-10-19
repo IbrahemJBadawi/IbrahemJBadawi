@@ -2,14 +2,18 @@ import "server-only";
 import { cache } from "react";
 import { redirect, notFound } from "next/navigation";
 import { asUser } from "@/lib/db";
+import { ensureAdmin, getDatabase } from "@/lib/db/core";
+import { supabaseAnonKey } from "./supabase";
 import { localGetSession, localSignIn, localSignOut, localSignUp } from "./local";
 import { supabaseGetSession, supabaseSignIn, supabaseSignOut, supabaseSignUp } from "./supabase";
 import type { CurrentUser } from "./types";
 
 export type { CurrentUser } from "./types";
 
+/** Explicit AUTH_PROVIDER wins; otherwise Supabase Auth whenever the Supabase keys are present. */
 export function authProvider(): "supabase" | "local" {
-  return process.env.AUTH_PROVIDER === "supabase" ? "supabase" : "local";
+  if (process.env.AUTH_PROVIDER === "supabase" || process.env.AUTH_PROVIDER === "local") return process.env.AUTH_PROVIDER;
+  return process.env.NEXT_PUBLIC_SUPABASE_URL && supabaseAnonKey() ? "supabase" : "local";
 }
 
 export const getSession = cache(async () =>
@@ -20,13 +24,21 @@ export const getSession = cache(async () =>
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const session = await getSession();
   if (!session) return null;
-  const profile = await asUser(session, async (tx) => {
-    const rows = await tx.query<{ full_name: string | null; phone: string | null; role: "customer" | "admin" }>(
-      "select full_name, phone, role from public.profiles where id = $1",
-      [session.id],
-    );
-    return rows[0];
-  });
+  const read = () =>
+    asUser(session, async (tx) => {
+      const rows = await tx.query<{ full_name: string | null; phone: string | null; role: "customer" | "admin" }>(
+        "select full_name, phone, role from public.profiles where id = $1",
+        [session.id],
+      );
+      return rows[0];
+    });
+  let profile = await read();
+  // The owner's account (ADMIN_EMAIL) becomes admin as soon as it is eligible.
+  const owner = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (profile && owner && profile.role !== "admin" && session.email?.toLowerCase() === owner) {
+    await ensureAdmin(await getDatabase());
+    profile = await read();
+  }
   if (!profile) return null;
   return {
     id: session.id,

@@ -3,6 +3,7 @@ import { listNotifications, notificationPrefs } from "@/lib/data/notifications";
 import { markAllReadAction, savePreferencesAction } from "@/lib/actions/notifications";
 import { ActionForm } from "@/components/forms/ActionForm";
 import { NotificationList } from "./NotificationList";
+import { PushToggle } from "@/components/pwa/Engage";
 
 export async function NotificationsPage({ next }: { next: string }) {
   const user = await requireUser(next);
@@ -13,6 +14,11 @@ export async function NotificationsPage({ next }: { next: string }) {
         <h1 className="text-2xl font-bold">الإشعارات</h1>
         {items.some((n) => !n.is_read) && <ActionForm action={markAllReadAction} submitLabel="تعليم الكل كمقروء" size="sm" variant="secondary" className="" />}
       </div>
+      <section className="rounded-[var(--radius-card)] border border-line bg-paper p-4">
+        <h2 className="mb-1 text-base font-bold">إشعارات الهاتف</h2>
+        <p className="mb-3 text-xs leading-6 text-muted">تصلك على هذا الجهاز حتى لو كان الموقع مغلقًا. فعّلها على كل جهاز تستخدمه.</p>
+        <PushToggle />
+      </section>
       <NotificationList items={items} />
       <section>
         <h2 className="mb-1 text-base font-bold">تفضيلات الإشعارات</h2>

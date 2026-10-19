@@ -3,13 +3,18 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { AuthResult, SessionIdentity } from "./types";
 
+/** Anon key, or the newer publishable key name used by the Vercel integration. */
+export function supabaseAnonKey() {
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "";
+}
+
 /**
  * Supabase Auth adapter. Uses only the public URL + anon/publishable key;
  * the service-role key is never needed for authentication.
  */
 export async function supabaseServerClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const key = supabaseAnonKey();
   if (!url || !key) {
     throw new Error("AUTH_PROVIDER=supabase requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY");
   }

@@ -32,8 +32,13 @@ export type DbContext =
 
 type GlobalWithDb = typeof globalThis & { __jamalDb?: Promise<Database> };
 
+/** DATABASE_URL, or POSTGRES_URL as set by the Vercel ↔ Supabase integration. */
+export function databaseUrl() {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
+}
+
 export function isDemoRuntime() {
-  return !process.env.DATABASE_URL && (process.env.JAMAL_DEMO === "1" || Boolean(process.env.VERCEL));
+  return !databaseUrl() && (process.env.JAMAL_DEMO === "1" || Boolean(process.env.VERCEL));
 }
 
 export function projectRoot() {
@@ -94,6 +99,51 @@ async function applyEnvPaymentDefaults(db: Database) {
   );
 }
 
+/**
+ * The store owner's admin account, from ADMIN_EMAIL.
+ * - Supabase Auth: the account is promoted only once its e-mail is confirmed,
+ *   so nobody can claim the address first.
+ * - Local auth: with ADMIN_PASSWORD the account is created if missing; an
+ *   existing account is promoted only if that password matches it.
+ */
+export async function ensureAdmin(db: Database) {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  if (!email) return;
+  await db.transaction(async (tx) => {
+    const [{ supabase }] = await tx.query<{ supabase: boolean }>(
+      `select exists (select 1 from information_schema.columns
+        where table_schema = 'auth' and table_name = 'users' and column_name = 'email_confirmed_at') as supabase`,
+    );
+    if (supabase) {
+      await tx.query(
+        `update public.profiles p set role = 'admin' from auth.users u
+         where u.id = p.id and lower(u.email) = $1 and u.email_confirmed_at is not null and p.role <> 'admin'`,
+        [email],
+      );
+      return;
+    }
+    const pw = process.env.ADMIN_PASSWORD;
+    if (!pw || pw.length < 10) return;
+    const bcrypt = (await import("bcryptjs")).default;
+    const [u] = await tx.query<{ id: string; encrypted_password: string | null }>(
+      "select id, encrypted_password from auth.users where lower(email) = $1",
+      [email],
+    );
+    let id = u?.id;
+    if (!u) {
+      [{ id }] = await tx.query<{ id: string }>(
+        `insert into auth.users (email, encrypted_password, raw_user_meta_data)
+         values ($1, $2, '{"full_name":"مدير المتجر"}'::jsonb) returning id`,
+        [email, await bcrypt.hash(pw, 12)],
+      );
+    } else if (!u.encrypted_password || !(await bcrypt.compare(pw, u.encrypted_password))) {
+      console.warn("ADMIN_EMAIL already belongs to an account with a different password; not promoting it.");
+      return;
+    }
+    await tx.query("update public.profiles set role = 'admin' where id = $1 and role <> 'admin'", [id]);
+  });
+}
+
 async function bootstrapDemo(db: Database) {
   const { seedDemo } = await import("../demo/seed");
   await db.transaction(async (tx) => {
@@ -113,9 +163,26 @@ async function bootstrapDemo(db: Database) {
   });
 }
 
-async function createPostgres(url: string): Promise<Database> {
+/**
+ * Integrations append extras (e.g. Supabase's `supa=…`) that Postgres would
+ * reject as unknown settings: keep only what the driver understands.
+ */
+function cleanUrl(raw: string) {
+  try {
+    const u = new URL(raw);
+    const ssl = u.searchParams.get("sslmode");
+    u.search = "";
+    return { url: u.toString(), ssl: ssl && ssl !== "disable" ? ("require" as const) : u.hostname === "localhost" || u.hostname === "127.0.0.1" ? false : ("require" as const) };
+  } catch {
+    return { url: raw, ssl: undefined };
+  }
+}
+
+async function createPostgres(raw: string): Promise<Database> {
   const postgres = (await import("postgres")).default;
+  const { url, ssl } = cleanUrl(raw);
   const sql = postgres(url, {
+    ssl,
     // Required for Supabase's transaction pooler (port 6543).
     prepare: false,
     max: Number(process.env.DATABASE_POOL_MAX || 5),
@@ -145,9 +212,13 @@ async function createPostgres(url: string): Promise<Database> {
 export function getDatabase(): Promise<Database> {
   const g = globalThis as GlobalWithDb;
   if (!g.__jamalDb) {
-    const url = process.env.DATABASE_URL;
+    const url = databaseUrl();
     g.__jamalDb = (url ? createPostgres(url) : createPglite()).then(async (db) => {
-      if (!isDemoRuntime()) await applyEnvPaymentDefaults(db);
+      if (url && process.env.JAMAL_AUTO_MIGRATE !== "0") await runMigrations(db);
+      if (!isDemoRuntime()) {
+        await applyEnvPaymentDefaults(db);
+        await ensureAdmin(db);
+      }
       return db;
     });
     g.__jamalDb.catch(() => {
@@ -192,7 +263,10 @@ export async function runMigrations(db: Database, log = false) {
     ? fs.readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()
     : [];
 
+  // Several server instances may start together: migrations take turns.
+  const lock = "select pg_advisory_xact_lock(724519)";
   await db.transaction(async (tx) => {
+    await tx.query(lock);
     const [{ exists }] = await tx.query<{ exists: boolean }>(
       "select to_regclass('auth.users') is not null as exists",
     );
@@ -215,6 +289,7 @@ export async function runMigrations(db: Database, log = false) {
 
   for (const file of files) {
     await db.transaction(async (tx) => {
+      await tx.query(lock);
       const done = await tx.query(
         "select 1 from app_meta.migrations where name = $1",
         [file],

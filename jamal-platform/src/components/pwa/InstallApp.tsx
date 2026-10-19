@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
-import { Download, Share, X } from "lucide-react";
+import { useSyncExternalStore } from "react";
+import { Download, Share } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: "accepted" | "dismissed" }> };
@@ -19,12 +19,12 @@ if (typeof window !== "undefined") {
     listeners.forEach((l) => l());
   });
 }
-const subscribe = (l: () => void) => {
+export const subscribeInstall = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
 
-function usePlatform() {
+export function usePlatform() {
   return useSyncExternalStore(
     () => () => undefined,
     () => {
@@ -39,7 +39,7 @@ function usePlatform() {
 /** Install button (Android/Chrome) or Add-to-Home-Screen steps (iOS Safari). */
 export function InstallApp({ compact = false }: { compact?: boolean }) {
   const platform = usePlatform();
-  const canPrompt = useSyncExternalStore(subscribe, () => !!deferred, () => false);
+  const canPrompt = useSyncExternalStore(subscribeInstall, () => !!deferred, () => false);
   if (platform === "server") return null;
   if (platform === "installed") return compact ? null : <p className="text-sm text-success">التطبيق مثبّت على جهازك.</p>;
   if (platform === "ios") {
@@ -70,42 +70,6 @@ export function InstallApp({ compact = false }: { compact?: boolean }) {
   );
 }
 
-/** One-time dismissible banner on phones (shown only when installing is possible). */
-export function InstallBanner() {
-  const canPrompt = useSyncExternalStore(subscribe, () => !!deferred, () => false);
-  const platform = usePlatform();
-  const stored = useSyncExternalStore(
-    () => () => undefined,
-    () => {
-      try {
-        return localStorage.getItem("jamal_install_dismissed") === "1";
-      } catch {
-        return false;
-      }
-    },
-    () => true,
-  );
-  const [dismissed, setDismissed] = useState(false);
-  if (stored || dismissed || platform === "installed" || platform === "server" || (!canPrompt && platform !== "ios")) return null;
-  return (
-    <div className="fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-40 flex items-center gap-3 rounded-2xl border border-line bg-paper p-3 shadow-lg md:hidden print:hidden" role="region" aria-label="تثبيت التطبيق">
-      <div className="min-w-0 flex-1 text-sm">
-        <p className="font-semibold">ثبّت تطبيق منصة الجمال</p>
-        <InstallApp compact />
-      </div>
-      <button
-        type="button"
-        aria-label="إخفاء"
-        className="inline-flex size-8 items-center justify-center rounded-full hover:bg-sand"
-        onClick={() => {
-          setDismissed(true);
-          try {
-            localStorage.setItem("jamal_install_dismissed", "1");
-          } catch { /* storage unavailable */ }
-        }}
-      >
-        <X className="size-4" />
-      </button>
-    </div>
-  );
+export function useCanPromptInstall() {
+  return useSyncExternalStore(subscribeInstall, () => !!deferred, () => false);
 }
