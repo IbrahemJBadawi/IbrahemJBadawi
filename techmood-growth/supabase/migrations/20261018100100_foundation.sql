@@ -450,7 +450,8 @@ create policy profiles_update on public.profiles for update to authenticated
 create policy platform_admins_select on public.platform_admins for select to authenticated
   using (user_id = auth.uid() or private.is_platform_admin());
 
-create policy plans_select on public.plans for select to anon, authenticated
+create policy plans_select_public on public.plans for select to anon using (is_public);
+create policy plans_select on public.plans for select to authenticated
   using (is_public or private.is_platform_admin());
 
 create policy organizations_select on public.organizations for select to authenticated

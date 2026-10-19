@@ -1,14 +1,16 @@
 -- =====================================================================
 -- TechMood Growth — Migration 0400: Appointments
 -- Availability per organization (in the organization's time zone),
--- public booking links, and double-booking prevention enforced by an
--- exclusion constraint (concurrent bookings cannot both succeed).
+-- public booking links, and double-booking prevention enforced in the
+-- database: a trigger locks the organization row, then rejects any
+-- overlap with SQLSTATE 23P01. Concurrent bookings are serialised by the
+-- lock, so they cannot both succeed. (A btree_gist exclusion constraint
+-- would also work on Supabase, but the embedded local database does not
+-- ship that extension, and one code path for both is simpler to trust.)
 --
 -- One shared calendar per organization in this version. Per-staff
 -- calendars are a later step (see docs/STATUS.md).
 -- =====================================================================
-
-create extension if not exists btree_gist with schema extensions;
 
 create type public.appointment_status as enum ('booked', 'confirmed', 'completed', 'canceled', 'no_show');
 create type public.email_status as enum ('sent', 'failed', 'not_configured', 'skipped');
@@ -85,13 +87,7 @@ create table public.appointments (
   unique (org_id, id),
   check (ends_at > starts_at and ends_at <= starts_at + interval '8 hours'),
   check (blocked_until >= ends_at),
-  foreign key (org_id, lead_id) references public.leads (org_id, id) on delete set null (lead_id),
-  -- The double-booking guarantee: active appointments of one organization
-  -- never overlap, whichever path (staff, public, concurrent) wrote them.
-  constraint appointments_no_overlap exclude using gist (
-    org_id with =,
-    tstzrange(starts_at, blocked_until, '[)') with &&
-  ) where (status in ('booked', 'confirmed'))
+  foreign key (org_id, lead_id) references public.leads (org_id, id) on delete set null (lead_id)
 );
 create index appointments_org_start_idx on public.appointments (org_id, starts_at);
 create index appointments_lead_idx on public.appointments (lead_id);
@@ -136,6 +132,18 @@ begin
     if new.status = 'canceled' and old.status <> 'canceled' then new.canceled_at := now(); end if;
     -- A moved appointment needs a fresh reminder.
     if new.starts_at <> old.starts_at then new.reminder_sent_at := null; new.reminder_email := null; end if;
+  end if;
+  -- The double-booking guarantee: active appointments of one organization
+  -- never overlap, whichever path (staff, public, concurrent) wrote them.
+  if new.status in ('booked', 'confirmed') then
+    perform 1 from public.organizations where id = new.org_id for update;
+    if exists (
+      select 1 from public.appointments a
+      where a.org_id = new.org_id and a.id <> new.id and a.status in ('booked', 'confirmed')
+        and tstzrange(a.starts_at, a.blocked_until, '[)') && tstzrange(new.starts_at, new.blocked_until, '[)')
+    ) then
+      raise exception 'يتعارض هذا الموعد مع موعد آخر محجوز' using errcode = '23P01', hint = 'slot_taken';
+    end if;
   end if;
   return new;
 end $$;

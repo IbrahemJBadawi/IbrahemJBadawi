@@ -112,6 +112,8 @@ declare
   v_email text := nullif(lower(btrim(coalesce(new.email, ''))), '');
   v_phone text := nullif(regexp_replace(coalesce(new.phone, ''), '[^0-9]', '', 'g'), '');
 begin
+  new.email := v_email;
+  new.phone := nullif(btrim(coalesce(new.phone, '')), '');
   if new.stage_id is null then
     new.stage_id := private.first_stage(new.org_id);
   end if;
@@ -148,6 +150,8 @@ begin
      and not private.is_member(new.org_id, new.owner_id) then
     raise exception 'المسؤول المحدد ليس عضوًا في الشركة' using errcode = '22023';
   end if;
+  new.email := nullif(lower(btrim(coalesce(new.email, ''))), '');
+  new.phone := nullif(btrim(coalesce(new.phone, '')), '');
   -- System-maintained columns.
   new.created_at := old.created_at;
   new.created_by := old.created_by;
