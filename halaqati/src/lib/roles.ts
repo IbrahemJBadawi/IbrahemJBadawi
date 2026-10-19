@@ -35,7 +35,7 @@ export const ROLE_DESCRIPTIONS: Partial<Record<AppRole, string>> = {
   quran_teacher: "أدير حلقات تحفيظ ومراجعة",
 };
 
-const ORDER: ContextKey[] = ["quran_teacher", "student", "parent", "center_admin", "org_admin", "instructor", "sponsor", "platform_admin"];
+const ORDER: ContextKey[] = ["student", "quran_teacher", "parent", "center_admin", "org_admin", "instructor", "sponsor", "platform_admin"];
 
 export type MembershipSummary = { id: string; name: string; role: string; status: string };
 

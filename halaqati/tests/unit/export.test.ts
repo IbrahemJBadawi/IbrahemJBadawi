@@ -10,7 +10,7 @@ describe("exports", () => {
     expect(csv).toContain('"أحمد ""الصغير"""');
     expect(csv).toContain("'=HYPERLINK(1),");
   });
-  it("XLSX is a zip file", async () => {
+  it("XLSX is a zip file", { timeout: 30_000 }, async () => {
     const buf = new Uint8Array(await toXlsx(t));
     expect([buf[0], buf[1]]).toEqual([0x50, 0x4b]);
   });

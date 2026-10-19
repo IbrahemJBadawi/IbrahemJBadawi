@@ -12,7 +12,13 @@
     "test:unit": "vitest run --project unit",
     "test:db": "vitest run --project db",
     "test:e2e": "playwright test",
-    "check:secrets": "node scripts/check-secrets.mjs"
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "local:setup": "node local/halaqati.mjs setup",
+    "local:up": "node local/halaqati.mjs up",
+    "local:down": "node local/halaqati.mjs down",
+    "local:logs": "node local/halaqati.mjs logs",
+    "local:backup": "node local/halaqati.mjs backup",
+    "local:restore": "node local/halaqati.mjs restore"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

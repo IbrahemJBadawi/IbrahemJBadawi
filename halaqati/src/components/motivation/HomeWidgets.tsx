@@ -39,8 +39,13 @@ export async function BadgesPreview({ supabase, studentId, longestStreak, href =
         <Link href={href} className="text-sm font-semibold text-brand-800">{earned.length} من {badges.length} وسامًا ←</Link>
       </div>
       {earned.length > 0 && (
-        <ul className="flex flex-wrap gap-1.5" aria-label="الأوسمة المكتسبة">
-          {earned.map((b) => <li key={b.key} className="rounded-full bg-gold-50 px-2.5 py-1 text-sm" title={b.hint}><span aria-hidden>{b.icon}</span> {b.title}</li>)}
+        <ul className="flex gap-3 overflow-x-auto pb-1" aria-label="الأوسمة المكتسبة">
+          {earned.map((b) => (
+            <li key={b.key} className="flex w-[72px] shrink-0 flex-col items-center gap-1 text-center" title={b.hint}>
+              <span className="hex is-earned !h-[56px] !w-[50px] !text-2xl" aria-hidden>{b.icon}</span>
+              <span className="text-[0.7rem] font-semibold leading-tight">{b.title}</span>
+            </li>
+          ))}
         </ul>
       )}
       <ul className="flex flex-col gap-2">
