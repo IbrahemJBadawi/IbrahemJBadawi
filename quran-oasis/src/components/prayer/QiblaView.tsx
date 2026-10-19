@@ -82,7 +82,7 @@ export function QiblaView() {
 
       <div className="hero-sunrise card-soft relative mx-auto grid aspect-square w-full max-w-[22rem] place-items-center rounded-full">
         <div
-          className="relative h-[86%] w-[86%] rounded-full border-2 border-gold/50 bg-surface transition-transform duration-300 ease-out"
+          className="relative h-[86%] w-[86%] overflow-hidden rounded-full border-2 border-gold/50 bg-surface transition-transform duration-300 ease-out"
           style={{ transform: `rotate(${dialRotation}deg)` }}
           role="img"
           aria-label={`القبلة على زاوية ${Math.round(bearing)} درجة من الشمال`}

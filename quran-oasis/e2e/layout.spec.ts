@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const PAGES = ["/", "/today", "/quran", "/quran/2", "/adhkar", "/adhkar/morning", "/oasis", "/plan", "/hifz", "/learn", "/stats", "/saved", "/profile", "/sources", "/privacy"];
+const PAGES = ["/", "/today", "/quran", "/quran/2", "/adhkar", "/adhkar/morning", "/oasis", "/plan", "/hifz", "/learn", "/stats", "/saved", "/profile", "/sources", "/privacy", "/prayer", "/qibla", "/tasbih", "/learn/tajweed-basics", "/welcome"];
 
 test("لا تمرير أفقي ولا أخطاء في الصفحات الرئيسية", async ({ page }) => {
   const errors: string[] = [];

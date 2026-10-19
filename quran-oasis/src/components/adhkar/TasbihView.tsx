@@ -84,7 +84,7 @@ export function TasbihView() {
         <span className="mt-5" key={pulse}>
           <ProgressRing value={target ? shown / target : 0} size={200} stroke={10} label="تقدم الدورة">
             <span className="animate-pop block">
-              <span className="block font-mono text-6xl font-bold tabular-nums text-ivory" dir="ltr">
+              <span className="block text-6xl font-bold tabular-nums text-ivory">
                 {toArabicDigits(shown)}
               </span>
               {target ? <span className="text-sm text-ivory/70">من {toArabicDigits(target)}</span> : null}

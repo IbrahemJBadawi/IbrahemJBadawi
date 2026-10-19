@@ -172,6 +172,6 @@ test("الإعدادات: الوضع الداكن وحجم الخط والتصد
   await page.reload();
   await expect(page.locator("html")).toHaveClass(/dark/);
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "تصدير بياناتي" }).click();
+  await page.getByRole("button", { name: "تصدير نسخة احتياطية" }).click();
   expect((await download).suggestedFilename()).toMatch(/^quran-oasis-\d{4}-\d{2}-\d{2}\.json$/);
 });

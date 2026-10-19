@@ -288,7 +288,7 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
                         <span className="block font-semibold">{c.title}</span>
                         <ProgressBar className="mt-1.5 h-1.5" value={hydrated && st.total ? st.done / st.total : 0} label={`تقدم ${c.title}`} />
                       </span>
-                      <span className="text-xs font-semibold text-muted">{!hydrated ? "…" : st.complete ? "✓" : `${toArabicDigits(st.done)}/${toArabicDigits(st.total)}`}</span>
+                      <span className="text-xs font-semibold text-muted">{!hydrated ? "…" : st.complete ? "✓" : `${toArabicDigits(st.done)} من ${toArabicDigits(st.total)}`}</span>
                     </Link>
                   </li>
                 );

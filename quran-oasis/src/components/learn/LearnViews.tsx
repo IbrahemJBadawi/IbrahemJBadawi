@@ -97,24 +97,25 @@ export function PathDetail({ path }: { path: LearningPath }) {
           </ButtonLink>
         )}
       </header>
-      <ol className="relative mx-auto max-w-sm py-2" aria-label="مسار الدروس">
+      <ol className="relative mx-auto max-w-sm overflow-x-clip py-2" aria-label="مسار الدروس">
         {path.lessons.map((l, i) => {
           const complete = isDone(path.id, l.id);
           const current = !complete && nextLesson?.id === l.id;
           // تعرّج المسار: يمين، وسط، يسار، وسط…
-          const offset = [0, -1, 0, 1][i % 4] * 28;
+          const offset = [0, -1, 0, 1][i % 4] * 64;
           return (
-            <li key={l.id} className="relative flex flex-col items-center pb-10 last:pb-0" style={{ transform: `translateX(${offset}%)` }}>
-              {i < path.lessons.length - 1 && (
-                <span
-                  aria-hidden="true"
-                  className="absolute top-20 h-12 w-0 border-r-[3px] border-dotted border-line"
-                  style={{ transform: `rotate(${([0, -1, 0, 1][(i + 1) % 4] - [0, -1, 0, 1][i % 4]) * -24}deg)`, transformOrigin: "top" }}
-                />
+            <li key={l.id} className="relative flex flex-col items-center pb-8 last:pb-0">
+              {i > 0 && (
+                <span aria-hidden="true" className="mb-3 flex flex-col items-center gap-1.5" style={{ transform: `translateX(${([0, -1, 0, 1][i % 4] + [0, -1, 0, 1][(i - 1) % 4]) * 32}px)` }}>
+                  <span className="h-2 w-2 rounded-full bg-line" />
+                  <span className="h-2 w-2 rounded-full bg-line" />
+                  <span className="h-2 w-2 rounded-full bg-line" />
+                </span>
               )}
               <Link
                 href={`/learn/${path.id}/${l.id}`}
-                className="group flex flex-col items-center text-center focus-ring rounded-3xl"
+                className="group relative flex flex-col items-center text-center focus-ring rounded-3xl"
+                style={{ transform: `translateX(${offset}px)` }}
                 aria-label={`الدرس ${i + 1}: ${l.title}${complete ? " — مكتمل" : current ? " — التالي" : ""}`}
               >
                 <span className="relative">
@@ -139,7 +140,7 @@ export function PathDetail({ path }: { path: LearningPath }) {
                     </span>
                   )}
                 </span>
-                <span className={cn("mt-4 max-w-[12rem] font-bold leading-snug", current ? "text-primary" : "text-fg")}>{l.title}</span>
+                <span className={cn("mt-4 max-w-[11rem] font-bold leading-snug", current ? "text-primary" : "text-fg")}>{l.title}</span>
                 <span className="mt-0.5 flex items-center gap-1 text-xs text-muted">
                   <Clock className="h-3 w-3" aria-hidden="true" />
                   {toArabicDigits(l.minutes)} دقائق
