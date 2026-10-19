@@ -14,6 +14,7 @@ Founder of TechMood 🚀
 
 ## Current Projects
 - TechMood
+- TechMood Technology — company website ([`techmood-company/`](techmood-company))
 - TechMood Agile Teams
 - FlowMood
 - LancerMood
