@@ -9,5 +9,5 @@ export type CurrentUser = {
   email: string | null;
   fullName: string | null;
   phone: string | null;
-  role: "customer" | "admin";
+  role: "customer" | "supplier" | "admin";
 };

@@ -23,6 +23,7 @@ export default async function AdminProducts({ searchParams }: PageProps<"/admin/
     if (status) { params.push(status); where.push(`p.status = $${params.length}`); }
     if (issue === "supplier") where.push("p.status = 'published' and not exists (select 1 from public.supplier_products s where s.product_id = p.id and s.is_primary)");
     if (issue === "images") where.push("jsonb_array_length(p.images) = 0");
+    if (issue === "review") where.push("p.review_status = 'pending' and p.status <> 'published'");
     if (issue === "demo") where.push("p.is_demo");
     if (issue === "stale") where.push("p.status = 'published' and not p.is_demo and (p.stock_confirmed_at is null or p.stock_confirmed_at < now() - interval '7 days')");
     return tx.query<{ id: string; slug: string; name_ar: string; status: string; availability: string; price: string; sale_price: string | null; currency_code: string; category: string | null; variants: number; supplier: string | null; is_demo: boolean; stock_confirmed_at: string | null }>(
@@ -38,6 +39,9 @@ export default async function AdminProducts({ searchParams }: PageProps<"/admin/
   return (
     <>
       <AdminTitle title="المنتجات" description={`${rows.length} منتج`} action={<ButtonLink href="/admin/products/new"><Plus className="size-4" /> منتج جديد</ButtonLink>} />
+      <div className="mb-3 flex flex-wrap gap-2 text-sm">
+        <Link href="/admin/products?issue=review" className={`rounded-full border px-3 py-1 ${issue === "review" ? "border-ink bg-ink text-ivory" : "border-line"}`}>منتجات الموردين للمراجعة</Link>
+      </div>
       <form className="mb-4 flex flex-wrap gap-2">
         <Input name="q" defaultValue={q} placeholder="بحث بالاسم أو المعرّف" className="max-w-xs" />
         <Select name="status" defaultValue={status} className="w-auto">

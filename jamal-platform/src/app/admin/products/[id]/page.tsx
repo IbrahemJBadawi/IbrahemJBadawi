@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { withAdmin } from "@/lib/admin";
 import { lookups } from "@/lib/admin/lookups";
 import {
-  deleteProductAction, deleteSupplierLinkAction, deleteVariantAction, saveSupplierLinkAction, saveVariantAction,
+  deleteProductAction, deleteSupplierLinkAction, deleteVariantAction, requestProductChangesAction, saveSupplierLinkAction, saveVariantAction,
 } from "@/lib/actions/admin/catalog";
 import { expectedMargin, effectiveUnitPrice } from "@/lib/pricing";
 import { formatMoney, fromMills } from "@/lib/money";
@@ -12,7 +12,7 @@ import { label, t } from "@/lib/i18n/ar";
 import { AdminTitle, Card } from "@/components/admin/ui";
 import { ProductForm, type ProductRow } from "@/components/admin/ProductForm";
 import { ActionForm } from "@/components/forms/ActionForm";
-import { Checkbox, Input, Select } from "@/components/ui/Field";
+import { Checkbox, Field, Input, Select, Textarea } from "@/components/ui/Field";
 import { Badge } from "@/components/ui/Badge";
 import { Notice } from "@/components/ui/States";
 
@@ -50,6 +50,12 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
       [id],
     );
     if (!product) return null;
+    const [review] = await tx.query<{ review_status: string | null; review_note: string | null; supplier_name: string | null; supplier_id: string | null; cost: string | null }>(
+      `select p.review_status, p.review_note, s.name as supplier_name, s.id as supplier_id,
+              (select sp.cost::text from public.supplier_products sp where sp.product_id = p.id and sp.supplier_id = s.id and sp.is_primary limit 1) as cost
+       from public.products p left join public.suppliers s on s.id = p.submitted_by_supplier where p.id = $1`,
+      [id],
+    );
     const variants = await tx.query<VariantRow>(
       "select id, color_name, color_hex, size, sku, price_override::text, availability from public.product_variants where product_id = $1 order by sort_order, color_name, size",
       [id],
@@ -62,7 +68,7 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
       [id],
     );
     const [{ orders }] = await tx.query<{ orders: number }>("select count(distinct order_id)::int as orders from public.order_items where product_id = $1", [id]);
-    return { product, variants, links, orders, ...(await lookups(tx)) };
+    return { product, variants, links, orders, review, ...(await lookups(tx)) };
   });
   if (!data) notFound();
   const { product: p, variants, links, suppliers, currencies, categories } = data;
@@ -81,6 +87,19 @@ export default async function EditProduct({ params, searchParams }: PageProps<"/
         action={p.status === "published" ? <Link href={`/product/${p.slug}`} target="_blank" className="inline-flex items-center gap-1 text-sm text-beige-deep hover:underline">عرض في المتجر <ExternalLink className="size-3.5" /></Link> : undefined}
       />
       {sp.created && <Notice tone="success">تم إنشاء المنتج. أضف الخيارات وبيانات المورد ثم انشره.</Notice>}
+      {data.review?.supplier_name && data.review.review_status && data.review.review_status !== "approved" && (
+        <Card title={`مقدّم من المورد: ${data.review.supplier_name}`}>
+          <p className="text-sm leading-7">
+            سعر المورد: <strong>{data.review.cost ? formatMoney(data.review.cost, p.currency_code) : "—"}</strong> · السعر المقترح للبيع: <strong>{formatMoney(p.price, p.currency_code)}</strong>
+          </p>
+          <p className="mt-1 text-xs leading-6 text-muted">للاعتماد: راجع الصور والوصف، حدّد سعر البيع، واجعل الحالة «منشور» واحفظ. يجب أن يكون المورد معتمدًا. يصل المورد إشعار بالنشر.</p>
+          {data.review.review_status === "changes_requested" && data.review.review_note && <p className="mt-2 text-sm text-warning">طلبت تعديلًا: {data.review.review_note}</p>}
+          <ActionForm action={requestProductChangesAction} submitLabel="إرسال طلب تعديل للمورد" variant="outline" size="sm" className="mt-3 space-y-2">
+            <input type="hidden" name="id" value={p.id} />
+            <Field label="ما المطلوب تعديله؟"><Textarea name="note" rows={2} required minLength={5} maxLength={1000} /></Field>
+          </ActionForm>
+        </Card>
+      )}
 
       <Card title="بيانات المنتج">
         <ProductForm product={p} categories={categories} currencies={currencies} />

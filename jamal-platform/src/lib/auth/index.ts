@@ -1,7 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { redirect, notFound } from "next/navigation";
-import { asUser } from "@/lib/db";
+import { asSystem, asUser } from "@/lib/db";
+import { supplierForUser, type SupplierAccount } from "@/lib/suppliers/portal";
 import { ensureAdmin, getDatabase, OWNER_EMAIL } from "@/lib/db/core";
 import { supabaseAnonKey } from "./supabase";
 import { localGetSession, localSignIn, localSignOut, localSignUp } from "./local";
@@ -26,7 +27,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   if (!session) return null;
   const read = () =>
     asUser(session, async (tx) => {
-      const rows = await tx.query<{ full_name: string | null; phone: string | null; role: "customer" | "admin" }>(
+      const rows = await tx.query<{ full_name: string | null; phone: string | null; role: "customer" | "supplier" | "admin" }>(
         "select full_name, phone, role from public.profiles where id = $1",
         [session.id],
       );
@@ -76,4 +77,12 @@ export function signIn(email: string, password: string) {
 
 export function signOut() {
   return authProvider() === "supabase" ? supabaseSignOut() : localSignOut();
+}
+
+/** The signed-in supplier with their supplier record; others are sent to the supplier sign-up page. */
+export async function requireSupplier(): Promise<{ user: CurrentUser; supplier: SupplierAccount }> {
+  const user = await requireUser("/supplier");
+  const supplier = await asSystem((tx) => supplierForUser(tx, user.id));
+  if (!supplier) redirect("/suppliers/join");
+  return { user, supplier };
 }

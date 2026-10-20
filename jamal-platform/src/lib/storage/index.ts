@@ -2,6 +2,7 @@ import "server-only";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { databaseUrl, withContext } from "@/lib/db/core";
 
 /**
  * Image storage for product photos.
@@ -60,6 +61,13 @@ export async function uploadImage(file: File): Promise<{ ok: true; url: string }
     return { ok: true, url: `${base}/storage/v1/object/public/${bucket}/products/${name}` };
   }
 
+  // Hosted without file storage (read-only disk): keep the photo in the database.
+  if (databaseUrl() || process.env.VERCEL) {
+    await withContext({ role: "system" }, (tx) =>
+      tx.query("insert into public.media_files (name, mime, data) values ($1, $2, $3)", [name, file.type, buf]),
+    );
+    return { ok: true, url: `/media/${name}` };
+  }
   await fs.mkdir(UPLOAD_DIR, { recursive: true });
   await fs.writeFile(path.join(UPLOAD_DIR, name), buf);
   return { ok: true, url: `/media/${name}` };
