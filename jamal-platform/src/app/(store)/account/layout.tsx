@@ -5,6 +5,7 @@ import { logoutAction } from "@/lib/actions/auth";
 
 async function AdminLink() {
   const user = await getCurrentUser();
+  if (user?.role === "supplier") return <li><Link href="/supplier" className="block font-semibold text-beige-deep">لوحة المورد</Link></li>;
   if (user?.role !== "admin") return null;
   return <li><Link href="/admin" className="block font-semibold text-beige-deep">لوحة الإدارة</Link></li>;
 }

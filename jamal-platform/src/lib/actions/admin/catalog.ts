@@ -377,3 +377,26 @@ export async function deleteCategoryAction(_: ActionResult, form: FormData): Pro
   refresh();
   return { ok: true, message: "تم حذف الفئة." };
 }
+
+/** Sends a supplier-submitted product back with the admin's note. */
+export async function requestProductChangesAction(_: ActionResult, form: FormData): Promise<ActionResult> {
+  const id = z.uuid().safeParse(f.str(form, "id"));
+  const note = z.string().trim().min(5, "اكتب ما المطلوب تعديله").max(1000).safeParse(f.str(form, "note"));
+  if (!id.success) return { error: "منتج غير صالح." };
+  if (!note.success) return { fieldErrors: { note: note.error.issues.map((i) => i.message) } };
+  try {
+    await withAdmin(async (tx, admin) => {
+      const rows = await tx.query(
+        `update public.products set review_status = 'changes_requested', review_note = $2
+         where id = $1 and submitted_by_supplier is not null and status <> 'published' returning id`,
+        [id.data, note.data],
+      );
+      if (!rows.length) throw new Error("not reviewable");
+      await audit(tx, admin, "request_changes", "product", id.data, { note: note.data });
+    });
+  } catch (e) {
+    return { error: e instanceof Error && e.message === "not reviewable" ? "هذا المنتج ليس بانتظار مراجعة." : dbError(e) };
+  }
+  refresh();
+  return { ok: true, message: "أرسلنا ملاحظتك للمورد." };
+}

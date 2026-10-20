@@ -67,6 +67,7 @@ export function MobileMenu({ categories, assistant = false }: { categories: { sl
               {assistant && <li><Link href="/assistant" className="block py-2">مساعد التسوق الذكي</Link></li>}
               <li><Link href="/support" className="block py-2">الدعم</Link></li>
               <li><Link href="/contact" className="block py-2">اتصل بنا</Link></li>
+              <li><Link href="/suppliers/join" className="block py-2 font-semibold text-beige-deep">للموردين: اعرض منتجاتك</Link></li>
               <li><Link href="/faq" className="block py-2">الأسئلة الشائعة</Link></li>
             </ul>
           </nav>

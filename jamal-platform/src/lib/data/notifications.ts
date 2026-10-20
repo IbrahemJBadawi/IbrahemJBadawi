@@ -31,8 +31,8 @@ export async function notificationPrefs(user: CurrentUser) {
               coalesce(p.in_app, true) as in_app, coalesce(p.email, c.email_default) as email
        from public.notification_categories c
        left join public.notification_preferences p on p.kind = c.kind and p.user_id = $1
-       where (not c.admin_only or $2) order by c.sort_order`,
-      [user.id, user.role === "admin"],
+       where (not c.admin_only or $2) and (not c.supplier_only or $3) order by c.sort_order`,
+      [user.id, user.role === "admin", user.role === "supplier"],
     ),
   );
 }

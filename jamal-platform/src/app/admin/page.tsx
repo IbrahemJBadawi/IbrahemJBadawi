@@ -24,7 +24,7 @@ export default async function AdminDashboard() {
     );
     const [counts] = await tx.query<{
       proofs: number; settlements_due: number; zones: number; messages: number; returns: number; refunds_pending: number;
-      stale_stock: number; late: number; no_supplier: number; demo_products: number; payment_configured: boolean;
+      stale_stock: number; late: number; no_supplier: number; demo_products: number; payment_configured: boolean; supplier_applications: number; supplier_products: number;
     }>(
       `select
         (select count(*)::int from public.payment_proofs pp join public.orders o on o.id = pp.order_id where pp.status = 'pending' and not o.is_test) as proofs,
@@ -37,7 +37,9 @@ export default async function AdminDashboard() {
         (select count(*)::int from public.orders o where not o.is_test and o.status not in ('delivered','cancelled','refunded','returned') and o.status_changed_at < now() - interval '48 hours') as late,
         (select count(*)::int from public.products p where p.status = 'published' and not exists (select 1 from public.supplier_products s where s.product_id = p.id and s.is_primary)) as no_supplier,
         (select count(*)::int from public.products where is_demo) as demo_products,
-        (select bank_transfer_enabled and (transfer_details is not null or beneficiary_name is not null) from public.payment_settings where id = 1) as payment_configured`,
+        (select bank_transfer_enabled and (transfer_details is not null or beneficiary_name is not null) from public.payment_settings where id = 1) as payment_configured,
+        (select count(*)::int from public.suppliers where agreement_status = 'applied') as supplier_applications,
+        (select count(*)::int from public.products where review_status = 'pending' and status <> 'published') as supplier_products`,
     );
     const finRows = await tx.query<FinRow>(
       `select o.id, o.currency_code, o.subtotal::text, o.discount_total::text, o.shipping_cost::text, o.fees_total::text, o.total::text,
@@ -83,6 +85,8 @@ export default async function AdminDashboard() {
 
   const c = data.counts;
   const warnings = [
+    c.supplier_applications > 0 && { text: `${c.supplier_applications} طلب انضمام من موردين بانتظار المراجعة.`, href: "/admin/suppliers" },
+    c.supplier_products > 0 && { text: `${c.supplier_products} منتج من الموردين بانتظار المراجعة والنشر.`, href: "/admin/products?issue=review" },
     !c.payment_configured && { text: "بيانات التحويل البنكي غير مُدخلة — لن تظهر للعملاء تعليمات الدفع.", href: "/admin/settings" },
     c.zones === 0 && { text: "لا توجد منطقة توصيل مفعّلة — لن يتمكن العملاء من الطلب.", href: "/admin/shipping" },
     c.proofs > 0 && { text: `${c.proofs} إثبات تحويل بانتظار المراجعة.`, href: "/admin/orders?status=payment_review" },

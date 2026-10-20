@@ -97,6 +97,7 @@ export const ar = {
     cancelled: "أُلغيت التسوية",
   },
   supplierStatus: {
+    applied: "طلب انضمام جديد",
     contacting: "قيد التواصل",
     negotiating: "قيد التفاوض",
     approved: "معتمد",
