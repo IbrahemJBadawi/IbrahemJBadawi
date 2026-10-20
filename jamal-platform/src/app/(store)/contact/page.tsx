@@ -7,7 +7,7 @@ import { ActionForm } from "@/components/forms/ActionForm";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { PageHeader } from "@/components/ui/States";
 
-export const metadata: Metadata = { title: "اتصل بنا", description: "تواصل مع فريق منصة الجمال.", alternates: { canonical: "/contact" } };
+export const metadata: Metadata = { title: "اتصل بنا", description: "تواصل مع فريق متجر الجمال.", alternates: { canonical: "/contact" } };
 
 async function Channels() {
   const s = await getStoreSettings();

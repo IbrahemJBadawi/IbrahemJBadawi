@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/category/[slug]">
   if (!c) return { title: "فئة غير موجودة" };
   return {
     title: c.name_ar,
-    description: c.description_ar ?? `تسوّق ${c.name_ar} من منصة الجمال.`,
+    description: c.description_ar ?? `تسوّق ${c.name_ar} من متجر الجمال.`,
     alternates: { canonical: `/category/${c.slug}` },
   };
 }

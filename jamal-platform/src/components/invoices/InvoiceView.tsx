@@ -14,7 +14,7 @@ export function InvoiceView({ inv }: { inv: Invoice }) {
         <div className="flex items-center gap-3">
           <Monogram className="w-9" />
           <div>
-            <p className="text-lg font-bold">{inv.seller_name ?? "منصة الجمال | Al Jamal"}</p>
+            <p className="text-lg font-bold">{inv.seller_name ?? "Al JAMAL Store | متجر الجمال"}</p>
             {inv.seller_tax_number ? <p className="text-xs text-muted">الرقم الضريبي: <span className="ltr">{inv.seller_tax_number}</span></p> : <p className="text-xs text-muted">فاتورة مبيعات — ليست فاتورة ضريبية</p>}
             {inv.store_phone && <p className="ltr text-xs text-muted">{inv.store_phone}</p>}
           </div>

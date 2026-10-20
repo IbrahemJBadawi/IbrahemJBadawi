@@ -102,7 +102,7 @@ export function EngagePrompt({ signedIn }: { signedIn: boolean }) {
           <li className="flex items-center gap-3 rounded-2xl bg-ivory p-3">
             <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-ink text-ivory"><Smartphone className="size-4" /></span>
             <div className="min-w-0 flex-1 text-sm">
-              <p className="font-semibold">تطبيق منصة الجمال</p>
+              <p className="font-semibold">تطبيق متجر الجمال</p>
               {platform === "ios" ? <InstallApp compact /> : <p className="text-xs leading-5 text-muted">أسرع، ويفتح من الشاشة الرئيسية.</p>}
             </div>
             {platform !== "ios" && <InstallApp compact />}

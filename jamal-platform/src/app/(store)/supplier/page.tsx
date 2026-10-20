@@ -21,7 +21,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/supplier">[
   ];
   return (
     <div className="space-y-6">
-      {sp.welcome === "1" && <Notice tone="success">أهلًا بك في منصة الجمال! وصلنا طلبك، وسنتواصل معك قريبًا. يمكنك البدء بإضافة منتجاتك من الآن.</Notice>}
+      {sp.welcome === "1" && <Notice tone="success">أهلًا بك في متجر الجمال! وصلنا طلبك، وسنتواصل معك قريبًا. يمكنك البدء بإضافة منتجاتك من الآن.</Notice>}
       <div>
         <h1 className="text-2xl font-bold">{supplier.name}</h1>
         {supplier.agreement_status === "approved" ? (

@@ -10,17 +10,17 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "منصة الجمال | Al Jamal — ملابس يومية في فلسطين",
-    template: "%s | منصة الجمال",
+    default: "Al JAMAL Store | متجر الجمال — ملابس يومية في فلسطين",
+    template: "%s | متجر الجمال",
   },
   description:
-    "منصة الجمال | Al Jamal: متجر إلكتروني فلسطيني للملابس اليومية الأساسية من موردين محليين، مع تأكيد التوفر والسعر قبل الدفع.",
-  applicationName: "Al Jamal",
+    "Al JAMAL Store | متجر الجمال: متجر إلكتروني فلسطيني للملابس اليومية الأساسية من موردين محليين، مع تأكيد التوفر والسعر قبل الدفع.",
+  applicationName: "Al JAMAL Store",
   appleWebApp: { capable: true, title: "الجمال", statusBarStyle: "default" },
   openGraph: {
     type: "website",
     locale: "ar_AR",
-    siteName: "منصة الجمال | Al Jamal",
+    siteName: "Al JAMAL Store | متجر الجمال",
   },
   alternates: { canonical: "/" },
 };

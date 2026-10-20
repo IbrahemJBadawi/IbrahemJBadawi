@@ -12,7 +12,7 @@ export function TicketThread({ messages, staffView = false }: { messages: Ticket
           <li key={m.id} className={`flex ${mine ? "justify-start" : "justify-end"}`}>
             <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-7 ${m.is_internal ? "border border-dashed border-warning/50 bg-warning/5" : mine ? "bg-ink text-ivory" : "border border-line bg-paper"}`}>
               <p className={`mb-1 text-[0.7rem] ${mine && !m.is_internal ? "text-ivory/70" : "text-muted"}`}>
-                {m.is_internal ? "ملاحظة داخلية" : m.author_kind === "staff" ? "فريق منصة الجمال" : m.author_kind === "system" ? "النظام" : "العميل"}
+                {m.is_internal ? "ملاحظة داخلية" : m.author_kind === "staff" ? "فريق متجر الجمال" : m.author_kind === "system" ? "النظام" : "العميل"}
                 {m.author ? ` · ${m.author}` : ""} · {fmt(m.created_at)}
               </p>
               <p className="whitespace-pre-line">{m.body_ar}</p>
