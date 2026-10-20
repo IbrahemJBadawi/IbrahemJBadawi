@@ -92,7 +92,7 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
     name: p.name_ar,
     description: p.description_ar ?? undefined,
     image: p.images.map((i) => i.url),
-    brand: { "@type": "Brand", name: "JAMAL" },
+    brand: { "@type": "Brand", name: "Al JAMAL Store" },
     offers: {
       "@type": "Offer",
       url: `${site}/product/${p.slug}`,

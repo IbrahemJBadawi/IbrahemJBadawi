@@ -34,8 +34,8 @@ export function Footer() {
     <footer className="mt-auto bg-ink text-ivory print:hidden">
       <div className="container-page grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3" dir="ltr"><Monogram variant="outline-light" className="w-9" /><p className="font-display text-3xl tracking-[0.4em]">JAMAL</p></div>
-          <p className="mt-1 text-xs tracking-[0.2em] text-beige">منصة الجمال</p>
+          <div className="flex items-center gap-3" dir="ltr"><Monogram variant="outline-light" className="w-9" /><p className="font-display text-2xl tracking-[0.3em]">AL JAMAL <span className="text-sm tracking-[0.4em] text-beige">STORE</span></p></div>
+          <p className="mt-1 text-xs tracking-[0.2em] text-beige">متجر الجمال</p>
           <p className="mt-4 max-w-xs text-sm leading-7 text-ivory/70">
             قطع يومية مختارة من موردين محليين في فلسطين. اطلب الآن وادفع بعد تثبيت طلبك.
           </p>
@@ -54,6 +54,7 @@ export function Footer() {
           <h2 className="mb-4 text-sm font-bold">المساعدة والسياسات</h2>
           <ul className={col}>
             <li><Link className="hover:text-ivory" href="/support">الدعم وتذاكر خدمة العملاء</Link></li>
+            <li><Link className="font-semibold text-beige hover:text-ivory" href="/suppliers/join">انضم كمورد</Link></li>
             <Suspense fallback={null}><AssistantLink /></Suspense>
             <li><Link className="hover:text-ivory" href="/faq">الأسئلة الشائعة</Link></li>
             <li><Link className="hover:text-ivory" href="/policies/shipping">سياسة التوصيل</Link></li>
@@ -71,7 +72,7 @@ export function Footer() {
       </div>
       <div className="border-t border-ivory/10">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-ivory/50 sm:flex-row sm:justify-between">
-          <p>© منصة الجمال | Al Jamal</p>
+          <p>© Al JAMAL Store | متجر الجمال</p>
           <p>الدفع آمن عبر بنك فلسطين — ولا نطلب بيانات بطاقات أبدًا.</p>
         </div>
       </div>

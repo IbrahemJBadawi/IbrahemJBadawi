@@ -47,7 +47,7 @@ export function MobileMenu({ categories, assistant = false }: { categories: { sl
           <button type="button" className="absolute inset-0 bg-ink/40" aria-label="إغلاق القائمة" onClick={() => setOpen(false)} />
           <nav className="absolute inset-y-0 start-0 flex w-[85%] max-w-sm flex-col overflow-y-auto bg-ivory px-6 pb-8 shadow-xl">
             <div className="flex h-16 items-center justify-between">
-              <span className="font-display text-xl tracking-[0.35em]" dir="ltr">JAMAL</span>
+              <span className="font-display text-xl tracking-[0.25em]" dir="ltr">AL JAMAL</span>
               <button ref={closeRef} type="button" onClick={() => setOpen(false)} className="inline-flex size-10 items-center justify-center rounded-full hover:bg-sand" aria-label="إغلاق القائمة">
                 <X className="size-5" />
               </button>
@@ -67,6 +67,7 @@ export function MobileMenu({ categories, assistant = false }: { categories: { sl
               {assistant && <li><Link href="/assistant" className="block py-2">مساعد التسوق الذكي</Link></li>}
               <li><Link href="/support" className="block py-2">الدعم</Link></li>
               <li><Link href="/contact" className="block py-2">اتصل بنا</Link></li>
+              <li><Link href="/suppliers/join" className="block py-2 font-semibold text-beige-deep">للموردين: اعرض منتجاتك</Link></li>
               <li><Link href="/faq" className="block py-2">الأسئلة الشائعة</Link></li>
             </ul>
           </nav>

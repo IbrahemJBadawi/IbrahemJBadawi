@@ -6,7 +6,7 @@ import { parseFilters } from "@/lib/data/filters";
 
 export const metadata: Metadata = {
   title: "العروض والتخفيضات",
-  description: "منتجات بأسعار مخفّضة من منصة الجمال.",
+  description: "منتجات بأسعار مخفّضة من متجر الجمال.",
   alternates: { canonical: "/offers" },
 };
 

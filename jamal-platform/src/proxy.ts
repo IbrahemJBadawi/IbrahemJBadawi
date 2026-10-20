@@ -7,7 +7,7 @@ import { createServerClient } from "@supabase/ssr";
  * server (requireUser / requireAdmin) and in Postgres RLS.
  * With Supabase Auth it also refreshes the session cookies.
  */
-const PRIVATE = ["/account", "/favorites", "/admin"];
+const PRIVATE = ["/account", "/favorites", "/admin", "/supplier"];
 
 function hasSessionCookie(req: NextRequest) {
   return req.cookies.getAll().some((c) => c.name === "jamal_session" || (c.name.startsWith("sb-") && c.name.includes("-auth-token")));

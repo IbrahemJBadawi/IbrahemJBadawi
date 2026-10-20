@@ -1,5 +1,5 @@
 /*
- * Al Jamal service worker — deliberately minimal.
+ * Al JAMAL Store service worker — deliberately minimal.
  * It only provides an offline fallback page. Pages are NOT cached because
  * order, payment and account pages contain private data.
  */
@@ -28,11 +28,11 @@ self.addEventListener("push", (event) => {
   try {
     data = event.data ? event.data.json() : {};
   } catch {
-    data = { title: "منصة الجمال", body: event.data ? event.data.text() : "" };
+    data = { title: "متجر الجمال", body: event.data ? event.data.text() : "" };
   }
   const link = typeof data.link === "string" && data.link.startsWith("/") ? data.link : "/";
   event.waitUntil(
-    self.registration.showNotification(data.title || "منصة الجمال", {
+    self.registration.showNotification(data.title || "متجر الجمال", {
       body: data.body || "",
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",

@@ -40,7 +40,7 @@ async function noHorizontalOverflow(page: Page) {
 
 const card = (page: Page, title: RegExp): Locator => page.locator("section").filter({ has: page.getByRole("heading", { name: title }) }).first();
 
-test.describe.serial("Al Jamal — Palestine order flow", () => {
+test.describe.serial("Al JAMAL Store — Palestine order flow", () => {
   let orderUrl = "";
   let orderNumber = "";
   let adminOrderUrl = "";
@@ -270,6 +270,41 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     expect(sw.ok()).toBe(true);
     await page.goto("/app");
     await noHorizontalOverflow(page);
+  });
+
+  test("a supplier signs up, adds a product with a photo, and the admin sees it for review", async ({ page }) => {
+    await register(page, "مورد تجريبي", `supplier.${stamp}@example.com`);
+    await page.goto("/suppliers/join");
+    await page.getByLabel("اسم المتجر أو النشاط").fill(`بوتيك ${stamp}`);
+    await page.getByLabel("اسم المسؤول").fill("ريم");
+    await page.getByLabel("رقم الهاتف").fill("0599000555");
+    await page.getByLabel("المدينة / البلدة").fill("نابلس");
+    await page.getByLabel("ماذا توفّر؟").fill("عبايات");
+    await page.getByRole("checkbox").check();
+    await page.getByRole("button", { name: "إرسال طلب الانضمام" }).click();
+    await expect(page).toHaveURL(/\/supplier\?welcome=1/);
+    await expect(page.getByText(/أهلًا بك في متجر الجمال/)).toBeVisible();
+    await noHorizontalOverflow(page);
+
+    await page.goto("/supplier/products/new");
+    await page.getByLabel("اسم المنتج").fill(`عباية الاختبار ${stamp}`);
+    await page.getByLabel("المقاسات").fill("52، 54");
+    await page.getByLabel("سعرك للمنصة (₪)").fill("90");
+    await page.getByLabel("سعر البيع المقترح (₪)").fill("150");
+    await page.locator('input[name="upload"]').setInputFiles({ name: "abaya.png", mimeType: "image/png", buffer: PNG });
+    await page.getByRole("button", { name: "إرسال المنتج للمراجعة" }).click();
+    await expect(page.getByText("وصلنا منتجك!")).toBeVisible();
+    await expect(page.getByText("قيد المراجعة").first()).toBeVisible();
+    const img = page.locator('img[src^="/media/"]').first();
+    await expect(img).toBeVisible();
+    expect(await img.evaluate((el) => (el as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await noHorizontalOverflow(page);
+
+    await page.context().clearCookies();
+    await login(page, adminEmail);
+    await page.goto("/admin/products?issue=review");
+    await page.getByRole("link", { name: `عباية الاختبار ${stamp}` }).click();
+    await expect(page.getByText(/مقدّم من المورد/)).toBeVisible();
   });
 
   test("contact form stores a message", async ({ page }) => {

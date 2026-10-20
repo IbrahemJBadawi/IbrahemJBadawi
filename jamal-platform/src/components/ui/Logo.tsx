@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 
-/** Brand lockup: blackletter J monogram + JAMAL wordmark + Arabic name. */
+/** Brand lockup: blackletter J monogram + AL JAMAL wordmark + STORE / Arabic name. */
 export function Logo({ className = "", compact = false }: { className?: string; compact?: boolean }) {
   return (
-    <Link href="/" aria-label="منصة الجمال — الصفحة الرئيسية" className={`group inline-flex items-center gap-2 ${className}`} dir="ltr">
+    <Link href="/" aria-label="متجر الجمال — الصفحة الرئيسية" className={`group inline-flex items-center gap-2 ${className}`} dir="ltr">
       <Image src="/brand/jamal-j.png" alt="" width={441} height={600} priority className="h-9 w-auto md:h-11" />
       <span className="flex flex-col items-start leading-none">
-        <span className="font-display text-[1.45rem] font-semibold tracking-[0.32em] text-ink md:text-[1.7rem]">JAMAL</span>
-        {!compact && <span className="mt-1 text-[0.6rem] font-medium tracking-[0.18em] text-beige-deep" dir="rtl">منصة الجمال</span>}
+        <span className="font-display text-[1.3rem] font-semibold tracking-[0.22em] text-ink md:text-[1.55rem]">AL JAMAL</span>
+        {!compact && <span className="mt-1 text-[0.58rem] font-semibold tracking-[0.42em] text-beige-deep">STORE</span>}
       </span>
     </Link>
   );

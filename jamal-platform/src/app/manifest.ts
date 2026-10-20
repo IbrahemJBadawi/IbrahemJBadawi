@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "منصة الجمال | Al Jamal",
-    short_name: "الجمال",
+    name: "Al JAMAL Store | متجر الجمال",
+    short_name: "Al JAMAL",
     description: "ملابس يومية من موردين محليين في فلسطين — تابع طلباتك ودفعك من هاتفك.",
     start_url: "/?source=pwa",
     scope: "/",
