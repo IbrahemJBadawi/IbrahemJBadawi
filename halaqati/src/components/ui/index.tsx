@@ -74,7 +74,22 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
   );
 }
 
-export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
+type Tone = "mint" | "sand" | "peach" | "sky" | "lilac" | "rose";
+
+/** Number tile. With a tone it becomes a pastel tile with an icon (like the reference dashboards). */
+export function Stat({ label, value, hint, tone, icon }: { label: string; value: ReactNode; hint?: string; tone?: Tone; icon?: string }) {
+  if (tone) {
+    return (
+      <div className={cx("stat-tile", `t-${tone}`)}>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm font-semibold text-ink">{label}</span>
+          {icon && <span className="stat-icon" aria-hidden>{icon}</span>}
+        </div>
+        <span className="stat-value">{value}</span>
+        {hint && <span className="text-xs text-muted">{hint}</span>}
+      </div>
+    );
+  }
   return (
     <Card className="flex flex-col gap-1">
       <span className="text-sm text-muted">{label}</span>

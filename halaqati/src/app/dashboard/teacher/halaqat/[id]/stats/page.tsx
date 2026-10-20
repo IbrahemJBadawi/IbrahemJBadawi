@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BarChart, weekLabel } from "@/components/motivation/BarChart";
+import { Ring } from "@/components/motivation/Ring";
 import { Alert, Card, PageHeader, Stat } from "@/components/ui";
 import { requireContext } from "@/lib/auth";
 import { loadHalaqaForStaff } from "@/lib/data/staff";
@@ -31,14 +32,23 @@ export default async function HalaqaStatsPage({ params }: PageProps<"/dashboard/
       {error || !stats ? <Alert tone="error">تعذّر تحميل الإحصائيات.</Alert> : (
         <>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="الطلاب النشطون" value={stats.active_students} />
-            <Stat label="الجلسات" value={sum("sessions")} />
-            <Stat label="نسبة الحضور" value={sum("marked") ? `${percent(sum("attended"), sum("marked"))}%` : "—"} hint="حاضر أو متأخر من المسجَّل" />
-            <Stat label="حفظ جديد معتمد" value={`${sum("new_ayat")} آية`} />
+            <Stat tone="mint" icon="👥" label="الطلاب النشطون" value={stats.active_students} />
+            <Stat tone="sky" icon="🗓️" label="الجلسات" value={sum("sessions")} />
+            <Stat tone="peach" icon="🕌" label="نسبة الحضور" value={sum("marked") ? `${percent(sum("attended"), sum("marked"))}%` : "—"} hint="حاضر أو متأخر من المسجَّل" />
+            <Stat tone="mint" icon="📗" label="حفظ جديد معتمد" value={`${sum("new_ayat")} آية`} />
           </div>
+          {sum("marked") > 0 && (
+            <Card className="flex flex-wrap items-center gap-4">
+              <Ring value={sum("attended")} max={sum("marked")} label={`${percent(sum("attended"), sum("marked"))}%`} sub="حضور" ariaLabel="نسبة الحضور في 12 أسبوعًا" />
+              <div>
+                <p className="font-bold">نسبة الحضور</p>
+                <p className="text-sm text-muted">{sum("attended")} حضورًا من {sum("marked")} مسجّلًا خلال 12 أسبوعًا</p>
+              </div>
+            </Card>
+          )}
           <div className="grid gap-4 lg:grid-cols-2">
             <Card><BarChart title="الحفظ الجديد أسبوعيًا (آية)" unit="آية" data={series((w) => w.new_ayat, "آية")} /></Card>
-            <Card><BarChart title="نسبة الحضور أسبوعيًا (%)" unit="%" data={series((w) => percent(w.attended, w.marked), "%")} /></Card>
+            <Card><BarChart title="نسبة الحضور أسبوعيًا (%)" showTotal={false} unit="%" data={series((w) => percent(w.attended, w.marked), "%")} /></Card>
             <Card><BarChart title="التسميعات المعتمدة أسبوعيًا" unit="تسميع" data={series((w) => w.records, "تسميع")} /></Card>
             <Card><BarChart title="الجلسات أسبوعيًا" unit="جلسة" data={series((w) => w.sessions, "جلسة")} /></Card>
           </div>

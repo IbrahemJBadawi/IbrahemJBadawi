@@ -77,8 +77,8 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
           </Card>
           <div className="grid grid-cols-2 gap-3">
             <Card className="col-span-2"><LevelCard points={m.points_total} compact /></Card>
-            <Stat label="نقاط هذا الأسبوع" value={m.points_week} />
-            <Stat label="مجموع النقاط" value={m.points_total} />
+            <Stat tone="sand" icon="⭐" label="نقاط هذا الأسبوع" value={m.points_week} />
+            <Stat tone="mint" icon="🏅" label="مجموع النقاط" value={m.points_total} />
             <Card className="col-span-2 text-sm text-muted">
               <p className="mb-1 font-semibold text-ink">كيف أجمع النقاط؟</p>
               حفظ جديد معتمد 10 · مراجعة 6 · حضور 5 (متأخر 3) · ورد يومي 3 · مهمة منجزة 2
@@ -157,10 +157,10 @@ export async function StudentHome({ user }: { user: CurrentUser }) {
         <section aria-labelledby="progress-h">
           <h2 id="progress-h" className="mb-3 text-lg font-bold">تقدّمي (آخر {o.period_days} يومًا)</h2>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="مجموع الحفظ المعتمد" value={`${o.amount.new_memorization_ayat} آية`} />
-            <Stat label="المراجعة" value={`${o.amount.review_ayat_period} آية`} />
-            <Stat label="متوسط الإتقان" value={o.mastery_avg ? `${o.mastery_avg} من 5` : "—"} />
-            <Stat label="متوسط جودة التلاوة" value={o.recitation_avg ? `${o.recitation_avg} من 5` : "—"} />
+            <Stat tone="mint" icon="📗" label="مجموع الحفظ المعتمد" value={`${o.amount.new_memorization_ayat} آية`} />
+            <Stat tone="sky" icon="🔁" label="المراجعة" value={`${o.amount.review_ayat_period} آية`} />
+            <Stat tone="lilac" icon="✨" label="متوسط الإتقان" value={o.mastery_avg ? `${o.mastery_avg} من 5` : "—"} />
+            <Stat tone="lilac" icon="🎙️" label="متوسط جودة التلاوة" value={o.recitation_avg ? `${o.recitation_avg} من 5` : "—"} />
           </div>
           <Link href="/dashboard/journey" className="mt-3 inline-block font-semibold text-brand-800 underline">تفاصيل رحلتي القرآنية</Link>
         </section>
