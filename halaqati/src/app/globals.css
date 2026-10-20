@@ -426,21 +426,30 @@ a.surface:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); bord
 #main:focus { outline: none; }
 
 /* ---------- charts ---------- */
-.chart-bars { display: flex; align-items: flex-end; gap: 2px; height: 140px; padding-top: 8px; overflow-x: clip; overflow-y: visible; }
-/* RTL: the first bar sits at the right edge, the last at the left — keep their tooltips inside the chart */
+/* Capsule bars on a soft track. The current period is solid and labelled;
+   earlier periods use the same green as a hatch (texture, not a new hue). */
+.chart-bars { display: flex; align-items: stretch; justify-content: space-between; gap: 6px; height: 160px; padding-top: 26px; overflow-x: clip; overflow-y: visible; }
+.chart-bar-wrap { position: relative; flex: 1; min-width: 0; display: flex; justify-content: center; outline: none; }
+.chart-track { position: relative; width: min(100%, 34px); height: 100%; border-radius: 999px; background: var(--bg-deep); }
+.chart-bar {
+  position: absolute; inset-inline: 0; bottom: 0; border-radius: 999px; transition: filter 0.15s;
+  background: repeating-linear-gradient(135deg, var(--chart) 0 3px, color-mix(in srgb, var(--chart) 22%, var(--panel)) 3px 7px);
+}
+.chart-bar.is-current { background: var(--royal-fill); }
+.chart-bar-wrap:hover .chart-bar, .chart-bar-wrap:focus-visible .chart-bar { filter: brightness(1.12); }
+.chart-bar-wrap:focus-visible .chart-track { box-shadow: 0 0 0 2px var(--royal); }
+.chart-value { position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%); padding: 1px 8px; border-radius: 999px; background: var(--ink); color: var(--panel); font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
 .chart-bar-wrap:nth-child(-n+2) .chart-tip { left: auto; right: 0; transform: none; }
 .chart-bar-wrap:nth-last-child(-n+2) .chart-tip { left: 0; transform: none; }
-.chart-bar-wrap { position: relative; flex: 1; height: 100%; display: flex; align-items: flex-end; }
-.chart-bar { width: 100%; min-height: 2px; background: var(--chart); border-radius: 4px 4px 0 0; transition: filter 0.15s; }
-.chart-bar-wrap:hover .chart-bar, .chart-bar-wrap:focus-visible .chart-bar { filter: brightness(1.15); }
 .chart-tip {
   position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
   background: var(--ink); color: var(--panel); font-size: 0.72rem; padding: 4px 8px; border-radius: 8px;
   white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.12s; z-index: 5;
 }
 .chart-bar-wrap:hover .chart-tip, .chart-bar-wrap:focus-visible .chart-tip { opacity: 1; }
-.chart-axis { display: flex; gap: 2px; margin-top: 6px; border-top: 1px solid var(--line-strong); padding-top: 4px; }
-.chart-axis span { flex: 1; text-align: center; font-size: 0.62rem; color: var(--ink-soft); overflow: hidden; white-space: nowrap; }
+.chart-axis { display: flex; justify-content: space-between; gap: 6px; margin-top: 8px; }
+.chart-axis span { flex: 1; min-width: 0; text-align: center; font-size: 0.66rem; color: var(--ink-soft); overflow: hidden; white-space: nowrap; }
+.chart-axis span.is-current { color: var(--ink); font-weight: 700; }
 }
 
 @media print {
@@ -529,4 +538,13 @@ a.surface:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); bord
   .hex.is-locked { background: var(--bg-deep); filter: grayscale(1); opacity: 0.75; }
   .goal-track { height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--panel) 70%, transparent); overflow: hidden; }
   .goal-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--royal-fill), var(--sky)); }
+}
+
+@layer components {
+  .stat-tile { display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 22px; min-width: 0; }
+  .stat-tile .stat-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: color-mix(in srgb, var(--panel) 75%, transparent); font-size: 1.1rem; }
+  .stat-tile .stat-value { font-size: 1.75rem; font-weight: 700; line-height: 1.15; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .segmented { display: inline-flex; padding: 4px; gap: 2px; border-radius: 999px; background: var(--bg-deep); }
+  .segmented > a, .segmented > button { padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--ink-soft); text-decoration: none; }
+  .segmented > [aria-current] { background: var(--panel); color: var(--ink); box-shadow: var(--shadow-1); }
 }

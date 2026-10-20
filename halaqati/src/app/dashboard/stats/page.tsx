@@ -46,9 +46,9 @@ export default async function StatsPage({ searchParams }: PageProps<"/dashboard/
         {people.length > 1 && people.map((p) => (
           <Link key={p.id} href={href(p.id, weeksParam)} aria-current={p.id === who.id ? "page" : undefined} className={cx("btn !min-h-9 !px-3 text-sm", p.id === who.id ? "btn-primary" : "btn-secondary")}>{p.name}</Link>
         ))}
-        <div className="ms-auto flex rounded-full bg-deep p-1" role="group" aria-label="المدة">
+        <div className="segmented ms-auto" role="group" aria-label="المدة">
           {[12, 26].map((w) => (
-            <Link key={w} href={href(who.id, w)} aria-current={w === weeksParam ? "true" : undefined} className={cx("rounded-full px-3 py-1.5 text-sm font-semibold", w === weeksParam ? "bg-panel text-brand-900 shadow-sm" : "text-muted")}>{w === 12 ? "3 أشهر" : "6 أشهر"}</Link>
+            <Link key={w} href={href(who.id, w)} aria-current={w === weeksParam ? "true" : undefined} >{w === 12 ? "3 أشهر" : "6 أشهر"}</Link>
           ))}
         </div>
       </div>

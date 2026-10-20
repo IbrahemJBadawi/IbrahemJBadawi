@@ -42,9 +42,9 @@ export async function TeacherHome({ user }: { user: CurrentUser }) {
         <ButtonLink href="/dashboard/teacher/halaqat/new">حلقة جديدة</ButtonLink>
       </div>
       <div className="grid grid-cols-3 gap-3">
-        <Stat label="حلقاتي" value={rows.length} />
-        <Stat label="طلبات انضمام" value={pendingRes.count ?? 0} />
-        <Stat label="واجبات مفتوحة" value={assignmentsRes.count ?? 0} />
+        <Stat tone="mint" icon="🕌" label="حلقاتي" value={rows.length} />
+        <Stat tone="sand" icon="📥" label="طلبات انضمام" value={pendingRes.count ?? 0} />
+        <Stat tone="sky" icon="📝" label="واجبات مفتوحة" value={assignmentsRes.count ?? 0} />
       </div>
       {first?.halaqat && <HalaqaCharts supabase={supabase} halaqaId={first.halaqa_id} name={first.halaqat.name} />}
       <div className="grid gap-4 md:grid-cols-2">

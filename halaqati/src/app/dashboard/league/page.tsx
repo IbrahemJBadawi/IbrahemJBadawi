@@ -61,9 +61,9 @@ export default async function LeaguePage({ searchParams }: PageProps<"/dashboard
           <Card>
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-bold text-brand-800">{selected?.name}</h2>
-              <div className="flex rounded-full bg-deep p-1" role="group" aria-label="الفترة">
+              <div className="segmented" role="group" aria-label="الفترة">
                 {PERIODS.map((p) => (
-                  <Link key={p.key} href={href(selected!.id, p.key)} aria-current={p.key === period ? "true" : undefined} className={cx("rounded-full px-3 py-1.5 text-sm font-semibold", p.key === period ? "bg-panel text-brand-900 shadow-sm" : "text-muted")}>{p.label}</Link>
+                  <Link key={p.key} href={href(selected!.id, p.key)} aria-current={p.key === period ? "true" : undefined} >{p.label}</Link>
                 ))}
               </div>
             </div>

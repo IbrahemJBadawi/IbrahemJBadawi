@@ -95,7 +95,7 @@ export async function HalaqaCharts({ supabase, halaqaId, name }: { supabase: Sup
           data={weeks.map((w) => ({ key: w.week, label: weekLabel(w.week), value: Number(w.new_ayat), tip: `أسبوع ${weekLabel(w.week)}: ${w.new_ayat} آية` }))} />
       </Card>
       <Card>
-        <BarChart title="نسبة الحضور أسبوعيًا (%)" unit="%" height={120}
+        <BarChart title="نسبة الحضور أسبوعيًا (%)" showTotal={false} unit="%" height={120}
           data={weeks.map((w) => ({ key: w.week, label: weekLabel(w.week), value: pct(Number(w.attended), Number(w.marked)), tip: `أسبوع ${weekLabel(w.week)}: ${pct(Number(w.attended), Number(w.marked))}%` }))} />
       </Card>
     </div>

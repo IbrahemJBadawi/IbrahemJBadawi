@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LevelCard } from "@/components/motivation/LevelCard";
+import { Ring } from "@/components/motivation/Ring";
 import { Alert, Card, PageHeader, Stat, cx } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { getMotivation } from "@/lib/data/motivation";
@@ -29,17 +30,20 @@ export default async function AchievementsPage({ searchParams }: PageProps<"/das
       <PageHeader title={studentId ? "إنجازات الابن" : "إنجازاتي"} description="سجلّك القرآني: المستوى والأوسمة والأرقام — من السجلات المعتمدة فقط." />
       <div className="flex flex-col gap-4">
         <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-          <Card><LevelCard points={stats.points_total} /></Card>
+          <Card className="flex flex-wrap items-center gap-5">
+            <Ring value={earned} max={badges.length} label={`${earned}/${badges.length}`} sub="وسامًا" ariaLabel={`الأوسمة: ${earned} من ${badges.length}`} />
+            <div className="min-w-[12rem] flex-1"><LevelCard points={stats.points_total} /></div>
+          </Card>
           <div className="grid grid-cols-2 gap-3">
-            <Stat label="الأوسمة" value={`${earned} من ${badges.length}`} />
-            <Stat label="أطول حماسة" value={`${motivation.longest_streak} يوم`} />
+            <Stat tone="sand" icon="🎖️" label="الأوسمة" value={`${earned} من ${badges.length}`} />
+            <Stat tone="peach" icon="🔥" label="أطول حماسة" value={`${motivation.longest_streak} يوم`} />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Stat label="تسميعات معتمدة" value={stats.recitations} />
-          <Stat label="آيات حفظ جديد" value={stats.new_ayat} />
-          <Stat label="جلسات حضرتها" value={stats.attended} />
-          <Stat label="شهادات" value={stats.certificates} />
+          <Stat tone="mint" icon="🎙️" label="تسميعات معتمدة" value={stats.recitations} />
+          <Stat tone="sky" icon="📗" label="آيات حفظ جديد" value={stats.new_ayat} />
+          <Stat tone="lilac" icon="🕌" label="جلسات حضرتها" value={stats.attended} />
+          <Stat tone="rose" icon="🎓" label="شهادات" value={stats.certificates} />
         </div>
         <section aria-labelledby="badges-h">
           <h2 id="badges-h" className="mb-3 text-lg font-bold">الأوسمة</h2>

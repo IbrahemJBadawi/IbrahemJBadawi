@@ -32,10 +32,10 @@ export async function AdminHome() {
         <section aria-labelledby="platform-h" className="flex flex-col gap-3">
           <h2 id="platform-h" className="text-lg font-bold">إحصائيات المنصة</h2>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <Stat label="المستخدمون" value={s.users} />
-            <Stat label="الحلقات المنشورة" value={s.halaqat_published} hint={`من ${s.halaqat_total} حلقة`} />
-            <Stat label="جلسات آخر 30 يومًا" value={s.sessions_30d} />
-            <Stat label="آيات معتمدة (30 يومًا)" value={s.ayat_30d} hint={`${s.records_30d} تسميعًا`} />
+            <Stat tone="mint" icon="👥" label="المستخدمون" value={s.users} />
+            <Stat tone="sky" icon="🕌" label="الحلقات المنشورة" value={s.halaqat_published} hint={`من ${s.halaqat_total} حلقة`} />
+            <Stat tone="sand" icon="🗓️" label="جلسات آخر 30 يومًا" value={s.sessions_30d} />
+            <Stat tone="lilac" icon="📗" label="آيات معتمدة (30 يومًا)" value={s.ayat_30d} hint={`${s.records_30d} تسميعًا`} />
           </div>
           <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
             <Card>
@@ -59,9 +59,9 @@ export async function AdminHome() {
       )}
       <h2 className="text-lg font-bold">بانتظار الإجراء</h2>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <Stat label="مؤسسات بانتظار التوثيق" value={orgs.count ?? 0} />
-        <Stat label="مراكز بانتظار التوثيق" value={centers.count ?? 0} />
-        <Stat label="طلبات خصوصية مفتوحة" value={privacy.count ?? 0} />
+        <Stat tone="sand" icon="🏛️" label="مؤسسات بانتظار التوثيق" value={orgs.count ?? 0} />
+        <Stat tone="sky" icon="🕌" label="مراكز بانتظار التوثيق" value={centers.count ?? 0} />
+        <Stat tone="rose" icon="🔒" label="طلبات خصوصية مفتوحة" value={privacy.count ?? 0} />
       </div>
       <Card>
         <ul className="list-inside list-disc space-y-1">
