@@ -1,0 +1,104 @@
+# Halaqati on your own computer: database, sign-in, API and the site.
+# Start with:  npm run local:setup -- you@example.com   then   npm run local:up
+name: halaqati
+
+x-secrets: &secrets
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run "npm run local:setup" first}
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      <<: *secrets
+      POSTGRES_DB: halaqati
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD}
+    volumes:
+      - halaqati-data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d halaqati"]
+      interval: 3s
+      retries: 30
+
+  auth:
+    image: supabase/gotrue:v2.177.0
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: "9999"
+      API_EXTERNAL_URL: ${SITE_URL}/auth/v1
+      GOTRUE_DB_DRIVER: postgres
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/halaqati?search_path=auth
+      GOTRUE_DB_NAMESPACE: auth
+      GOTRUE_SITE_URL: ${SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${SITE_URL}/**
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_JWT_EXP: "3600"
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      # No mail server at home: accounts are confirmed immediately.
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@localhost
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: "1000"
+      GOTRUE_LOG_LEVEL: warn
+
+  migrate:
+    image: postgres:16-alpine
+    depends_on:
+      db: { condition: service_healthy }
+      auth: { condition: service_started }
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+    volumes:
+      - ../supabase/migrations:/migrations:ro
+      - ./migrate.sh:/migrate.sh:ro
+    entrypoint: ["sh", "/migrate.sh"]
+    restart: "no"
+
+  rest:
+    image: postgrest/postgrest:v12.2.12
+    restart: unless-stopped
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${AUTHENTICATOR_PASSWORD}@db:5432/halaqati
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_SERVER_PORT: "3001"
+
+  gateway:
+    image: node:22-alpine
+    restart: unless-stopped
+    depends_on: [auth, rest]
+    environment:
+      AUTH_HOST: auth
+      REST_HOST: rest
+    volumes:
+      - ../scripts/local-stack/gateway.mjs:/gateway.mjs:ro
+    command: ["node", "/gateway.mjs"]
+
+  app:
+    build:
+      context: ..
+      dockerfile: local/Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: http://gateway:54321
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${ANON_KEY}
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+    restart: unless-stopped
+    depends_on: [gateway]
+    environment:
+      SUPABASE_SERVICE_ROLE_KEY: ${SERVICE_KEY}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+volumes:
+  halaqati-data:

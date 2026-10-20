@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Brand tokens — Jamal: ivory, charcoal, warm beige. */
+@theme {
+  --color-ivory: #faf7f2;
+  --color-paper: #ffffff;
+  --color-sand: #efe7da;
+  --color-beige: #c9b79c;
+  --color-beige-deep: #8c7356;
+  --color-ink: #1d1b18;
+  --color-ink-soft: #3a3631;
+  --color-muted: #6f685e;
+  --color-line: #e6dfd3;
+  --color-danger: #a1362b;
+  --color-success: #2f6b45;
+  --color-warning: #8a5a12;
+
+  --font-sans: "Cairo Variable", "Segoe UI", Tahoma, sans-serif;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+
+  --radius-card: 1.375rem;
+  --radius-control: 0.875rem;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--color-ivory);
+    /* room for the mobile bottom navigation */
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "kern";
+    text-rendering: optimizeLegibility;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-beige-deep);
+    outline-offset: 2px;
+  }
+  input, select, textarea, button {
+    font: inherit;
+  }
+  /* Numbers, SKUs, phone numbers and emails stay left-to-right inside RTL text. */
+  .ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 768px) {
+    .container-page { padding-inline: 2rem; }
+  }
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--color-beige-deep);
+    font-weight: 600;
+  }
+  .prose-jamal h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-jamal p, .prose-jamal li {
+    line-height: 1.95;
+    color: var(--color-ink-soft);
+  }
+  .prose-jamal ul {
+    list-style: disc;
+    padding-inline-start: 1.25rem;
+    margin-block: 0.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  body { padding-bottom: 0; }
+}
+
+@media print {
+  body { padding-bottom: 0; background: #fff; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

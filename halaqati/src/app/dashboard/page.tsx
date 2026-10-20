@@ -1,0 +1,68 @@
+import Link from "next/link";
+import { Alert, Card } from "@/components/ui";
+import { requireUser } from "@/lib/auth";
+import { CONTEXT_LABELS } from "@/lib/roles";
+import { AdminHome } from "./_home/AdminHome";
+import { ParentHome } from "./_home/ParentHome";
+import { StudentHome } from "./_home/StudentHome";
+import { OnboardingChecklist, WelcomeCard } from "./_home/Welcome";
+import { TeacherHome } from "./_home/TeacherHome";
+import { studentSummary } from "@/lib/data/summary";
+import { createClient } from "@/lib/supabase/server";
+import { loadImages } from "@/lib/data/images";
+import { QuickActions } from "@/components/motivation/QuickActions";
+
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
+  const user = await requireUser();
+  const sp = await searchParams;
+  const banner = sp.password === "updated" ? <div className="mb-4"><Alert tone="success">تم تحديث كلمة المرور.</Alert></div> : null;
+  const ctx = user.activeContext;
+
+  let body: React.ReactNode;
+  if (!ctx) {
+    body = (
+      <Card>
+        <h1 className="mb-2 text-xl font-bold">مرحبًا بك</h1>
+        <p className="text-muted">لا يوجد دور مفعّل لحسابك. أضف دورًا من <Link href="/dashboard/profile" className="font-semibold underline">صفحة حسابي</Link>.</p>
+      </Card>
+    );
+  } else if (ctx === "student") body = <StudentHome user={user} />;
+  else if (ctx === "quran_teacher") body = <TeacherHome user={user} />;
+  else if (ctx === "parent") body = <ParentHome user={user} />;
+  else if (ctx === "platform_admin") body = <AdminHome />;
+  else {
+    body = (
+      <Card>
+        <h1 className="mb-2 text-xl font-bold">{CONTEXT_LABELS[ctx]}</h1>
+        {ctx === "center_admin" || ctx === "org_admin" ? (
+          <div className="flex flex-col gap-3">
+            <p className="text-muted">تواصل مع محفّظي مراكزك وأمرائها، وارفع شعارات مؤسساتك لتُطبع على الشهادات.</p>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/dashboard/staff-messages" className="btn btn-primary">رسائل الإدارة</Link>
+              <Link href="/dashboard/institutions" className="btn btn-secondary">مؤسساتي وشعاراتها</Link>
+            </div>
+            <Alert tone="info">بقية أدوات «{CONTEXT_LABELS[ctx]}» (توزيع الطلاب والتقارير الإدارية) ضمن المرحلة القادمة.</Alert>
+          </div>
+        ) : (
+          <Alert tone="info">
+            لوحة «{CONTEXT_LABELS[ctx]}» قيد التطوير ضمن المراحل القادمة، ولم تُفعَّل وظائفها بعد. يمكنك التبديل إلى دور آخر من أعلى الصفحة.
+          </Alert>
+        )}
+      </Card>
+    );
+  }
+  // Anyone who is also a student sees their own summary in the greeting.
+  const summary = ctx && user.roles.includes("student") && (ctx === "student" || ctx === "quran_teacher" || ctx === "parent")
+    ? await studentSummary(await createClient(), user.id, true)
+    : null;
+  const avatar = (await loadImages(await createClient(), "profile", [user.id])).get(user.id) ?? null;
+  return (
+    <div className="flex flex-col gap-5">
+      {banner}
+      {ctx && <WelcomeCard user={user} summary={summary} avatar={avatar} />}
+      <QuickActions ctx={ctx} />
+      <OnboardingChecklist user={user} />
+      {body}
+    </div>
+  );
+}

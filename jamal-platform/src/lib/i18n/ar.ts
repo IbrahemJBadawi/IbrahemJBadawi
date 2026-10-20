@@ -1,0 +1,138 @@
+/**
+ * Arabic UI dictionary. The structure is ready for an `en.ts` sibling:
+ * add the file with the same keys and pick the dictionary by locale.
+ */
+export const ar = {
+  brand: { name: "متجر الجمال", latin: "Al JAMAL Store", tagline: "أزياء معاصرة بلمسة هادئة" },
+  nav: {
+    home: "الرئيسية",
+    all: "جميع المنتجات",
+    offers: "العروض والتخفيضات",
+    search: "البحث",
+    favorites: "المفضلة",
+    cart: "السلة",
+    account: "حسابي",
+    orders: "طلباتي",
+    login: "تسجيل الدخول",
+    register: "إنشاء حساب",
+    logout: "تسجيل الخروج",
+    contact: "اتصل بنا",
+    faq: "الأسئلة الشائعة",
+    track: "تتبع الطلب",
+    admin: "لوحة الإدارة",
+    menu: "القائمة",
+  },
+  availability: {
+    available: "متوفر",
+    out_of_stock: "غير متوفر حاليًا",
+    discontinued: "متوقف",
+  },
+  productStatus: { draft: "مسودة", published: "منشور", hidden: "مخفي" },
+  orderStatus: {
+    new: "جديد",
+    under_review: "قيد مراجعة الطلب",
+    awaiting_stock: "بانتظار تأكيد المخزون",
+    awaiting_payment: "بانتظار التحويل البنكي",
+    payment_review: "إثبات الدفع قيد المراجعة",
+    paid: "تم تأكيد الدفع",
+    awaiting_supplier_payout: "بانتظار تحويل مستحقات المورد",
+    supplier_paid: "تم تحويل مستحقات المورد",
+    processing: "قيد التجهيز",
+    shipped: "تم الشحن",
+    delivered: "تم التسليم",
+    cancel_requested: "طلب إلغاء قيد المراجعة",
+    cancelled: "ملغى",
+    returned: "مرتجع",
+    refund_pending: "بانتظار الاسترداد",
+    refunded: "تم الاسترداد",
+  },
+  /** Customer-facing wording (hides internal supplier steps). */
+  customerStatus: {
+    new: "تم استلام الطلب",
+    under_review: "نجهّز تأكيد طلبك",
+    awaiting_stock: "نحجز منتجاتك لدى المورد",
+    awaiting_payment: "جاهز للدفع",
+    payment_review: "نتحقق من تحويلك",
+    paid: "تم تأكيد الدفع",
+    awaiting_supplier_payout: "قيد التجهيز",
+    supplier_paid: "قيد التجهيز",
+    processing: "قيد التجهيز",
+    shipped: "تم الشحن",
+    delivered: "تم التسليم",
+    cancel_requested: "طلب الإلغاء قيد المراجعة",
+    cancelled: "ملغى",
+    returned: "مرتجع",
+    refund_pending: "بانتظار الاسترداد",
+    refunded: "تم الاسترداد",
+  },
+  paymentStatus: {
+    unpaid: "لم يُدفع",
+    pending_verification: "بانتظار التحقق",
+    paid: "مدفوع ومؤكد",
+    partially_refunded: "استرداد جزئي",
+    refunded: "استرداد كامل",
+  },
+  paymentMethod: {
+    bank_transfer: "تحويل بنكي",
+    cod: "الدفع عند الاستلام",
+    manual: "طلب يدوي",
+  },
+  fulfillmentStatus: {
+    awaiting_supplier: "بانتظار المورد",
+    sent_to_supplier: "أُرسل للمورد",
+    supplier_accepted: "قبِل المورد التنفيذ",
+    preparing: "قيد التجهيز",
+    shipped: "تم الشحن",
+    delivered: "تم التسليم",
+    delivery_failed: "فشل التسليم",
+    cancelled: "ملغى",
+    returned: "مرتجع",
+  },
+  settlementStatus: {
+    not_due: "لم يُستحق بعد",
+    due: "مستحق",
+    awaiting_transfer: "بانتظار التحويل",
+    paid: "تم التحويل",
+    disputed: "نزاع أو مراجعة",
+    cancelled: "أُلغيت التسوية",
+  },
+  supplierStatus: {
+    applied: "طلب انضمام جديد",
+    contacting: "قيد التواصل",
+    negotiating: "قيد التفاوض",
+    approved: "معتمد",
+    suspended: "موقوف",
+  },
+  stockStatus: { unconfirmed: "غير مؤكد", available: "متوفر لدى المورد", unavailable: "غير متوفر" },
+  proofStatus: { pending: "قيد المراجعة", accepted: "مقبول", rejected: "مرفوض" },
+  refundStatus: { pending: "معلّق (لم يُنفّذ بعد)", completed: "تم التنفيذ", cancelled: "ملغى" },
+  expenseKind: { payment_fee: "رسوم دفع", transfer_fee: "رسوم تحويل", return_cost: "تكلفة إرجاع", other: "مصروف آخر" },
+  costParty: { customer: "العميل", platform: "المنصة", supplier: "المورد", none: "لا يوجد" },
+  returnKind: { return: "إرجاع", exchange: "استبدال مقاس/لون", damaged: "منتج تالف", wrong_item: "منتج خاطئ" },
+  returnStatus: {
+    requested: "تم الطلب",
+    approved: "مقبول",
+    rejected: "مرفوض",
+    received: "تم استلام المرتجع",
+    refunded: "تم الاسترداد",
+    exchanged: "تم الاستبدال",
+    closed: "مغلق",
+  },
+  ticketCategory: { order: "طلب", payment: "الدفع والتحويل", delivery: "التوصيل", return: "إرجاع واستبدال", product: "استفسار عن منتج", account: "الحساب", other: "أخرى" },
+  ticketStatus: { open: "مفتوحة", waiting_staff: "بانتظار فريق الدعم", waiting_customer: "بانتظار ردك", resolved: "تم الحل", closed: "مغلقة" },
+  ticketPriority: { low: "منخفضة", normal: "عادية", high: "مرتفعة", urgent: "عاجلة" },
+  sort: {
+    newest: "الأحدث",
+    price_asc: "السعر: من الأقل",
+    price_desc: "السعر: من الأعلى",
+    name: "الاسم",
+  },
+} as const;
+
+export type Dictionary = typeof ar;
+export const t = ar;
+
+export function label<T extends Record<string, string>>(map: T, key: string | null | undefined): string {
+  if (!key) return "";
+  return (map as Record<string, string>)[key] ?? key;
+}

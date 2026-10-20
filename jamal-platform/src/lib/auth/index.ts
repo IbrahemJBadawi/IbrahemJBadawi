@@ -1,0 +1,88 @@
+import "server-only";
+import { cache } from "react";
+import { redirect, notFound } from "next/navigation";
+import { asSystem, asUser } from "@/lib/db";
+import { supplierForUser, type SupplierAccount } from "@/lib/suppliers/portal";
+import { ensureAdmin, getDatabase, OWNER_EMAIL } from "@/lib/db/core";
+import { supabaseAnonKey } from "./supabase";
+import { localGetSession, localSignIn, localSignOut, localSignUp } from "./local";
+import { supabaseGetSession, supabaseSignIn, supabaseSignOut, supabaseSignUp } from "./supabase";
+import type { CurrentUser } from "./types";
+
+export type { CurrentUser } from "./types";
+
+/** Explicit AUTH_PROVIDER wins; otherwise Supabase Auth whenever the Supabase keys are present. */
+export function authProvider(): "supabase" | "local" {
+  if (process.env.AUTH_PROVIDER === "supabase" || process.env.AUTH_PROVIDER === "local") return process.env.AUTH_PROVIDER;
+  return process.env.NEXT_PUBLIC_SUPABASE_URL && supabaseAnonKey() ? "supabase" : "local";
+}
+
+export const getSession = cache(async () =>
+  authProvider() === "supabase" ? supabaseGetSession() : localGetSession(),
+);
+
+/** The signed-in user with their profile (role read through RLS), or null. */
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
+  const session = await getSession();
+  if (!session) return null;
+  const read = () =>
+    asUser(session, async (tx) => {
+      const rows = await tx.query<{ full_name: string | null; phone: string | null; role: "customer" | "supplier" | "admin" }>(
+        "select full_name, phone, role from public.profiles where id = $1",
+        [session.id],
+      );
+      return rows[0];
+    });
+  let profile = await read();
+  // The owner's account (ADMIN_EMAIL) becomes admin as soon as it is eligible.
+  const owner = (process.env.ADMIN_EMAIL || OWNER_EMAIL).trim().toLowerCase();
+  if (profile && profile.role !== "admin" && session.email?.toLowerCase() === owner) {
+    await ensureAdmin(await getDatabase());
+    profile = await read();
+  }
+  if (!profile) return null;
+  return {
+    id: session.id,
+    email: session.email,
+    fullName: profile.full_name,
+    phone: profile.phone,
+    role: profile.role,
+  };
+});
+
+export async function requireUser(next = "/account"): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
+  return user;
+}
+
+/** Server-side admin gate. RLS enforces is_admin() again on every query. */
+export async function requireAdmin(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin");
+  // Non-admins get a 404 so the admin area does not reveal itself.
+  if (user.role !== "admin") notFound();
+  return user;
+}
+
+export function signUp(email: string, password: string, fullName: string) {
+  return authProvider() === "supabase"
+    ? supabaseSignUp(email, password, fullName)
+    : localSignUp(email, password, fullName);
+}
+
+export function signIn(email: string, password: string) {
+  return authProvider() === "supabase" ? supabaseSignIn(email, password) : localSignIn(email, password);
+}
+
+export function signOut() {
+  return authProvider() === "supabase" ? supabaseSignOut() : localSignOut();
+}
+
+/** The signed-in supplier with their supplier record; others are sent to the supplier sign-up page. */
+export async function requireSupplier(): Promise<{ user: CurrentUser; supplier: SupplierAccount }> {
+  const user = await requireUser("/supplier");
+  const supplier = await asSystem((tx) => supplierForUser(tx, user.id));
+  if (!supplier) redirect("/suppliers/join");
+  return { user, supplier };
+}
