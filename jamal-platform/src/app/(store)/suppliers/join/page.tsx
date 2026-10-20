@@ -14,7 +14,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Field";
 import { Notice, Skeleton } from "@/components/ui/States";
 
-export const metadata: Metadata = { title: "انضم كمورد", description: "اعرض منتجاتك على منصة الجمال ووصل لعملاء في كل فلسطين." };
+export const metadata: Metadata = { title: "انضم كمورد", description: "اعرض منتجاتك على متجر الجمال ووصل لعملاء في كل فلسطين." };
 
 const PERKS = [
   { icon: BadgePercent, title: "بدون رسوم اشتراك", text: "تضيف منتجاتك مجانًا، ونربح فقط عندما تبيع." },

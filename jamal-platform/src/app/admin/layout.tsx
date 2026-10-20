@@ -21,7 +21,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     <div className="-mb-[calc(4.25rem+env(safe-area-inset-bottom))] min-h-screen bg-ivory md:mb-0 lg:grid lg:grid-cols-[15rem_1fr]">
       <aside className="border-b border-line bg-paper print:hidden lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-e">
         <div className="flex items-center justify-between px-5 py-4">
-          <Link href="/admin" className="flex items-center gap-2 font-display text-xl tracking-[0.3em]" dir="ltr"><Monogram className="w-6" />JAMAL</Link>
+          <Link href="/admin" className="flex items-center gap-2 font-display text-xl tracking-[0.3em]" dir="ltr"><Monogram className="w-6" />AL JAMAL</Link>
           <span className="flex items-center gap-2">
             <Suspense fallback={null}><NotificationBell href="/admin/notifications" className="inline-flex size-9 items-center justify-center rounded-full hover:bg-sand" /></Suspense>
             <span className="rounded-full bg-sand px-2 py-0.5 text-[0.65rem] font-semibold text-beige-deep">إدارة</span>

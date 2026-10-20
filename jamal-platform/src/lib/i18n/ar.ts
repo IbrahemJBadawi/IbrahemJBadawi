@@ -3,7 +3,7 @@
  * add the file with the same keys and pick the dictionary by locale.
  */
 export const ar = {
-  brand: { name: "منصة الجمال", latin: "JAMAL", tagline: "أزياء معاصرة بلمسة هادئة" },
+  brand: { name: "متجر الجمال", latin: "Al JAMAL Store", tagline: "أزياء معاصرة بلمسة هادئة" },
   nav: {
     home: "الرئيسية",
     all: "جميع المنتجات",

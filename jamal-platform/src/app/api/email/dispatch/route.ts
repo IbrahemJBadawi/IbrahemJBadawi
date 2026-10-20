@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   let sent = 0;
   for (const m of batch) {
     const link = m.action_url ? `${site}${m.action_url}` : site;
-    const html = `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;line-height:1.8"><p>${escapeHtml(m.body_ar)}</p>${link ? `<p><a href="${escapeHtml(link)}">فتح في منصة الجمال</a></p>` : ""}</div>`;
+    const html = `<div dir="rtl" style="font-family:Tahoma,Arial,sans-serif;line-height:1.8"><p>${escapeHtml(m.body_ar)}</p>${link ? `<p><a href="${escapeHtml(link)}">فتح في متجر الجمال</a></p>` : ""}</div>`;
     try {
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",

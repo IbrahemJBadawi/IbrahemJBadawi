@@ -40,7 +40,7 @@ async function noHorizontalOverflow(page: Page) {
 
 const card = (page: Page, title: RegExp): Locator => page.locator("section").filter({ has: page.getByRole("heading", { name: title }) }).first();
 
-test.describe.serial("Al Jamal — Palestine order flow", () => {
+test.describe.serial("Al JAMAL Store — Palestine order flow", () => {
   let orderUrl = "";
   let orderNumber = "";
   let adminOrderUrl = "";
@@ -283,7 +283,7 @@ test.describe.serial("Al Jamal — Palestine order flow", () => {
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "إرسال طلب الانضمام" }).click();
     await expect(page).toHaveURL(/\/supplier\?welcome=1/);
-    await expect(page.getByText(/أهلًا بك في منصة الجمال/)).toBeVisible();
+    await expect(page.getByText(/أهلًا بك في متجر الجمال/)).toBeVisible();
     await noHorizontalOverflow(page);
 
     await page.goto("/supplier/products/new");

@@ -60,7 +60,7 @@ begin
       coalesce(new.city, '') || ' ' || coalesce(new.categories_supplied, ''), '/admin/suppliers/' || new.id, 'supplier', new.id);
   elsif tg_op = 'UPDATE' and new.owner_user_id is not null and new.agreement_status is distinct from old.agreement_status then
     if new.agreement_status = 'approved' then
-      perform public.notify(new.owner_user_id, 'supplier_update', 'تم اعتماد متجرك على منصة الجمال 🎉',
+      perform public.notify(new.owner_user_id, 'supplier_update', 'تم اعتماد متجرك على متجر الجمال 🎉',
         'يمكنك الآن إضافة منتجاتك، وننشرها بعد مراجعة سريعة.', '/supplier', 'supplier', new.id);
     elsif new.agreement_status = 'suspended' then
       perform public.notify(new.owner_user_id, 'supplier_update', 'تم إيقاف حساب المورد مؤقتًا',

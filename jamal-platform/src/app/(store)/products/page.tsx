@@ -6,7 +6,7 @@ import { parseFilters } from "@/lib/data/filters";
 
 export const metadata: Metadata = {
   title: "جميع المنتجات",
-  description: "تصفح جميع منتجات منصة الجمال: ملابس نسائية ورجالية وأطفال، أحذية، حقائب وإكسسوارات.",
+  description: "تصفح جميع منتجات متجر الجمال: ملابس نسائية ورجالية وأطفال، أحذية، حقائب وإكسسوارات.",
   alternates: { canonical: "/products" },
 };
 

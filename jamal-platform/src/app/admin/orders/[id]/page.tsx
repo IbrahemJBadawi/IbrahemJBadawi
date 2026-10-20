@@ -63,7 +63,7 @@ function supplierText(o: Order, items: Item[]) {
     return parts.join("\n");
   });
   return [
-    "طلب تنفيذ من منصة الجمال | Al Jamal",
+    "طلب تنفيذ من Al JAMAL Store | متجر الجمال",
     `رقم الطلب: ${o.order_number}`,
     "",
     "المنتجات:",
