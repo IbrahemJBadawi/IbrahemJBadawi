@@ -48,6 +48,8 @@ export function AppHeader() {
             <Link
               key={item.href}
               href={item.href}
+              aria-label={item.label}
+              title={item.label}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
               className={cn(
                 "qo-nav-link inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-xl px-2 text-[13px] font-bold focus-ring",
