@@ -22,7 +22,7 @@ export function SidebarNav({ groups, counts }: { groups: NavGroup[]; counts: Rec
           <div className="nav-group-label">{g.label}</div>
           {g.items.map((i) => (
             <Link key={i.href} href={i.href} className={cx("navlink", current === i.href && "active")} aria-current={current === i.href ? "page" : undefined} title={i.label}>
-              <Icon name={i.icon} />
+              <span className="navlink-icon"><Icon name={i.icon} /></span>
               <span className="navlink-label">{i.label}</span>
               {counts[i.href] ? <span className="nav-count">{counts[i.href]}</span> : null}
             </Link>
