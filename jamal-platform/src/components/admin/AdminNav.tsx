@@ -29,7 +29,7 @@ const ITEMS = [
 export function AdminNav() {
   const pathname = usePathname();
   return (
-    <nav aria-label="لوحة الإدارة" className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible lg:px-3 lg:pb-0">
+    <nav aria-label="لوحة الإدارة" className="flex gap-1.5 overflow-x-auto px-3 pb-3 [scrollbar-width:thin] lg:flex-col lg:overflow-visible lg:px-3 lg:pb-0">
       {ITEMS.map(({ href, label, icon: Icon }) => {
         const active = href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
         return (
@@ -37,11 +37,11 @@ export function AdminNav() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`flex shrink-0 items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
-              active ? "bg-ink text-ivory" : "text-ink-soft hover:bg-sand"
+            className={`flex shrink-0 items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-[background-color,color,transform] duration-200 active:scale-[0.98] ${
+              active ? "bg-ink text-ivory shadow-sm" : "text-ink-soft hover:bg-sand hover:text-ink"
             }`}
           >
-            <Icon className="size-4" strokeWidth={1.7} />
+            <Icon className="size-[1.1rem] shrink-0" strokeWidth={active ? 2 : 1.7} />
             {label}
           </Link>
         );
