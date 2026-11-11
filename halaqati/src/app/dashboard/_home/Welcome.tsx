@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { Button, ButtonLink, Card, cx } from "@/components/ui";
 import type { CurrentUser } from "@/lib/auth";
 import { CONTEXT_LABELS, type ContextKey } from "@/lib/roles";
@@ -23,7 +24,7 @@ export function WelcomeCard({ user, summary, avatar }: { user: CurrentUser; summ
   const name = user.displayName || user.fullName;
   const d = todayDates();
   return (
-    <section className="dawn flex flex-col gap-4 p-5 pb-8 sm:p-6 sm:pb-10" aria-label="الترحيب">
+    <section className="dawn welcome-refresh flex flex-col gap-4 p-5 pb-8 sm:p-6 sm:pb-10" aria-label="الترحيب">
       <Skyline />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 rounded-full bg-panel/70 px-3 py-1 text-sm font-bold text-gold-dark shadow-[var(--shadow-1)]">
@@ -44,7 +45,7 @@ export function WelcomeCard({ user, summary, avatar }: { user: CurrentUser; summ
       {summary && <SummaryChips s={summary} tone="hero" />}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-gold-dark">رحلتك مع القرآن</p>
-        <ButtonLink href={theme.action.href} variant="primary">{theme.action.label}</ButtonLink>
+        <ButtonLink href={theme.action.href} variant="primary">{theme.action.label} <Icon name="chevron" size={18} /></ButtonLink>
       </div>
     </section>
   );
