@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import { ArrowLeft, PackageCheck, RotateCcw, ShieldCheck, Truck } from "lucide-react";
+import { ArrowLeft, PackageCheck, RotateCcw, Search, ShieldCheck, Truck } from "lucide-react";
 import { getCategories, listProducts } from "@/lib/data/catalog";
 import { ProductCard, ProductGrid } from "@/components/product/ProductCard";
+import { ProductImage } from "@/components/product/ProductImage";
 import { CategoryCircle, CategoryTile } from "@/components/catalog/CategoryTile";
 import { ButtonLink } from "@/components/ui/Button";
 import { EmptyState, ProductGridSkeleton, Skeleton } from "@/components/ui/States";
@@ -10,20 +11,26 @@ import { Monogram } from "@/components/ui/Logo";
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden bg-ivory">
-      <div className="container-page grid items-center gap-8 pt-8 pb-10 md:grid-cols-2 md:gap-12 md:py-20">
+    <section className="relative isolate overflow-hidden bg-ivory">
+      <div className="pointer-events-none absolute inset-0 -z-10 jamal-editorial-glow" aria-hidden />
+      <div className="container-page grid items-center gap-7 pb-10 pt-8 md:grid-cols-2 md:gap-12 md:py-16 lg:gap-20">
         <div>
-          <p className="eyebrow mb-3">مجموعة الموسم</p>
-          <h1 className="text-[2.5rem] font-extrabold leading-[1.3] tracking-tight md:text-6xl md:leading-[1.25]">
+          <p className="jamal-overline mb-3">مجموعة الموسم · AL JAMAL</p>
+          <h1 className="text-[2.4rem] font-extrabold leading-[1.3] md:text-[3.5rem] md:leading-[1.22] lg:text-6xl">
             أناقة{" "}
-            <span className="inline-block -rotate-1 rounded-full bg-ink px-4 pb-1 text-ivory md:px-6">هادئة</span>
+            <span className="inline-block -rotate-1 rounded-[1.1rem] bg-ink px-4 pb-1 text-ivory shadow-[0_12px_26px_-16px_rgba(29,27,24,0.55)] md:px-6">هادئة</span>
             <br />
             <span className="text-beige-deep">لكل يوم.</span>
           </h1>
-          <p className="mt-4 max-w-md text-[0.95rem] leading-8 text-muted">
+          <p className="mt-4 max-w-lg text-[0.95rem] leading-8 text-muted">
             قطع يومية مختارة من موردين محليين في فلسطين. اطلب الآن وادفع بعد تثبيت طلبك.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+          <form action="/search" role="search" className="mt-6 flex max-w-lg items-center gap-3 rounded-full border border-line bg-paper/95 p-1.5 ps-4 shadow-[var(--shadow-card)]">
+            <Search className="size-5 shrink-0 text-beige-deep" strokeWidth={1.8} />
+            <input type="search" name="q" placeholder="ابحث عن قطعة أو موديل..." aria-label="البحث في منتجات الجمال" className="min-w-0 flex-1 bg-transparent py-2 text-sm text-ink outline-none placeholder:text-muted" />
+            <button type="submit" className="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-ivory transition-colors hover:bg-ink-soft">بحث</button>
+          </form>
+          <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href="/products" size="lg">
               تسوّق الآن
               <ArrowLeft className="size-4" />
@@ -32,8 +39,12 @@ function Hero() {
               تتبع طلبك
             </ButtonLink>
           </div>
+          <p className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-soft">
+            <span className="inline-flex items-center gap-1.5"><PackageCheck className="size-4 text-beige-deep" strokeWidth={1.8} /> تأكيد التوفر قبل الدفع</span>
+            <span className="inline-flex items-center gap-1.5"><Truck className="size-4 text-beige-deep" strokeWidth={1.8} /> توصيل حسب المنطقة</span>
+          </p>
         </div>
-        <Suspense fallback={<Skeleton className="h-56 rounded-[2rem] md:h-80" />}>
+        <Suspense fallback={<Skeleton className="h-64 rounded-[2rem] md:h-[25rem]" />}>
           <PromoCard />
         </Suspense>
       </div>
@@ -43,31 +54,42 @@ function Hero() {
 
 /** Uses real catalog numbers only: the largest discount currently published. */
 async function PromoCard() {
-  const { items } = await listProducts({ onSale: true, pageSize: 60 });
-  const best = items.reduce((m, p) => {
-    const price = Number(p.price);
-    const sale = Number(p.sale_price);
-    return price > 0 && sale > 0 && sale < price ? Math.max(m, Math.floor((1 - sale / price) * 100)) : m;
+  const [sale, latest] = await Promise.all([
+    listProducts({ onSale: true, pageSize: 24 }),
+    listProducts({ sort: "newest", pageSize: 4 }),
+  ]);
+  const best = sale.items.reduce((max, product) => {
+    const original = Number(product.price);
+    const reduced = Number(product.sale_price);
+    return original > 0 && reduced > 0 && reduced < original
+      ? Math.max(max, Math.floor((1 - reduced / original) * 100))
+      : max;
   }, 0);
-  const hasOffers = best > 0;
+  const heroItem = sale.items.find((product) => product.image) ?? latest.items.find((product) => product.image) ?? latest.items[0];
+  const destination = heroItem ? "/product/" + heroItem.slug : best > 0 ? "/offers" : "/products";
   return (
-    <Link
-      href={hasOffers ? "/offers" : "/products"}
-      className="group relative isolate block overflow-hidden rounded-[2rem] bg-ink p-6 text-ivory shadow-[0_24px_48px_-24px_rgba(29,27,24,0.7)] md:p-10"
-    >
-      <Monogram variant="outline-light" className="pointer-events-none absolute -bottom-12 -end-10 -z-10 w-40 opacity-20 md:w-60" />
-      <p className="text-xs tracking-[0.3em] text-beige">{hasOffers ? "عروض الموسم" : "جديد JAMAL"}</p>
-      {hasOffers ? (
-        <p className="mt-3 text-lg font-semibold">
-          خصم حتى <span className="mt-1 block font-display text-7xl leading-none tracking-tight text-ivory md:text-8xl"><bdi>{best}%</bdi></span>
-        </p>
+    <Link href={destination} className="group relative isolate flex min-h-64 flex-col justify-end overflow-hidden rounded-[2rem] bg-ink p-6 text-ivory shadow-[0_24px_52px_-28px_rgba(29,27,24,0.65)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_30px_64px_-28px_rgba(29,27,24,0.7)] md:min-h-[26rem] md:p-9">
+      {heroItem?.image ? (
+        <>
+          <ProductImage src={heroItem.image} alt={heroItem.image_alt || heroItem.name_ar} sizes="(min-width: 768px) 50vw, 100vw" priority className="transition-transform duration-700 group-hover:scale-[1.05]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/50 to-ink/10" aria-hidden />
+        </>
       ) : (
-        <p className="mt-3 max-w-[14rem] text-2xl font-bold leading-snug">قطع يومية مختارة بعناية</p>
+        <Monogram variant="outline-light" className="pointer-events-none absolute -bottom-20 -end-8 -z-10 w-56 opacity-20 md:w-80" />
       )}
-      <p className="mt-3 max-w-[15rem] text-xs leading-6 text-ivory/70">على قطع مختارة من المجموعة.</p>
-      <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-bold text-ink transition-transform group-hover:-translate-x-1">
-        {hasOffers ? "تسوّق العروض" : "اكتشف المجموعة"} <ArrowLeft className="size-4" />
-      </span>
+      <div className="relative z-10 max-w-sm">
+        <p className="mb-2 text-xs font-semibold tracking-[0.18em] text-beige" dir="ltr">AL JAMAL / THE EDIT</p>
+        {best > 0 && (
+          <span className="mb-3 inline-flex rounded-full border border-ivory/25 bg-ivory/15 px-3 py-1 text-xs font-bold text-ivory backdrop-blur">
+            عروض مختارة حتى {best}% خصم
+          </span>
+        )}
+        <h2 className="text-2xl font-bold leading-snug md:text-3xl">{heroItem?.name_ar ?? "أسلوب يومي بتفاصيل أنيقة"}</h2>
+        <p className="mt-2 text-sm leading-7 text-ivory/80">اكتشف القطع المختارة واطلب بمقاسك المفضل.</p>
+        <span className="mt-5 inline-flex items-center gap-2 rounded-full bg-ivory px-5 py-2.5 text-sm font-bold text-ink transition-transform duration-200 group-hover:-translate-x-1">
+          اكتشف الآن <ArrowLeft className="size-4" strokeWidth={1.8} />
+        </span>
+      </div>
     </Link>
   );
 }
@@ -128,7 +150,7 @@ function Section({ title, href, compact = false, children }: { title: string; hr
   return (
     <section className={`container-page ${compact ? "py-6 md:py-12" : "py-10 md:py-16"}`}>
       <div className="mb-5 flex items-end justify-between gap-4 md:mb-7">
-        <h2 className="text-xl font-bold md:text-2xl">{title}</h2>
+        <h2 className="text-xl font-extrabold tracking-tight md:text-2xl">{title}</h2>
         {href && (
           <Link href={href} className="inline-flex items-center gap-1 text-sm font-semibold text-beige-deep hover:text-ink">
             عرض الكل <ArrowLeft className="size-4" />
@@ -169,6 +191,11 @@ export default function HomePage() {
         <CategoryChips />
       </Suspense>
       <Hero />
+      <Section title="وصل حديثًا" href="/products">
+        <Suspense fallback={<ProductGridSkeleton count={4} />}>
+          <ProductsRow kind="new" />
+        </Suspense>
+      </Section>
       <Section title="تسوّق حسب الفئة" compact>
         <Suspense fallback={<div className="flex gap-4"><Skeleton className="size-20 rounded-full" /><Skeleton className="size-20 rounded-full" /><Skeleton className="size-20 rounded-full" /></div>}>
           <Categories />
@@ -178,11 +205,6 @@ export default function HomePage() {
         <FeaturedSection />
       </Suspense>
       <Promises />
-      <Section title="وصل حديثًا" href="/products">
-        <Suspense fallback={<ProductGridSkeleton count={4} />}>
-          <ProductsRow kind="new" />
-        </Suspense>
-      </Section>
       <Suspense fallback={null}>
         <SaleSection />
       </Suspense>
