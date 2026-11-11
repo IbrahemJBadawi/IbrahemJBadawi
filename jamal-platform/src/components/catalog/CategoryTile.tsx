@@ -4,10 +4,10 @@ import { artFor } from "@/lib/art";
 
 export function CategoryTile({ slug, name, count, image }: { slug: string; name: string; count?: number; image?: string | null }) {
   return (
-    <Link href={`/category/${slug}`} className="group relative block overflow-hidden rounded-[var(--radius-card)] bg-sand">
+    <Link href={`/category/${slug}`} className="group relative block overflow-hidden rounded-[var(--radius-card)] border border-line/70 bg-sand shadow-[var(--shadow-card)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]">
       <div className="relative aspect-[4/5]">
         {image ? (
-          <Image src={image} alt="" fill sizes="(min-width:768px) 33vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+          <Image src={image} alt="" fill sizes="(min-width:768px) 33vw, 50vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
         ) : (
           <svg viewBox="0 0 200 260" className="absolute inset-0 m-auto h-[70%] w-[70%] text-beige-deep/70 transition-transform duration-700 group-hover:scale-[1.05]" aria-hidden>
             <path d={artFor(slug)} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -26,7 +26,7 @@ export function CategoryTile({ slug, name, count, image }: { slug: string; name:
 export function CategoryCircle({ slug, name, image }: { slug: string; name: string; image?: string | null }) {
   return (
     <Link href={`/category/${slug}`} className="group flex w-20 flex-col items-center gap-2 text-center">
-      <span className="relative block size-20 overflow-hidden rounded-full bg-sand ring-1 ring-line transition-shadow group-hover:ring-2 group-hover:ring-ink">
+      <span className="relative block size-20 overflow-hidden rounded-[1.5rem] border-2 border-paper bg-sand shadow-[var(--shadow-card)] ring-1 ring-line transition-[transform,box-shadow] duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-card-hover)]">
         {image ? (
           <Image src={image} alt="" fill sizes="80px" className="object-cover" />
         ) : (
