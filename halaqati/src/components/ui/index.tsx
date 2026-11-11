@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon, type IconName } from "@/components/Icon";
 import type { ComponentProps, ReactNode } from "react";
 
 export function cx(...parts: Array<string | false | null | undefined>) {
@@ -76,14 +77,23 @@ export function EmptyState({ title, children }: { title: string; children?: Reac
 
 type Tone = "mint" | "sand" | "peach" | "sky" | "lilac" | "rose";
 
-/** Number tile. With a tone it becomes a pastel tile with an icon (like the reference dashboards). */
+/** Preserve existing stat API while giving the dashboard a coherent, crisp SVG icon style. */
+const STAT_GLYPHS: Record<string, IconName> = {
+  "🔥": "flame", "🏆": "trophy", "📈": "chartUp", "📊": "stats",
+  "⭐": "star", "🏅": "medal", "📗": "bookOpen", "📖": "bookOpen",
+  "🔁": "refresh", "✨": "sparkles", "🎙️": "mic", "🎯": "target",
+  "📅": "calendar", "👥": "users", "⏰": "clock", "✅": "checkCircle",
+  "🏫": "school", "🕌": "school", "🔔": "bell", "📝": "tasks",
+};
+
+/** Number tile. With a tone it becomes a pastel tile with a consistent icon. */
 export function Stat({ label, value, hint, tone, icon }: { label: string; value: ReactNode; hint?: string; tone?: Tone; icon?: string }) {
   if (tone) {
     return (
       <div className={cx("stat-tile", `t-${tone}`)}>
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm font-semibold text-ink">{label}</span>
-          {icon && <span className="stat-icon" aria-hidden>{icon}</span>}
+          {icon && <span className="stat-icon" aria-hidden>{STAT_GLYPHS[icon] ? <Icon name={STAT_GLYPHS[icon]} size={22} /> : icon}</span>}
         </div>
         <span className="stat-value">{value}</span>
         {hint && <span className="text-xs text-muted">{hint}</span>}
