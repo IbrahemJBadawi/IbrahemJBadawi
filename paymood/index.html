@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="PayMood من TechMood Technology — مركز متابعة طلبات الدفع، بنسخة تجريبية آمنة دون معاملات مالية حقيقية.">
+  <title>PayMood | TechMood Technology</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" class="svg-sprite" aria-hidden="true">
+  <symbol id="i-overview" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M7 15h4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2.5h8l4 4V21H6a2 2 0 0 1-2-2V4.5a2 2 0 0 1 2-2Z"/><path d="M14 2.5v4h4M8 12h8M8 16h6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 16v-5M12 16V7M17 16v-9"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="m10 2-.7 2.1-2 .9-2-.8-2 3.5 1.6 1.7-.2 2.2L3 13l2 3.5 2.2-.6 1.8 1.1L10 19h4l.7-2.1 1.9-.9 2.1.6 2-3.5-1.7-1.6.1-2.2L21 7.7l-2-3.5-2.2.8-1.9-.9L14 2Z"/><circle cx="12" cy="10.5" r="2.7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 10h18c0-2-3-2-3-10M10 21h4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v13m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18M7 12h10M10 19h4"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M5 6V4a2 2 0 0 1 2-2h11M4 6h15a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"/><path d="M21 12h-6a2 2 0 0 0 0 4h6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 4 5v7c0 5.1 3.3 8.1 8 10 4.7-1.9 8-4.9 8-10V5Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2Z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 16.5A8 8 0 0 1 7.5 4 8.5 8.5 0 1 0 20 16.5Z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.5 1.5m11.2 11.2 1.5 1.5m0-14.2-1.5 1.5M6.4 17.6l-1.5 1.5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6m4-6v6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M13 4h7v7M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-empty" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6M7 17h4"/></symbol>
+</svg>
+<div id="app-shell">
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+  <aside class="sidebar" id="sidebar" aria-label="التنقل الرئيسي">
+    <a class="brand" href="#overview" aria-label="PayMood الرئيسية">
+      <span class="brand-icon"><svg class="logo-svg" viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="14" fill="currentColor" opacity=".08"/><path d="M14 32V15h12a7 7 0 0 1 0 14H14m0-8h12" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="34" cy="32" r="4" fill="#30b69a"/></svg></span>
+      <span><strong>PayMood</strong><small>TechMood Technology</small></span>
+    </a>
+    <div class="workspace"><span class="workspace-avatar"><svg class="ico"><use href="#i-grid"/></svg></span><span><strong>مساحة العمل</strong><small>مركز المدفوعات</small></span><svg class="ico muted-icon"><use href="#i-chevron"/></svg></div>
+    <div class="nav-caption">القائمة الرئيسية</div>
+    <nav class="main-nav" id="main-nav">
+      <button data-view="overview" class="nav-item active"><svg class="ico"><use href="#i-overview"/></svg>نظرة عامة</button>
+      <button data-view="payments" class="nav-item"><svg class="ico"><use href="#i-card"/></svg>طلبات الدفع<span id="nav-count" class="nav-count" hidden></span></button>
+      <button data-view="methods" class="nav-item"><svg class="ico"><use href="#i-wallet"/></svg>وسائل الدفع</button>
+      <button data-view="reports" class="nav-item"><svg class="ico"><use href="#i-chart"/></svg>التقارير</button>
+      <div class="nav-caption second">المنظومة</div>
+      <button data-view="integrations" class="nav-item"><svg class="ico"><use href="#i-grid"/></svg>تكامل المنتجات</button>
+      <button data-view="settings" class="nav-item"><svg class="ico"><use href="#i-settings"/></svg>الإعدادات</button>
+    </nav>
+    <div class="sidebar-foot"><div class="security-icon"><svg class="ico"><use href="#i-shield"/></svg></div><strong>بيئة تجريبية آمنة</strong><p>لا تحويلات أو أرصدة أو عمليات مالية فعلية.</p><a href="https://github.com/IbrahemJBadawi/IbrahemJBadawi/tree/main/paymood" target="_blank" rel="noopener noreferrer">المشروع على GitHub <svg class="ico small"><use href="#i-external"/></svg></a></div>
+  </aside>
+  <div class="app-column">
+    <header class="topbar">
+      <div class="topbar-left"><button class="icon-btn mobile-menu" id="menu-toggle" aria-label="فتح القائمة"><svg class="ico"><use href="#i-menu"/></svg></button><span id="breadcrumb">لوحة التحكم</span><svg class="ico crumb-arrow"><use href="#i-chevron"/></svg><strong id="page-name">نظرة عامة</strong></div>
+      <div class="topbar-actions">
+        <div class="top-search"><svg class="ico"><use href="#i-search"/></svg><input id="global-search" placeholder="ابحث في الطلبات..." aria-label="البحث"></div>
+        <button class="icon-btn" id="theme-toggle" aria-label="تبديل المظهر" title="تبديل المظهر"><svg class="ico"><use href="#i-moon"/></svg></button>
+        <button class="icon-btn bell-btn" id="notify-toggle" aria-label="الإشعارات" title="الإشعارات"><svg class="ico"><use href="#i-bell"/></svg></button>
+        <div class="top-avatar" aria-label="حساب العرض">PM</div>
+      </div>
+    </header>
+    <div class="notice-banner"><svg class="ico"><use href="#i-info"/></svg><span><strong>وضع المعاينة:</strong> هذه واجهة تجريبية. المسودات محفوظة على هذا الجهاز فقط، ولا تمثل دفعًا أو تحصيلًا أو تحويلًا حقيقيًا.</span></div>
+    <main id="main" tabindex="-1" aria-live="polite"></main>
+    <footer class="app-footer"><span>© 2026 PayMood — أحد منتجات <strong>TechMood Technology</strong></span><span>إدارة مدفوعات دون تشغيل خدمات مالية</span></footer>
+  </div>
+</div>
+<dialog id="request-dialog" class="request-dialog" aria-labelledby="dialog-title">
+  <form id="request-form" class="dialog-layout">
+    <div class="dialog-header"><div><div class="eyebrow">طلب جديد</div><h2 id="dialog-title">إنشاء مسودة طلب دفع</h2><p>لن يتم إرسال الطلب أو تحصيل أي مبلغ.</p></div><button type="button" class="icon-btn" data-close aria-label="إغلاق"><svg class="ico"><use href="#i-close"/></svg></button></div>
+    <div class="form-grid">
+      <label class="form-field">اسم العميل أو الجهة <input name="customer" required maxlength="80" placeholder="مثال: اسم المستفيد" autocomplete="off"></label>
+      <label class="form-field">المنتج <select name="product" required><option value="">اختر المنتج</option><option>StoreMood</option><option>MentorMood</option><option>GrowthMood</option><option>CodeMood</option><option>HealthMood</option><option>Capital Market</option><option>منتج آخر</option></select></label>
+      <label class="form-field">المبلغ المرجعي <input name="amount" required type="number" inputmode="decimal" min="0.01" max="1000000" step="0.01" placeholder="0.00"></label>
+      <label class="form-field">العملة <select name="currency"><option value="ILS">شيكل ILS</option><option value="USD">دولار USD</option><option value="JOD">دينار JOD</option></select></label>
+      <label class="form-field wide">الوصف <textarea name="description" maxlength="250" rows="3" placeholder="وصف الطلب أو الخدمة..."></textarea></label>
+    </div>
+    <div class="form-note"><svg class="ico"><use href="#i-shield"/></svg>يُحفظ كمسودة محلية فقط؛ ليس إثباتًا على وصول المال.</div>
+    <div class="dialog-actions"><button type="button" class="btn btn-soft" data-close>إلغاء</button><button type="submit" class="btn btn-primary"><svg class="ico"><use href="#i-check"/></svg>حفظ المسودة</button></div>
+  </form>
+</dialog>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
