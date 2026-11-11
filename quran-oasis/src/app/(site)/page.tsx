@@ -39,6 +39,12 @@ const SECTIONS: { href: string; title: string; text: string; icon: LucideIcon }[
   { href: "/learn", title: "التعلّم", text: "مسارات قصيرة في التجويد والقراءة الصحيحة والحفظ والتدبّر.", icon: GraduationCap },
 ];
 
+const SECTION_TINTS = [
+  "bg-tint-sage text-accent", "bg-tint-sand text-gold-fg",
+  "bg-tint-mint text-success", "bg-tint-sky text-[#47738a]",
+  "bg-tint-apricot text-[#96633c]", "bg-tint-rose text-[#986068]",
+];
+
 const FEATURES: { title: string; text: string; icon: LucideIcon }[] = [
   { title: "بلا حساب للبدء", text: "تصفّح وتقدّم مباشرة؛ ويُحفظ تقدمك على جهازك حتى تقرر إنشاء حساب.", icon: UserRound },
   { title: "يعمل دون اتصال", text: "ثبّت المنصة على هاتفك ونزّل المصحف لقراءته دون إنترنت.", icon: CloudOff },
@@ -91,19 +97,19 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* ───────── البطل ───────── */}
-      <section className="pattern-bg relative overflow-hidden">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 md:grid-cols-2 md:pb-24 md:pt-20">
+      <section className="qo-home-hero pattern-bg relative overflow-hidden border-b border-line/60">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 md:grid-cols-2 md:gap-12 md:pb-24 md:pt-20">
           <div>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold-soft px-3 py-1 text-sm font-semibold text-gold-fg">
+            <p className="mb-5 inline-flex items-center gap-2 rounded-xl border border-gold/25 bg-gold-soft px-3 py-1.5 text-xs font-extrabold text-gold-fg">
               <Leaf className="h-4 w-4" aria-hidden="true" />
               {SITE.tagline}
             </p>
-            <h1 className="text-4xl font-bold leading-[1.35] text-fg md:text-5xl md:leading-[1.3]">
+            <h1 className="text-[2.45rem] font-extrabold leading-[1.45] text-fg sm:text-5xl md:text-[3.45rem] md:leading-[1.35]">
               اجعل للقرآن مكانًا
               <br />
               <span className="text-accent">في كل يوم</span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
+            <p className="mt-5 max-w-lg text-[16px] leading-[2] text-muted sm:text-lg">
               رفيق يومي هادئ يجمع لك المصحف، والأذكار، والورد، والتدبّر، والحفظ في مكان واحد — لتبني صلة ثابتة بكتاب الله، خطوة
               بعد خطوة، دون ضغط أو مقارنة.
             </p>
@@ -121,7 +127,7 @@ export default async function HomePage() {
           <div className="relative">
             <OasisScene className="w-full" />
             {ayah && (
-              <figure className="relative -mt-16 mx-4 rounded-3xl border border-line bg-surface/95 p-5 shadow-sm backdrop-blur md:mx-8">
+              <figure className="qo-card relative -mt-16 mx-4 rounded-[1.75rem] border border-line bg-surface/95 p-5 backdrop-blur-xl md:mx-8 md:p-6">
                 <figcaption className="mb-2 flex items-center justify-between text-xs font-semibold text-muted">
                   <span className="inline-flex items-center gap-1.5 text-accent">
                     <Leaf className="h-3.5 w-3.5" aria-hidden="true" />
@@ -148,16 +154,16 @@ export default async function HomePage() {
         </h2>
         <p className="mt-2 text-muted">أقسام مترابطة، كل منها يخدم وردك اليومي.</p>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SECTIONS.map((s) => (
+          {SECTIONS.map((s, i) => (
             <Link
               key={s.href}
               href={s.href}
-              className="group rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-colors hover:border-accent focus-ring"
+              className="qo-section-card group rounded-[var(--radius-card)] border border-line bg-surface p-5 focus-ring sm:p-6"
             >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-accent-soft text-accent">
-                <s.icon className="h-6 w-6" aria-hidden="true" />
+              <span className={`grid h-[3.25rem] w-[3.25rem] place-items-center rounded-2xl ${SECTION_TINTS[i % SECTION_TINTS.length]}`}>
+                <s.icon className="h-6 w-6" strokeWidth={1.8} aria-hidden="true" />
               </span>
-              <h3 className="mt-4 text-lg font-bold group-hover:text-accent">{s.title}</h3>
+              <h3 className="mt-4 text-lg font-extrabold group-hover:text-accent">{s.title}</h3>
               <p className="mt-1 text-[15px] leading-relaxed text-muted">{s.text}</p>
             </Link>
           ))}
@@ -202,8 +208,8 @@ export default async function HomePage() {
         </h2>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {FEATURES.map((f) => (
-            <li key={f.title} className="rounded-[var(--radius-card)] bg-surface-2 p-5">
-              <f.icon className="h-6 w-6 text-accent" aria-hidden="true" />
+            <li key={f.title} className="qo-feature-card rounded-[var(--radius-card)] border border-line/70 bg-surface p-5">
+              <f.icon className="h-6 w-6 text-accent" strokeWidth={1.8} aria-hidden="true" />
               <h3 className="mt-3 font-bold">{f.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted">{f.text}</p>
             </li>
@@ -247,7 +253,7 @@ export default async function HomePage() {
         </h2>
         <div className="mt-8 space-y-3">
           {FAQ.map((f) => (
-            <details key={f.q} className="group rounded-2xl border border-line bg-surface p-5 open:border-accent">
+            <details key={f.q} className="group qo-card rounded-2xl border border-line bg-surface p-5 open:border-accent">
               <summary className="cursor-pointer list-none font-bold marker:hidden focus-ring rounded">
                 <span className="flex items-center justify-between gap-3">
                   {f.q}
