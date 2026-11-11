@@ -1,8 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo } from "next/font/google";
+import { Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { publicEnv } from "@/lib/env";
 import { ServiceWorkerRegistration } from "@/components/pwa/ServiceWorker";
 import "./globals.css";
+
+const interfaceFont = IBM_Plex_Sans_Arabic({
+  variable: "--font-interface",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 const cairo = Cairo({
   variable: "--font-arabic",
@@ -32,7 +39,7 @@ const THEME_INIT = `try{var t=localStorage.getItem("halaqati-theme");if(t==="dar
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="ar" dir="rtl" className={`${interfaceFont.variable} ${cairo.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>

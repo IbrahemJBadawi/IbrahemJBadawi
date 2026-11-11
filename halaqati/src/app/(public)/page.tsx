@@ -1,5 +1,6 @@
 import { Crescent, Skyline } from "@/components/brand/Skyline";
 import { ButtonLink, Card } from "@/components/ui";
+import { Icon, type IconName } from "@/components/Icon";
 
 const AUDIENCES = [
   { title: "للطالب", text: "خطة حفظ ومراجعة واضحة، وسجلّ لكل تسميع، ومتابعة للحضور والواجب القادم." },
@@ -11,42 +12,66 @@ const AUDIENCES = [
 export default function HomePage() {
   return (
     <div className="flex flex-col gap-10">
-      <section className="dawn px-6 pt-10 pb-24 text-center sm:px-10 sm:pt-14 sm:pb-32">
+
+      <section className="dawn landing-hero" aria-labelledby="landing-title">
         <Skyline />
-        <Crescent className="mx-auto mb-3 size-10 text-gold" />
-        <p className="mb-2 font-semibold text-gold-dark">رحلتك مع القرآن</p>
-        <h1 className="mx-auto max-w-2xl text-3xl font-bold leading-snug text-brand-900 sm:text-4xl">حلقتي: منصة واحدة لحلقات التحفيظ والمراجعة</h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-          تربط الطلاب بالمحفّظين، وتساعد الدور والمراكز على متابعة رحلة كل طالب: الحفظ الجديد، والمراجعة القريبة والبعيدة، والحضور، وجودة التلاوة.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <ButtonLink href="/register">أنشئ حسابك مجانًا</ButtonLink>
-          <ButtonLink href="/halaqat" variant="secondary">استعرض الحلقات</ButtonLink>
+        <div className="landing-copy">
+          <span className="landing-eyebrow"><Crescent className="size-5" /> رحلتك مع القرآن، خطوة بخطوة</span>
+          <h1 id="landing-title">كل حلقة، كل طالب، <span className="landing-gradient">كل إنجاز في مكان واحد.</span></h1>
+          <p className="landing-lead">حلقتي تجمع إدارة حلقات القرآن ومتابعة الحفظ والمراجعة والحضور في تجربة واضحة للمعلم والطالب وولي الأمر والمركز.</p>
+          <div className="landing-actions">
+            <ButtonLink href="/register">ابدأ رحلتك مجانًا <Icon name="chevron" size={18} /></ButtonLink>
+            <ButtonLink href="/halaqat" variant="secondary"><Icon name="search" size={18} /> استعرض الحلقات</ButtonLink>
+          </div>
+          <div className="landing-trust">
+            <span><Icon name="checkCircle" size={17} /> متابعة الحفظ والمراجعة</span>
+            <span><Icon name="shield" size={17} /> خصوصية لكل طالب</span>
+            <span><Icon name="users" size={17} /> للطلاب والمراكز</span>
+          </div>
+        </div>
+        <div className="landing-showcase" aria-label="نظرة على أدوات المنصة">
+          <div className="landing-window">
+            <div className="landing-window-head">
+              <span className="landing-window-logo"><Icon name="bookOpen" size={22} /></span>
+              <div><strong>رحلتي القرآنية</strong><small>كل خطوة في طريق الإتقان</small></div>
+              <span className="landing-window-status"><Icon name="checkCircle" size={14} /> متابعة يومية</span>
+            </div>
+            <div className="landing-window-grid">
+              <div className="landing-mini-card"><span className="landing-mini-icon mint"><Icon name="bookOpen" /></span><strong>الحفظ الجديد</strong><small>تسميع ومقدار وإتقان</small></div>
+              <div className="landing-mini-card"><span className="landing-mini-icon sand"><Icon name="refresh" /></span><strong>المراجعة</strong><small>قريبة وبعيدة ومنظمة</small></div>
+              <div className="landing-mini-card"><span className="landing-mini-icon sky"><Icon name="calendar" /></span><strong>الحضور</strong><small>الجلسات وجدول الحلقة</small></div>
+              <div className="landing-mini-card"><span className="landing-mini-icon rose"><Icon name="chartUp" /></span><strong>التقدّم</strong><small>إحصائيات لكل طالب</small></div>
+            </div>
+            <div className="landing-window-footer"><Icon name="star" size={18} /><span>حماسة يومية وإنجازات تشجّع على الاستمرار</span></div>
+          </div>
+          <span className="landing-orbit landing-orbit-one" aria-hidden><Icon name="sparkles" size={24} /></span>
+          <span className="landing-orbit landing-orbit-two" aria-hidden><Icon name="trophy" size={24} /></span>
         </div>
       </section>
 
-      <section aria-labelledby="motivate" className="grid gap-4 sm:grid-cols-3">
-        <h2 id="motivate" className="sr-only">ما يحفّز الطالب</h2>
-        {[
-          { tint: "t-peach", icon: "🔥", title: "الحماسة", text: "سلسلة أيام متتالية من الورد والتسميع والمهام." },
-          { tint: "t-sand", icon: "🏆", title: "دوري الحلقة", text: "ترتيب أسبوعي بالنقاط داخل الحلقة، مع خيار إخفاء الاسم." },
-          { tint: "t-sky", icon: "📈", title: "إحصائيات واضحة", text: "رسوم أسبوعية للحفظ والمراجعة والإتقان والحضور." },
-        ].map((f) => (
-          <Card key={f.title} className="flex items-start gap-3">
-            <span className={`tile-icon ${f.tint} !size-12 !rounded-[16px] text-2xl`} aria-hidden>{f.icon}</span>
-            <div>
-              <h3 className="font-bold">{f.title}</h3>
-              <p className="text-sm text-muted">{f.text}</p>
-            </div>
-          </Card>
-        ))}
+
+      <section aria-labelledby="motivate" className="landing-features">
+        <div className="landing-section-heading"><span>تعلم مستمر</span><h2 id="motivate">التشجيع جزء من التجربة</h2><p>أدوات تحفيزية خفيفة تساعد الطالب على المواظبة، دون أن تطغى على هدف الحفظ والإتقان.</p></div>
+        <div className="landing-feature-grid">
+          {([
+            { tint: "peach", icon: "flame", title: "الحماسة اليومية", text: "سلسلة أيام متتالية من الورد والتسميع والمهام." },
+            { tint: "sand", icon: "trophy", title: "دوري الحلقة", text: "ترتيب بالنقاط داخل الحلقة، مع احترام خصوصية الطلاب." },
+            { tint: "sky", icon: "chartUp", title: "تقدّم مرئي", text: "رسوم واضحة للحفظ والمراجعة والإتقان والحضور." },
+          ] satisfies Array<{tint: string; icon: IconName; title: string; text: string}>).map((f) => (
+            <Card key={f.title} className="landing-feature">
+              <span className={"landing-feature-icon " + f.tint}><Icon name={f.icon} size={25} /></span>
+              <h3>{f.title}</h3>
+              <p>{f.text}</p>
+            </Card>
+          ))}
+        </div>
       </section>
 
       <section aria-labelledby="who">
-        <h2 id="who" className="mb-4 text-2xl font-bold text-ink">لمن حلقتي؟</h2>
+        <div className="landing-section-heading mb-5"><span>لمن صُممت المنصة؟</span><h2 id="who">مكان واحد لكل من يرافق رحلة القرآن</h2></div>
         <div className="grid gap-4 sm:grid-cols-2">
           {AUDIENCES.map((a) => (
-            <Card key={a.title}>
+            <Card key={a.title} className="landing-audience-card">
               <h3 className="mb-1 text-lg font-bold text-brand-800">{a.title}</h3>
               <p className="text-muted">{a.text}</p>
             </Card>
