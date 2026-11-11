@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#071b30">
+  <meta name="description" content="مجلس السلام — لعبة استراتيجية لبناء مستقبل غزة، وإدارة الموارد والخدمات ومشاريع الإعمار.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>مجلس السلام | Peace Council</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="refinements.css">
+  <script defer src="icons.js"></script>
+  <script defer src="game.js"></script>
+</head>
+<body>
+ <div class="app" id="app">
+  <header class="topbar">
+   <div class="brand">
+    <div class="brand-seal" aria-hidden="true"><img src="peace-council-logo.webp" alt=""></div>
+    <div><strong>مجلس السلام</strong><small>PEACE COUNCIL <span class="brand-dot">•</span> TechMood Technology</small></div>
+   </div>
+   <div class="top-actions">
+     <span class="save-pill" id="save-status">● محفوظ محليًا</span>
+     <button class="icon-btn" id="help-btn" type="button" aria-label="طريقة اللعب" title="طريقة اللعب"><span data-icon="help"></span></button>
+     <button class="icon-btn" id="sound-btn" type="button" aria-label="الصوت" title="الصوت"><span data-icon="music"></span></button>
+   </div>
+  </header>
+  <section class="resource-strip" aria-label="الموارد والمؤشرات">
+   <div class="metric"><span class="metric-icon gold" data-icon="wallet"></span><div><small>الميزانية</small><strong id="metric-coins">—</strong></div></div>
+   <div class="metric"><span class="metric-icon sand" data-icon="bricks"></span><div><small>مواد البناء</small><strong id="metric-materials">—</strong></div></div>
+   <div class="metric"><span class="metric-icon sky" data-icon="users"></span><div><small>السكان</small><strong id="metric-population">—</strong></div></div>
+   <div class="metric"><span class="metric-icon green" data-icon="heart"></span><div><small>رضا السكان</small><strong id="metric-happiness">—</strong></div></div>
+   <div class="metric compact"><span class="metric-icon purple" data-icon="trophy"></span><div><small>المستوى</small><strong id="metric-level">—</strong></div></div>
+  </section>
+  <main class="dashboard">
+   <aside class="sidebar side-regions" aria-label="المناطق والتحديات">
+    <section class="panel intro-panel">
+      <div class="eyebrow"><span data-icon="sparkles"></span> رحلة إعادة الإعمار</div>
+      <h1>من الأمل <em>تبدأ المدينة</em></h1>
+      <p>خطّط، ابنِ، ووازن بين احتياجات الناس والموارد المتاحة. قراراتك تصنع الفرق.</p>
+      <div class="game-clock"><span class="clock-line"><span data-icon="calendar"></span> اليوم <b id="game-day">1</b></span><span class="clock-speed">يوم جديد كل 25 ثانية</span></div>
+    </section>
+    <section class="panel">
+     <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">خريطة تجريبية</span></div>
+     <div class="regions" id="regions"></div>
+     <p class="fine-print">حدود الأحياء داخل مساحة اللعب تخطيطية وليست خريطة مساحية فعلية.</p>
+    </section>
+    <section class="panel mission-panel">
+     <div class="panel-heading"><h2><span data-icon="trophy"></span> مهمة الإعمار</h2><span class="mission-counter" id="mission-counter">1 / 5</span></div>
+     <div id="mission-card"></div>
+    </section>
+   </aside>
+   <section class="game-panel" aria-label="مساحة بناء المدينة">
+    <div class="game-header">
+     <div><span class="eyebrow" id="region-subtitle">منطقة الوسطى • نموذج أولي</span><h2 id="region-title">مدينة دير البلح</h2></div>
+     <div class="game-header-actions">
+      <span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
+      <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>
+      <button class="map-control info" id="reset-camera" type="button" title="العودة إلى منتصف المدينة"><span data-icon="locate"></span></button>
+     </div>
+    </div>
+    <div class="canvas-wrap" id="canvas-wrap">
+     <canvas id="world" role="img" aria-label="خريطة بناء مائلة. اختر منشأة ثم اضغط على مربع أرضي لبنائها">متصفحك لا يدعم تشغيل اللعبة بالرسم.</canvas>
+     <div class="map-top-hint" id="mode-hint">اختر منشأة ثم اضغط على أرض فارغة للبناء</div>
+     <div class="map-controls"><button id="zoom-in" type="button" aria-label="تكبير">+</button><button id="zoom-out" type="button" aria-label="تصغير">−</button></div>
+     <div class="map-bottom-label"><span class="ocean-dot"></span> ساحل غزة — رسم تخطيطي <span class="sep">•</span> اسحب للتحريك، واستخدم إصبعين للتكبير</div>
+     <div class="floating-selection" id="selection-info" hidden></div>
+    </div>
+    <div class="game-foot">
+     <div class="goal-mini"><span data-icon="build"></span><div><strong>إعادة بناء أفضل</strong><small>تقدّم الخدمات يرفع مستوى رفاه السكان</small></div></div>
+     <button class="secondary-btn" id="save-button" type="button"><span data-icon="save"></span> حفظ التقدم</button>
+    </div>
+   </section>
+   <aside class="sidebar side-build" aria-label="المشاريع والإحصاءات">
+    <section class="panel build-panel">
+      <div class="panel-heading"><h2><span data-icon="build"></span> ابنِ مدينتك</h2><span class="mini-label">9 منشآت</span></div>
+      <p class="build-helper">اختر المنشأة، ثم اضغط على مربع فارغ داخل الخريطة.</p>
+      <div class="build-list" id="build-list"></div>
+      <div class="build-actions"><button id="cancel-build" class="secondary-btn" type="button">إلغاء الاختيار</button></div>
+    </section>
+    <section class="panel indicators-panel">
+      <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات المدينة</h2><span class="mini-label">مباشر</span></div>
+      <div id="service-bars"></div>
+      <div class="income-strip"><span>الدخل اليومي</span><strong id="income-label">—</strong></div>
+    </section>
+   </aside>
+  </main>
+  <div class="game-disclaimer"><span data-icon="info"></span> هذه لعبة تخطيطية؛ الأرقام والخريطة داخل منطقة اللعب افتراضية ولا تمثل بيانات إعادة الإعمار الحقيقية.</div>
+  <footer class="bottom-bar"><span>Peace Council © TechMood Technology</span><div><button type="button" class="link-btn" id="export-button">تصدير الحفظ</button><button type="button" class="link-btn" id="import-button">استيراد الحفظ</button><button type="button" class="link-btn dangerous" id="new-game">لعبة جديدة</button></div></footer>
+  <input id="import-file" type="file" accept=".json,application/json" hidden>
+  <button id="mobile-build-jump" class="mobile-build-jump" type="button"><span data-icon="build"></span> منشآت البناء</button>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="modal-host" class="modal-host" hidden></div>
+  <noscript><div class="noscript">فعّل JavaScript لتشغيل مجلس السلام.</div></noscript>
+ </div>
+</body>
+</html>
