@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "./cn";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("rounded-[var(--radius-card)] border border-line bg-surface p-5", className)} {...props} />;
+  return <div className={cn("qo-card rounded-[var(--radius-card)] border border-line bg-surface p-5 sm:p-6", className)} {...props} />;
 }
 
 export function CardTitle({
@@ -18,8 +18,8 @@ export function CardTitle({
 }) {
   return (
     <div className="mb-3 flex items-center justify-between gap-3">
-      <Tag className="flex items-center gap-2 text-base font-bold text-fg">
-        {icon && <span className="text-accent">{icon}</span>}
+      <Tag className="flex items-center gap-2 text-[17px] font-extrabold text-fg">
+        {icon && <span className="grid h-8 w-8 place-items-center rounded-xl bg-accent-soft text-accent [&_svg]:h-[18px] [&_svg]:w-[18px]">{icon}</span>}
         {children}
       </Tag>
       {action}
