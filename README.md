@@ -4,7 +4,7 @@ Founder of TechMood 🚀
 
 🎓 Management Information Systems Graduate
 
-🤖 MBA in AI Graduate
+🤖 MBA in Artificial Intelligence (AI) — Professional Certificate (non-degree)
 
 💻 Interested in:
 - AI
