@@ -110,3 +110,10 @@ svg.ui-icon{width:21px;height:21px;display:inline-block;flex-shrink:0;vertical-a
 }
 @media(max-width:395px){.hero-circle{display:none}.top .tag{max-width:143px}.quick-action .copy small{display:none}.moods button{font-size:10px;padding:9px 4px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Educational library entry point — HealthMood 2026 */
+.library-promo{margin-top:18px;display:flex;align-items:center;gap:25px;padding:24px 28px;background:linear-gradient(112deg,#fff,#eef9fb);border-color:#d5eaee}
+.library-promo-visual{width:78px;height:86px;background:#d7f1ee;box-shadow:inset 8px 0 #bde4df,0 8px 14px #1e737c16;display:grid;place-items:center;border-radius:17px 10px 10px 17px;flex:none;color:#0a8c90}
+.library-promo-visual .ui-icon{width:42px;height:42px;stroke-width:1.5}
+.library-promo-copy{flex:1}.library-promo-copy h2{margin:3px 0;font-size:19px}.library-promo-copy p{margin:0 0 15px;max-width:580px}.library-promo-copy .btn{display:inline-flex;align-items:center;text-decoration:none;background:#087e91;color:#fff}
+@media(max-width:720px){.library-promo{gap:13px;margin-top:13px;padding:18px}.library-promo-visual{width:52px;height:61px;border-radius:13px}.library-promo-visual .ui-icon{width:30px;height:30px}.library-promo-copy h2{font-size:16px}.library-promo-copy p{font-size:11px;line-height:1.8}.library-promo-copy .btn{padding:9px 12px;min-height:38px;font-size:11px}}
