@@ -18,9 +18,10 @@ type Props = {
   templateTitle: string;
   values: Record<string, string>;
   onRestore: (record: LocalFormRecord) => void;
+  onLock: () => void;
 };
 
-export function LocalVaultPanel({ templateId, templateTitle, values, onRestore }: Props) {
+export function LocalVaultPanel({ templateId, templateTitle, values, onRestore, onLock }: Props) {
   const [exists, setExists] = useState<boolean | null>(null);
   const [key, setKey] = useState<CryptoKey | null>(null);
   const [records, setRecords] = useState<LocalFormRecord[]>([]);
@@ -109,6 +110,7 @@ export function LocalVaultPanel({ templateId, templateTitle, values, onRestore }
     setConfirmPassword("");
     setBackupPassword("");
     setBackupFile(null);
+    onLock();
     setNotice("اكتملت الاستعادة. أدخل كلمة مرور النسخة المستوردة لفتحها.");
   });
 
@@ -156,7 +158,7 @@ export function LocalVaultPanel({ templateId, templateTitle, values, onRestore }
           <div className="local-vault-status">
             <span><Icon name="checkCircle" size={17} /> قاعدة مشفرة مفتوحة · {records.length} سجل</span>
             <button type="button" className="btn btn-secondary !min-h-9" onClick={() => {
-              setKey(null); setRecords([]); setNotice("تم قفل قاعدة البيانات على هذه الصفحة.");
+              setKey(null); setRecords([]); onLock(); setNotice("تم قفل قاعدة البيانات وإخفاء المدخلات من الصفحة.");
             }}>
               <Icon name="lock" size={17} /> قفل
             </button>
