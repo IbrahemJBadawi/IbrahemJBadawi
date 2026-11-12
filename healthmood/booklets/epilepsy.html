@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>كتيب الصرع</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+@page{size:A5;margin:0}
+:root{--red:#d6392e;--green:#3a9a7a;--lg:#dff0e9;--navy:#27407c;--gray:#e6e6e6;--ink:#222}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;background:#9aa;font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink);font-size:10pt;line-height:1.6;counter-reset:pg}
+.page{width:148mm;height:210mm;margin:8mm auto;background:#fff;padding:11mm 10mm 12mm;position:relative;overflow:hidden;counter-increment:pg;page-break-after:always;break-after:page}
+.page::after{content:counter(pg);position:absolute;bottom:5mm;left:0;right:0;text-align:center;font-size:8.5pt;color:#777}
+.cover::after,.back::after{content:""}
+@media print{body{background:#fff}.page{margin:0}}
+h2{color:var(--red);font-size:16pt;font-weight:800;margin:0 0 3mm}
+h3{color:var(--navy);font-size:11.5pt;margin:3mm 0 1.5mm}
+p{margin:0 0 2.5mm}
+ul{margin:0 0 2.5mm;padding-inline-start:5mm}
+li{margin-bottom:1mm}
+li::marker{color:var(--red)}
+.tag{display:inline-block;background:var(--green);color:#fff;border-radius:10px;padding:.5mm 5mm;font-weight:700;font-size:10.5pt;margin-bottom:3mm}
+.box{border:1.5px solid var(--green);border-radius:8px;padding:3mm 4mm;margin-bottom:3mm}
+.alert{border:2px solid var(--red);background:#fdeceb;border-radius:8px;padding:3mm 4mm}
+.alert li{font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5mm}
+.sym{border:1px solid #bcd;border-radius:8px;padding:2mm 3mm;background:#f4f9fc;font-size:9.5pt;line-height:1.4}
+.sym b{display:block;color:var(--navy);font-size:10.5pt}
+.cover{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:14mm}
+.logo{width:34mm;height:22mm;border:1px dashed #999;color:#999;font-size:8pt;display:flex;align-items:center;justify-content:center;margin-bottom:14mm}
+.title{border:2px solid var(--navy);padding:9mm 6mm;width:100%;margin-bottom:12mm}
+.title h1{margin:0;color:var(--navy);font-size:25pt;line-height:1.3}
+.title div{color:var(--navy);font-weight:700;margin-top:3mm;font-size:12pt;direction:ltr}
+.note{font-size:8.5pt;color:#555}
+.line{display:flex;gap:2mm;align-items:flex-end;border-bottom:1px solid #999;height:9mm;font-weight:600}
+.line span{color:var(--navy);white-space:nowrap;font-size:10pt}
+table{width:100%;border-collapse:collapse;font-size:8.5pt;margin-bottom:2mm}
+th,td{border:1px solid #444;padding:1mm 1.5mm;text-align:center}
+th{background:var(--gray);font-weight:700}
+th.g{background:var(--lg)}
+th.r{background:var(--red);color:#fff}
+td{height:9mm}
+td.l{text-align:start;background:#fafafa;font-weight:600;height:11mm}
+.ruled{height:150mm;background:repeating-linear-gradient(transparent 0 8.4mm,#bbb 8.4mm 8.9mm);margin-top:2mm}
+.sig{height:14mm}
+.ic{width:15mm;height:15mm;flex:none;border-radius:8px}
+.sym{display:flex;gap:2.5mm;align-items:center}
+.body{float:left;width:19mm;height:38mm;margin:0 3mm 1mm 0}
+.big{width:48mm;height:48mm;margin-bottom:8mm}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:2mm;text-align:center;font-size:8.5pt;font-weight:700;color:var(--navy);margin:0 0 3mm}
+.tiles svg,.pair svg{display:block;margin:0 auto 1mm;border-radius:10px}
+.tiles svg{width:16mm;height:16mm}
+.pair{display:flex;gap:6mm;justify-content:center;text-align:center;font-size:8.5pt;font-weight:700;color:var(--navy);margin:3mm 0}
+.pair svg{width:30mm;height:30mm}
+.hd{display:flex;align-items:center;gap:3mm;margin-bottom:3mm}
+.hd h2{margin:0}
+.hd svg{width:18mm;height:18mm;flex:none}
+.idcard{border:1.5px solid var(--navy);border-radius:10px;width:88mm;margin:0 auto 2mm;padding:3mm 4mm;background:#fff}
+.idcard .line{height:6.5mm;font-size:8.5pt}
+.idcard .line span{font-size:8.5pt}
+.ct{display:flex;align-items:center;gap:2mm;color:var(--navy);margin-bottom:1mm}
+.ct svg{width:9mm;height:9mm}
+.cardnote{font-size:8pt;line-height:1.45;margin:1mm 0 0}
+.cut{text-align:center;color:#888;font-size:9pt;margin:2mm 0}
+.tl{border-radius:10px;padding:2.5mm 4mm;margin-bottom:2.5mm;border:2px solid;font-size:9pt;line-height:1.5}
+.tl h3{margin:0 0 1mm;font-size:11pt;display:flex;align-items:center;gap:2mm}
+.tl h3 i{width:5mm;height:5mm;border-radius:50%;display:inline-block}
+.tl ul{margin:0 0 1mm}.tl li{margin-bottom:.4mm}
+.tl p{margin:0;font-weight:700}
+.tl.g{background:#e3f4ea;border-color:#3a9a7a}.tl.g i{background:#3a9a7a}
+.tl.y{background:#fff6d6;border-color:#e0a800}.tl.y i{background:#e0a800}
+.tl.r{background:#fdeceb;border-color:#d6392e}.tl.r i{background:#d6392e}
+ul.chk{list-style:none;padding:0}
+ul.chk li::before,.cbx::before{content:"";display:inline-block;width:3.4mm;height:3.4mm;border:1px solid #444;margin-inline-end:2mm;vertical-align:-.4mm;background:#fff}
+.cbx{margin-inline-end:4mm;white-space:nowrap}
+.toc{list-style:none;padding:0;column-count:2;column-gap:7mm;font-size:9.5pt}
+.toc li{display:flex;gap:1.5mm;align-items:baseline;margin-bottom:2.2mm;break-inside:avoid}
+.toc li::before{content:none}
+.toc i{flex:1;border-bottom:1px dotted #888}
+.toc b{color:var(--red)}
+.qr{width:32mm;height:32mm;border:1.5px dashed #888;margin:8mm auto 0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#777;font-size:9pt;line-height:1.3}
+.qr small{font-size:7pt}
+.rem th{font-size:7.5pt;padding:1mm .5mm}.rem td:first-child{width:24mm}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:0 4mm}
+</style>
+<meta name="robots" content="noindex,nofollow"><style>
+ @media screen{
+ html{scroll-behavior:smooth}body{background:#edf5f6}
+ .page{box-shadow:0 10px 35px #103d531a;border-radius:13px;overflow:visible}
+ .readerbar{position:sticky;top:0;z-index:5;background:#fffffff0;backdrop-filter:blur(15px);box-shadow:0 3px 18px #123e4b14;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px max(15px,calc((100vw - 800px)/2));color:#174657}
+ .readerbar a{color:#087e91;font-size:13px;font-weight:700;text-decoration:none;background:#e6f6f4;padding:9px 12px;border-radius:12px}
+ .readerbar strong{font-size:13px}.readerbar button{font:700 13px "Cairo",sans-serif;border:0;border-radius:12px;background:#087e91;color:#fff;padding:9px 12px;cursor:pointer}
+ .readerwarn{max-width:560px;margin:18px auto;padding:13px 17px;background:#fff8eb;border:1px solid #e9d6ae;border-radius:12px;font-size:12px;color:#664c1c}
+ .readerwarn strong{display:block;color:#795418;margin-bottom:3px}
+ .readerfoot{padding:25px;text-align:center;color:#587a83;font-size:11px}
+ }
+ @media screen and (max-width:650px){
+ .page{width:calc(100% - 18px);max-width:560px;min-height:450px;height:auto;margin:10px auto;padding:22px 18px 35px;overflow:visible}
+ .page .toc{column-count:1}.page .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.page .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .page table{table-layout:fixed;font-size:7.3pt;overflow-wrap:anywhere}
+ .page td,.page th{padding:1.5px}.page .idcard{width:100%;max-width:100%}.page .body{height:36mm}.page .ruled{height:105mm}
+ .readerbar{padding:8px 9px;gap:5px}.readerbar a,.readerbar button{padding:7px 9px;font-size:11px}.readerbar strong{font-size:11px}.readerwarn{margin:10px 9px}
+ }
+ @media print{.readerbar,.readerwarn,.readerfoot{display:none!important}}
+ </style></head>
+<body><nav class="readerbar"><a href="../library.html" aria-label="العودة إلى المكتبة الطبية">← المكتبة</a><strong>كتيب الصرع</strong><button id="reader-print" type="button">طباعة / PDF</button></nav><div class="readerwarn"><strong>محتوى توعوي من ملف أُرسل إلى HealthMood، لم يخضع لتدقيق سريري مستقل.</strong> هذه نسخة للقراءة، وليس لتسجيل بيانات المرضى. لا تستخدمها لتشخيص حالة أو تعديل علاج دون طبيب. في الطوارئ اطلب الرعاية العاجلة.</div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-doc" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="9" y="26" width="18" height="24" rx="7" fill="#fff" stroke="#27407c" stroke-width="2"/><circle cx="18" cy="18" r="7" fill="#f3c7a1"/><path d="M11 17q7-9 14 0q-7-3-14 0z" fill="#3b2a20"/><rect x="38" y="28" width="18" height="22" rx="7" fill="#3a9a7a"/><circle cx="47" cy="20" r="7" fill="#f3c7a1"/><path d="M39 21q1-10 8-10t8 10q-8-5-16 0z" fill="#8a3b6a"/><ellipse cx="32" cy="50" rx="25" ry="7" fill="#5b3a29"/></symbol>
+<symbol id="i-pills" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="6" y="12" width="30" height="22" rx="4" fill="#fff" stroke="#999"/><circle cx="14" cy="20" r="3.5" fill="#d6392e"/><circle cx="26" cy="20" r="3.5" fill="#d6392e"/><circle cx="14" cy="28" r="3.5" fill="#d6392e"/><circle cx="26" cy="28" r="3.5" fill="#d6392e"/><rect x="38" y="24" width="18" height="30" rx="4" fill="#fff" stroke="#999"/><rect x="38" y="32" width="18" height="12" fill="#d6392e"/><rect x="42" y="18" width="10" height="7" rx="2" fill="#27407c"/></symbol>
+<symbol id="i-sleep" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#27407c"/><path d="M40 12a19 19 0 1 0 14 30a15 15 0 0 1-14-30z" fill="#f6d86b"/><circle cx="14" cy="16" r="2" fill="#fff"/><circle cx="52" cy="14" r="1.6" fill="#fff"/><circle cx="46" cy="52" r="2" fill="#fff"/></symbol>
+<symbol id="i-cal" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="10" y="14" width="44" height="40" rx="5" fill="#fff" stroke="#27407c" stroke-width="2.5"/><path d="M10 19a5 5 0 0 1 5-5h34a5 5 0 0 1 5 5v6H10z" fill="#d6392e"/><path d="M22 9v9M42 9v9" stroke="#27407c" stroke-width="3" stroke-linecap="round"/><path d="M22 40l7 7 13-14" fill="none" stroke="#3a9a7a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-alert" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#fdeceb"/><circle cx="32" cy="32" r="22" fill="#d6392e"/><path d="M32 19v26M19 32h26" stroke="#fff" stroke-width="8"/></symbol>
+<symbol id="i-nosmoke" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="10" y="38" width="30" height="7" fill="#fff" stroke="#999"/><rect x="40" y="38" width="9" height="7" fill="#e5a14a"/><path d="M52 36q6-6 0-12" stroke="#999" stroke-width="2" fill="none"/><circle cx="32" cy="32" r="22" fill="none" stroke="#d6392e" stroke-width="5"/><path d="M16 48L48 16" stroke="#d6392e" stroke-width="5"/></symbol>
+<symbol id="i-brain" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><path d="M32 12c-8-4-20 2-18 12-6 4-4 14 2 16 0 8 10 12 16 8 6 4 16 0 16-8 6-2 8-12 2-16 2-10-10-16-18-12z" fill="#e8a0b0" stroke="#b05a70" stroke-width="2"/><path d="M32 12v40" stroke="#b05a70" stroke-width="1.5"/><path d="M37 18l-7 12h9l-7 14" fill="none" stroke="#f6d86b" stroke-width="3.5" stroke-linejoin="round"/></symbol>
+<symbol id="i-conv" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><path d="M4 50h56" stroke="#999" stroke-width="2"/><rect x="14" y="38" width="42" height="11" rx="5.5" fill="#3a9a7a"/><circle cx="13" cy="42" r="8" fill="#f3c7a1"/><path d="M24 20l4 5-4 3 4 5M36 18l4 5-4 3 4 5M48 20l4 5-4 3 4 5" fill="none" stroke="#d6392e" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="i-absence" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><circle cx="32" cy="32" r="17" fill="#f3c7a1"/><circle cx="25" cy="29" r="3.5" fill="#fff" stroke="#222"/><circle cx="39" cy="29" r="3.5" fill="#fff" stroke="#222"/><path d="M27 40h10" stroke="#222" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="24" fill="none" stroke="#27407c" stroke-width="2" stroke-dasharray="3 4"/></symbol>
+<symbol id="i-focal" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="6" y="28" width="38" height="14" rx="7" fill="#f3c7a1"/><circle cx="46" cy="35" r="8" fill="#f3c7a1"/><path d="M48 12l-4 7 6 2-4 7M58 20l-3 6 4 2" fill="none" stroke="#d6392e" stroke-width="2.2" stroke-linejoin="round"/></symbol>
+<symbol id="i-fall" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><path d="M4 54h56" stroke="#999" stroke-width="2"/><circle cx="20" cy="16" r="7" fill="#f3c7a1"/><rect x="22" y="22" width="12" height="28" rx="6" fill="#27407c" transform="rotate(-30 28 36)"/><path d="M50 12v24M44 30l6 8 6-8" fill="none" stroke="#d6392e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-myo" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="4" y="30" width="40" height="13" rx="6.5" fill="#f3c7a1"/><circle cx="46" cy="36" r="8" fill="#f3c7a1"/><path d="M34 6l-8 14h10l-8 14" fill="none" stroke="#f6d86b" stroke-width="4" stroke-linejoin="round"/></symbol>
+<symbol id="i-side" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><path d="M4 50h56" stroke="#999" stroke-width="2"/><rect x="14" y="38" width="42" height="11" rx="5.5" fill="#3a9a7a"/><circle cx="12" cy="40" r="8" fill="#f3c7a1"/><path d="M30 40l6-9h9" stroke="#f3c7a1" stroke-width="5" stroke-linecap="round" fill="none"/><rect x="5" y="46" width="14" height="5" rx="2.5" fill="#fff" stroke="#999"/></symbol>
+<symbol id="i-clock" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><circle cx="32" cy="35" r="20" fill="#fff" stroke="#27407c" stroke-width="3"/><path d="M32 35V21M32 35l9 5" stroke="#d6392e" stroke-width="3" stroke-linecap="round"/><rect x="27" y="8" width="10" height="5" rx="2" fill="#27407c"/></symbol>
+<symbol id="i-flash" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><path d="M37 6L18 36h12l-4 22 20-32H34z" fill="#f6d86b" stroke="#c9a227" stroke-width="2" stroke-linejoin="round"/></symbol>
+<symbol id="i-nodrink" viewBox="0 0 64 64"><rect width="64" height="64" rx="9" fill="#d9eef3"/><rect x="26" y="22" width="12" height="30" rx="4" fill="#3a9a7a"/><rect x="29" y="10" width="6" height="14" fill="#3a9a7a"/><circle cx="32" cy="32" r="22" fill="none" stroke="#d6392e" stroke-width="5"/><path d="M16 48L48 16" stroke="#d6392e" stroke-width="5"/></symbol>
+</defs></svg>
+<section class="page cover">
+  <div class="logo">مكان شعار الجهة</div>
+  <div class="title"><h1>كتيب الصرع<br>للمتابعة الذاتية</h1><div>Epilepsy Log Book</div></div>
+  <svg class="big"><use href="#i-brain"/></svg>
+  <p class="note">رقم الملف: ................................</p>
+  <p class="note" style="margin-top:auto">للتوعية والمتابعة الذاتية، ولا يغني عن استشارة الطبيب</p>
+</section>
+<section class="page">
+<h2>الفهرس</h2><ul class="toc"><li><span>بيانات المريض</span><i></i><b>3</b></li><li><span>بطاقة الطوارئ</span><i></i><b>4</b></li><li><span>ما هو الصرع؟</span><i></i><b>5</b></li><li><span>المحفزات والتشخيص</span><i></i><b>6</b></li><li><span>العلاج</span><i></i><b>7</b></li><li><span>كيف تساعد من تصيبه نوبة</span><i></i><b>8</b></li><li><span>متى تتصل بالإسعاف؟</span><i></i><b>9</b></li><li><span>نموذج وصف النوبة</span><i></i><b>10</b></li><li><span>خطة الإشارة الضوئية</span><i></i><b>11</b></li><li><span>لأهلي وأصدقائي</span><i></i><b>12</b></li><li><span>الحياة اليومية والأسئلة</span><i></i><b>13</b></li><li><span>السلامة</span><i></i><b>14</b></li><li><span>القيادة والسفر والصيام</span><i></i><b>15</b></li><li><span>الحمل وتنظيم الأسرة</span><i></i><b>16</b></li><li><span>جدول الأدوية</span><i></i><b>17</b></li><li><span>تذكير الدواء الأسبوعي</span><i></i><b>18</b></li><li><span>سجل النوبات</span><i></i><b>20</b></li><li><span>مخطط النوبات</span><i></i><b>22</b></li><li><span>مواعيد المراجعة</span><i></i><b>23</b></li><li><span>الفحوصات والتصوير</span><i></i><b>24</b></li><li><span>الاستشارات التخصصية</span><i></i><b>25</b></li><li><span>أسئلة لطبيبي</span><i></i><b>26</b></li><li><span>ملاحظات</span><i></i><b>27</b></li></ul>
+</section>
+<section class="page">
+  <span class="tag">بيانات المريض</span>
+  <div class="line"><span>الاسم الكامل:</span></div>
+  <div class="line"><span>تاريخ الميلاد:</span></div>
+  <div class="line"><span>رقم الهوية / الملف:</span></div>
+  <div class="line"><span>رقم الهاتف:</span></div>
+  <div class="line"><span>العنوان:</span></div>
+  <div class="line"><span>عمر أول نوبة / تاريخ التشخيص:</span></div>
+  <div class="line"><span>نوع النوبات:</span></div>
+  <div class="line"><span>الطبيب المعالج:</span></div>
+  <div class="line"><span>المركز / المستشفى:</span></div>
+  <div class="line"><span>فصيلة الدم:</span></div>
+  <div class="line"><span>حساسية من أدوية أو أغذية:</span></div>
+  <div class="line"><span>شخص للاتصال عند الطوارئ ورقمه:</span></div>
+  <p class="note" style="margin-top:4mm">أحضر هذا الكتيب معك في كل زيارة للطبيب أو الصيدلية أو الطوارئ، وأعطِ نسخة منه لمن يعيشون معك.</p>
+</section>
+<section class="page">
+<span class="tag">بطاقة الطوارئ</span> <span class="note">قصّ البطاقتين واطوِهما معًا وضعهما في محفظتك</span><div class="idcard"><div class="ct"><svg><use href="#i-brain"/></svg><b>بطاقة طبية — مريض صرع</b></div><div class="line"><span>الاسم:</span></div><div class="line"><span>تاريخ الميلاد / فصيلة الدم:</span></div><div class="line"><span>حساسية من:</span></div><div class="line"><span>الطبيب المعالج وهاتفه:</span></div><div class="line"><span>قريب للاتصال وهاتفه:</span></div></div><div class="cut">✂ - - - - - - - - - - - - - - - - - - - - - -</div><div class="idcard"><div class="ct"><b>أدويتي الحالية</b></div><div class="line"><span></span></div><div class="line"><span></span></div><div class="line"><span></span></div><p class="cardnote">مريض صرع: إذا وجدتني أرتجف أو فاقد الوعي: لا تضع شيئًا في فمي، أبعد الأشياء الخطرة، أدرني على جنبي بعد توقف الرجفات، سجّل الوقت، واتصل بالإسعاف إذا تجاوزت 5 دقائق.</p></div>
+</section>
+<section class="page">
+  <h2>ما هو الصرع؟</h2>
+  <p>مرض عصبي مزمن تحدث فيه <b>نوبات متكررة</b> بسبب نشاط كهربائي زائد ومفاجئ في الدماغ. هو <b>ليس مرضًا نفسيًا ولا معديًا</b> ولا يعني ضعف الذكاء، ويمكن السيطرة على النوبات عند معظم المرضى بالعلاج المنتظم.</p>
+  <h3>أنواع النوبات</h3>
+  <div class="grid">
+    <div class="sym"><svg class="ic"><use href="#i-conv"/></svg><div><b>النوبة التشنجية</b>فقدان وعي مع تيبس ثم رجفات، وتدوم غالبًا دقيقة أو دقيقتين.</div></div>
+    <div class="sym"><svg class="ic"><use href="#i-absence"/></svg><div><b>نوبة الغياب</b>شرود قصير لثوانٍ ثم يعود طبيعيًا، وهي شائعة عند الأطفال.</div></div>
+    <div class="sym"><svg class="ic"><use href="#i-focal"/></svg><div><b>النوبة البؤرية</b>تبدأ من جزء من الدماغ: حركات أو أحاسيس غريبة، وقد يبقى واعيًا.</div></div>
+    <div class="sym"><svg class="ic"><use href="#i-myo"/></svg><div><b>الرمع العضلي</b>رجفات سريعة قصيرة في الذراعين، غالبًا عند الاستيقاظ.</div></div>
+    <div class="sym"><svg class="ic"><use href="#i-fall"/></svg><div><b>فقدان التوتر</b>ارتخاء مفاجئ وسقوط على الأرض.</div></div>
+    <div class="sym"><svg class="ic"><use href="#i-brain"/></svg><div><b>نوبات أخرى</b>قد تختلف النوبة من شخص لآخر، فاسأل طبيبك عن نوعك.</div></div>
+  </div>
+  <p class="note" style="margin-top:3mm">اكتب نوع نوبتك في صفحة بيانات المريض.</p>
+</section>
+<section class="page">
+  <h2>ما الذي قد يثير النوبات؟</h2>
+  <div class="tiles"><div><svg><use href="#i-pills"/></svg>نسيان الدواء</div><div><svg><use href="#i-sleep"/></svg>قلة النوم</div><div><svg><use href="#i-flash"/></svg>ضوء وامض*</div><div><svg><use href="#i-nodrink"/></svg>الكحول</div></div>
+  <p>تختلف المحفزات من مريض لآخر، ومنها أيضًا الحمى والمرض والتوتر الشديد. سجّل ما سبق كل نوبة في سجل النوبات لتعرف محفزاتك. <span class="note">*الضوء الوامض يؤثر عند فئة قليلة فقط.</span></p>
+  <h2>التشخيص</h2>
+  <ul>
+    <li><b>وصف النوبة:</b> من المريض ومن شاهدها، ويفيد تصويرها بالهاتف إن أمكن.</li>
+    <li><b>تخطيط الدماغ (EEG):</b> يسجل النشاط الكهربائي للدماغ.</li>
+    <li><b>تصوير الدماغ (رنين أو أشعة مقطعية):</b> للبحث عن سبب.</li>
+    <li><b>فحوصات الدم:</b> لاستبعاد أسباب أخرى للنوبات.</li>
+  </ul>
+  <p class="note">قد يكون تخطيط الدماغ طبيعيًا لدى بعض المرضى، ولا ينفي ذلك التشخيص.</p>
+</section>
+<section class="page">
+  <h2>العلاج</h2>
+  <p>الهدف: <b>منع النوبات بأقل أعراض جانبية</b>. يختار الطبيب الدواء المناسب لنوع نوباتك وعمرك وحالتك.</p>
+  <ul>
+    <li>خذ الدواء <b>يوميًا في نفس الموعد</b> حتى لو لم تحدث نوبات.</li>
+    <li><b>لا توقف الدواء فجأة</b>، فقد يسبب نوبات شديدة.</li>
+    <li>إذا نسيت جرعة فاسأل طبيبك أو الصيدلاني ماذا تفعل، ولا تضاعف الجرعة دون استشارة.</li>
+    <li>أخبر طبيبك عن النعاس أو الدوار أو تغيّر المزاج أو الطفح الجلدي.</li>
+    <li>أخبر الطبيب والصيدلاني عن أي دواء أو عشبة تستخدمها، فقد تتداخل مع دواء الصرع.</li>
+    <li>قد لا تناسب بعض موانع الحمل الهرمونية مع بعض الأدوية، فاسأل طبيبك.</li>
+    <li>عند التفكير بالحمل: <b>تحدث مع الطبيب قبله</b>، ولا توقف الدواء من نفسك.</li>
+  </ul>
+  <div class="pair"><div><svg><use href="#i-doc"/></svg>المتابعة مع الطبيب</div><div><svg><use href="#i-pills"/></svg>الدواء في موعده</div></div>
+  <p class="note">إن لم تتحكم الأدوية بالنوبات، فقد يقترح الطبيب خيارات أخرى مثل الجراحة أو تحفيز العصب أو الحمية الكيتونية بعد تقييم متخصص.</p>
+</section>
+<section class="page">
+  <h2>كيف تساعد من تصيبه نوبة؟</h2>
+  <div class="pair" style="margin-top:0"><div><svg><use href="#i-clock"/></svg>سجّل وقت البدء</div><div><svg><use href="#i-side"/></svg>على الجنب بعد انتهاء الرجفات</div></div>
+  <div class="box"><b>افعل:</b>
+    <ul>
+      <li>ابقَ هادئًا وابقَ بجانبه.</li>
+      <li>أبعد الأشياء الحادة أو الخطرة، وضع شيئًا ناعمًا تحت رأسه.</li>
+      <li>فكّ الملابس الضيقة حول الرقبة وأزل النظارة.</li>
+      <li>سجّل الوقت، وراقب مدة النوبة.</li>
+      <li>بعد توقف الرجفات أدِره على جنبه ليتنفس بسهولة.</li>
+      <li>طمئنه عند الإفاقة، وابقَ معه حتى يستعيد وعيه تمامًا.</li>
+    </ul></div>
+  <div class="alert"><b>لا تفعل:</b>
+    <ul>
+      <li>لا تضع أي شيء في فمه، فلا خطر من بلع اللسان.</li>
+      <li>لا تمسكه بقوة ولا تحاول إيقاف الحركات.</li>
+      <li>لا تعطه ماءً أو طعامًا أو دواءً حتى يستيقظ تمامًا.</li>
+      <li>لا تنقله إلا إذا كان في خطر.</li>
+    </ul></div>
+</section>
+<section class="page">
+  <div class="hd"><svg><use href="#i-alert"/></svg><h2>متى تتصل بالإسعاف؟</h2></div>
+  <div class="alert"><ul>
+    <li>النوبة تدوم أكثر من <b>5 دقائق</b></li>
+    <li>نوبات متتالية دون استعادة الوعي بينها</li>
+    <li>صعوبة في التنفس أو لون أزرق بعد النوبة</li>
+    <li>إصابة أثناء النوبة أو حدوثها في الماء</li>
+    <li>لا يستعيد وعيه خلال فترة معقولة بعد النوبة</li>
+    <li>أول نوبة في حياته، أو النوبة أثناء الحمل أو مع السكري</li>
+  </ul></div>
+  <h3 style="margin-top:5mm">أرقام مهمة</h3>
+  <div class="line"><span>الطبيب المعالج:</span></div>
+  <div class="line"><span>العيادة / المركز:</span></div>
+  <div class="line"><span>الصيدلية:</span></div>
+  <div class="line"><span>الإسعاف / الطوارئ:</span></div>
+  <div class="line"><span>قريب للاتصال:</span></div>
+</section>
+<section class="page">
+<span class="tag">نموذج وصف النوبة</span> <span class="note">يعبّئه من شاهدها (ويفيد التصوير)</span><div class="line"><span>التاريخ والوقت:</span></div><div class="line"><span>المكان وماذا كان يفعل:</span></div><div class="line"><span>علامات قبل النوبة (شعور غريب، رائحة...):</span></div><h3>أثناء النوبة</h3><p><span class="cbx">فقد الوعي</span><span class="cbx">تيبّس</span><span class="cbx">رجفات</span><span class="cbx">شرود فقط</span></p><p><span class="cbx">جهة واحدة</span><span class="cbx">الجهتان</span><span class="cbx">عضّ اللسان</span><span class="cbx">فقد التحكم بالبول</span></p><p><span class="cbx">زرقة في الوجه</span><span class="cbx">إصابة</span></p><div class="line"><span>مدة النوبة (دقائق):</span></div><h3>بعد النوبة</h3><p><span class="cbx">نعاس</span><span class="cbx">ارتباك</span><span class="cbx">صداع</span><span class="cbx">استعاد وعيه فورًا</span></p><div class="line"><span>ما الذي تم فعله:</span></div><div class="line"><span>اسم الشاهد وهاتفه:</span></div><p class="note" style="margin-top:3mm">اصنع نسخًا من هذه الصفحة، أو انقل المعلومات إلى سجل النوبات.</p>
+</section>
+<section class="page">
+<h2>خطة العمل: الإشارة الضوئية</h2><div class="tl g"><h3><i></i>الأخضر: أنا بخير</h3><ul><li>لا نوبات، أو نمطها كالمعتاد</li><li>أتناول دوائي في موعده</li><li>أنام جيدًا</li></ul><p>← أستمر على الدواء والمتابعة</p></div><div class="tl y"><h3><i></i>الأصفر: انتبه</h3><ul><li>نوبة جديدة أو أكثر من المعتاد</li><li>نسيت عدة جرعات</li><li>نعاس شديد أو دوار أو تغيّر مزاج</li><li>مرض أو حمى، أو قيء يمنع الدواء</li><li>طفح جلدي خفيف بعد دواء جديد</li></ul><p>← اتصل بطبيبك في نفس اليوم، ولا توقف الدواء بنفسك</p></div><div class="tl r"><h3><i></i>الأحمر: طوارئ</h3><ul><li>نوبة أكثر من 5 دقائق أو نوبات متتالية</li><li>إصابة، أو صعوبة في التنفس</li><li>لا يستعيد وعيه بعد النوبة</li><li>طفح واسع مع حمى أو تقرحات في الفم أو العين</li></ul><p>← اتصل بالإسعاف أو اذهب إلى الطوارئ فورًا</p></div><p class="note">اتفق مع طبيبك على تعديل هذه الخطة حسب حالتك.</p>
+</section>
+<section class="page">
+<h2>لأهلي وأصدقائي</h2><p>الصرع غير معدٍ، ويمكنكم التعامل معي كالمعتاد. ما تعرفونه عن الإسعاف قد ينقذني.</p><div class="tiles"><div><svg><use href="#i-side"/></svg>الإسعاف</div><div><svg><use href="#i-pills"/></svg>الدواء</div><div><svg><use href="#i-sleep"/></svg>النوم</div><div><svg><use href="#i-cal"/></svg>المواعيد</div></div><ul><li>اقرأوا صفحة «كيف تساعد من تصيبه نوبة» واحفظوا خطواتها.</li><li>ذكّروني بالدواء وساعدوني على النوم المنتظم.</li><li>لا تعاملوني كشخص هش، فأنا أستطيع الدراسة والعمل في الغالب.</li><li>اعرفوا أرقام الطبيب والإسعاف.</li><li>بعد النوبة أبقوا بجانبي، فقد أكون مرتبكًا ومتعبًا.</li></ul><h3>الأشخاص المطّلعون على حالتي</h3><div class="line"><span>الاسم والهاتف:</span></div><div class="line"><span>الاسم والهاتف:</span></div><div class="line"><span>الاسم والهاتف:</span></div>
+</section>
+<section class="page">
+  <h2>في حياتك اليومية</h2>
+  <ul>
+    <li>نم ساعات كافية وفي مواعيد منتظمة.</li>
+    <li>تجنب الكحول، وراجع طبيبك بشأن السهر والمنبهات.</li>
+    <li>استحم بالدش بدل حوض الاستحمام، ولا تسبح وحدك.</li>
+    <li>تجنب المرتفعات والمشي قرب النار أو الماء وحدك، وخذ الحيطة عند الطبخ.</li>
+    <li>القيادة: تعتمد على القانون ومدة خلوّك من النوبات ورأي الطبيب.</li>
+    <li>مارس الرياضة بانتظام مع الحذر من الأنشطة الخطرة.</li>
+    <li>احمل بطاقة تعريف بمرضك ودوائك.</li>
+  </ul>
+  <h2>أسئلة شائعة</h2>
+  <h3>هل أستطيع الدراسة والعمل؟</h3>
+  <p>نعم في الغالب. من الجيد إخبار شخص موثوق في المدرسة أو العمل بطريقة المساعدة.</p>
+  <h3>هل أستطيع الزواج والإنجاب؟</h3>
+  <p>نعم عند كثير من المرضى، مع التخطيط المسبق مع الطبيب.</p>
+  <h3>هل يُشفى الصرع؟</h3>
+  <p>قد تختفي النوبات مع العلاج عند كثيرين، وقد يقرر الطبيب تقليل الدواء تدريجيًا بعد فترة طويلة بلا نوبات.</p>
+</section>
+<section class="page">
+<div class="hd"><svg><use href="#i-alert"/></svg><h2>السلامة في البيت والعمل</h2></div><h3>في البيت</h3><ul><li>استحم بالدش بدل الحوض، واترك الباب غير مغلق بالمفتاح.</li><li>ركّب واقيات على حواف الأثاث الحادة، وفضّل الأرضيات الناعمة.</li><li>احذر عند الطبخ على النار، واستعمل المواقد الخلفية والأواني ذات المقابض.</li><li>لا تنم على سرير مرتفع جدًا.</li></ul><h3>في المدرسة أو العمل</h3><ul><li>أخبر شخصًا موثوقًا، واترك له نسخة من خطة الإسعاف.</li><li>تجنب العمل على المرتفعات أو قرب الآلات الخطرة دون موافقة الطبيب.</li><li>اطلب فترات راحة إذا كان الإرهاق من محفزاتك.</li></ul><h3>في الخارج</h3><ul><li>لا تسبح وحدك، وارتدِ سترة نجاة في الماء.</li><li>ارتدِ خوذة عند ركوب الدراجة.</li><li>احمل بطاقة الطوارئ دائمًا.</li></ul>
+</section>
+<section class="page">
+<h2>القيادة والسفر والصيام</h2><h3>القيادة</h3><p>القوانين تختلف، وتشترط عادةً فترة خلوّ من النوبات وتقرير الطبيب. <b>لا تقد حتى يسمح لك طبيبك.</b></p><h3>السفر</h3><ul><li>خذ دواءً يكفي ويزيد، في الحقيبة اليدوية، مع نسخة من الوصفة.</li><li>اسأل طبيبك عن مواعيد الجرعات عند تغيّر المنطقة الزمنية.</li><li>نم جيدًا وتجنب الإرهاق.</li></ul><h3>الصيام</h3><p>كثير من المرضى يستطيعون الصيام، لكن <b>استشر طبيبك قبله</b> لضبط مواعيد الدواء، ولا تغيّرها بنفسك. حافظ على السحور والنوم، وراجع طبيبك إذا زادت النوبات.</p><h3>جدول مواعيد الدواء المتفق عليه مع طبيبي</h3><table><thead><tr><th class="g">الدواء</th><th class="g">في الأيام العادية</th><th class="g">في الصيام / السفر</th></tr></thead><tbody><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody></table><p class="note">يكتبه الطبيب أو الصيدلاني.</p>
+</section>
+<section class="page">
+<h2>الحمل وتنظيم الأسرة</h2><ul><li>خطّط للحمل مع طبيبك <b>قبل</b> حدوثه، ولا توقف الدواء من نفسك.</li><li>بعض أدوية الصرع تزيد خطر التشوهات عند الجنين، فقد يغيّر الطبيب دواءك قبل الحمل.</li><li>سيحدد طبيبك جرعة حمض الفوليك المناسبة قبل الحمل وخلاله.</li><li>بعض الأدوية تقلل فعالية موانع الحمل الهرمونية، فاسأل طبيبك عن الوسيلة المناسبة.</li><li>تابع الحمل عند طبيب نسائية وطبيب أعصاب، وخطّط للولادة في مستشفى مجهز.</li><li>الرضاعة ممكنة غالبًا مع معظم الأدوية، لكن اسأل طبيبك.</li><li>عند حمل مفاجئ: لا توقف الدواء، وراجع طبيبك فورًا.</li></ul>
+</section>
+<section class="page">
+  <span class="tag">جدول الأدوية</span>
+  <table><thead><tr><th rowspan="2">الرقم</th><th rowspan="2">اسم الدواء</th><th class="g" colspan="3">الجرعة اليومية</th><th rowspan="2">تاريخ الوصفة</th><th rowspan="2">الحالة*</th><th rowspan="2">ملاحظات</th></tr><tr><th class="g">صباحًا</th><th class="g">ظهرًا</th><th class="g">مساءً</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+  <p class="note">*الحالة: جديد / مستمر / ملغى. تعبأ من قبل الطبيب أو الصيدلاني.</p>
+</section>
+<section class="page">
+<span class="tag">تذكير الدواء الأسبوعي</span> <span class="note">ضع علامة ✓ عند تناول كل جرعة</span><p class="note">الأسبوع من ........ إلى ........</p><table class="rem"><thead><tr><th class="g">الدواء</th><th class="g">الوقت</th><th class="g">السبت</th><th class="g">الأحد</th><th class="g">الاثنين</th><th class="g">الثلاثاء</th><th class="g">الأربعاء</th><th class="g">الخميس</th><th class="g">الجمعة</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><p class="note">الأسبوع من ........ إلى ........</p><table class="rem"><thead><tr><th class="g">الدواء</th><th class="g">الوقت</th><th class="g">السبت</th><th class="g">الأحد</th><th class="g">الاثنين</th><th class="g">الثلاثاء</th><th class="g">الأربعاء</th><th class="g">الخميس</th><th class="g">الجمعة</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</section>
+<section class="page">
+<span class="tag">تذكير الدواء الأسبوعي</span> <span class="note">ضع علامة ✓ عند تناول كل جرعة</span><p class="note">الأسبوع من ........ إلى ........</p><table class="rem"><thead><tr><th class="g">الدواء</th><th class="g">الوقت</th><th class="g">السبت</th><th class="g">الأحد</th><th class="g">الاثنين</th><th class="g">الثلاثاء</th><th class="g">الأربعاء</th><th class="g">الخميس</th><th class="g">الجمعة</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><p class="note">الأسبوع من ........ إلى ........</p><table class="rem"><thead><tr><th class="g">الدواء</th><th class="g">الوقت</th><th class="g">السبت</th><th class="g">الأحد</th><th class="g">الاثنين</th><th class="g">الثلاثاء</th><th class="g">الأربعاء</th><th class="g">الخميس</th><th class="g">الجمعة</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</section>
+<section class="page">
+  <span class="tag">سجل النوبات</span>
+  <table><thead><tr><th>التاريخ والوقت</th><th>نوع النوبة</th><th>المدة (دقائق)</th><th>ما سبقها (نوم قليل، نسيان دواء...)</th><th>ما بعدها (نعاس، ارتباك...)</th><th>إصابة / ملاحظات</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</section>
+<section class="page">
+  <span class="tag">سجل النوبات</span>
+  <table><thead><tr><th>التاريخ والوقت</th><th>نوع النوبة</th><th>المدة (دقائق)</th><th>ما سبقها (نوم قليل، نسيان دواء...)</th><th>ما بعدها (نعاس، ارتباك...)</th><th>إصابة / ملاحظات</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+</section>
+<section class="page">
+<span class="tag">مخطط النوبات</span><h3>عدد النوبات شهريًا</h3><svg viewBox="0 0 260 140" style="width:100%;height:auto;display:block;margin-bottom:3mm" font-size="7" fill="#444"><rect x="32" y="8" width="222" height="100" fill="#fff" stroke="#444"/><path d="M50.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M69.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M87.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M106.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M124.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M143.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M161.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M180.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M198.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M217.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M235.5 8 v100" stroke="#ccc" stroke-width=".5"/><text x="41.2" y="117" text-anchor="middle">1</text><text x="59.8" y="117" text-anchor="middle">2</text><text x="78.2" y="117" text-anchor="middle">3</text><text x="96.8" y="117" text-anchor="middle">4</text><text x="115.2" y="117" text-anchor="middle">5</text><text x="133.8" y="117" text-anchor="middle">6</text><text x="152.2" y="117" text-anchor="middle">7</text><text x="170.8" y="117" text-anchor="middle">8</text><text x="189.2" y="117" text-anchor="middle">9</text><text x="207.8" y="117" text-anchor="middle">10</text><text x="226.2" y="117" text-anchor="middle">11</text><text x="244.8" y="117" text-anchor="middle">12</text><path d="M32 108.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="110.5" text-anchor="end">0</text><path d="M32 98.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="100.5" text-anchor="end">2</text><path d="M32 88.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="90.5" text-anchor="end">4</text><path d="M32 78.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="80.5" text-anchor="end">6</text><path d="M32 68.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="70.5" text-anchor="end">8</text><path d="M32 58.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="60.5" text-anchor="end">10</text><path d="M32 48.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="50.5" text-anchor="end">12</text><path d="M32 38.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="40.5" text-anchor="end">14</text><path d="M32 28.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="30.5" text-anchor="end">16</text><path d="M32 18.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="20.5" text-anchor="end">18</text><path d="M32 8.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="10.5" text-anchor="end">20</text><text x="143" y="137" text-anchor="middle">رقم الشهر</text><text transform="translate(9 58) rotate(-90)" text-anchor="middle">عدد النوبات</text></svg><h3>الجرعات المنسية شهريًا</h3><svg viewBox="0 0 260 140" style="width:100%;height:auto;display:block;margin-bottom:3mm" font-size="7" fill="#444"><rect x="32" y="8" width="222" height="100" fill="#fff" stroke="#444"/><path d="M50.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M69.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M87.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M106.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M124.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M143.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M161.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M180.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M198.5 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M217.0 8 v100" stroke="#ccc" stroke-width=".5"/><path d="M235.5 8 v100" stroke="#ccc" stroke-width=".5"/><text x="41.2" y="117" text-anchor="middle">1</text><text x="59.8" y="117" text-anchor="middle">2</text><text x="78.2" y="117" text-anchor="middle">3</text><text x="96.8" y="117" text-anchor="middle">4</text><text x="115.2" y="117" text-anchor="middle">5</text><text x="133.8" y="117" text-anchor="middle">6</text><text x="152.2" y="117" text-anchor="middle">7</text><text x="170.8" y="117" text-anchor="middle">8</text><text x="189.2" y="117" text-anchor="middle">9</text><text x="207.8" y="117" text-anchor="middle">10</text><text x="226.2" y="117" text-anchor="middle">11</text><text x="244.8" y="117" text-anchor="middle">12</text><path d="M32 108.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="110.5" text-anchor="end">0</text><path d="M32 98.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="100.5" text-anchor="end">1</text><path d="M32 88.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="90.5" text-anchor="end">2</text><path d="M32 78.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="80.5" text-anchor="end">3</text><path d="M32 68.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="70.5" text-anchor="end">4</text><path d="M32 58.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="60.5" text-anchor="end">5</text><path d="M32 48.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="50.5" text-anchor="end">6</text><path d="M32 38.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="40.5" text-anchor="end">7</text><path d="M32 28.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="30.5" text-anchor="end">8</text><path d="M32 18.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="20.5" text-anchor="end">9</text><path d="M32 8.0 h222" stroke="#ccc" stroke-width=".5"/><text x="29" y="10.5" text-anchor="end">10</text><text x="143" y="137" text-anchor="middle">رقم الشهر</text><text transform="translate(9 58) rotate(-90)" text-anchor="middle">جرعات منسية</text></svg><p class="note">ضع نقطة لكل شهر ثم صل النقاط بخط لترى الاتجاه.</p>
+</section>
+<section class="page">
+  <span class="tag">مواعيد المراجعة وصرف العلاج</span>
+  <table><thead><tr><th class="g">الرقم</th><th class="g">تاريخ الزيارة القادمة</th><th class="g">الموعد</th><th class="g">نوع الزيارة*</th><th class="g">الاسم والتوقيع</th></tr></thead><tbody><tr><td>1</td><td></td><td></td><td></td><td></td></tr><tr><td>2</td><td></td><td></td><td></td><td></td></tr><tr><td>3</td><td></td><td></td><td></td><td></td></tr><tr><td>4</td><td></td><td></td><td></td><td></td></tr><tr><td>5</td><td></td><td></td><td></td><td></td></tr><tr><td>6</td><td></td><td></td><td></td><td></td></tr><tr><td>7</td><td></td><td></td><td></td><td></td></tr><tr><td>8</td><td></td><td></td><td></td><td></td></tr><tr><td>9</td><td></td><td></td><td></td><td></td></tr><tr><td>10</td><td></td><td></td><td></td><td></td></tr><tr><td>11</td><td></td><td></td><td></td><td></td></tr><tr><td>12</td><td></td><td></td><td></td><td></td></tr></tbody></table>
+  <p class="note">*نوع الزيارة: دورية (صرف علاج)، متابعة حالة، تقييم. تعبأ من قبل الطبيب أو التمريض.</p>
+</section>
+<section class="page">
+  <span class="tag">الفحوصات والتصوير</span>
+  <table><thead><tr><th>التاريخ ←</th><th>__/__/__</th><th>__/__/__</th><th>__/__/__</th><th>__/__/__</th><th>__/__/__</th></tr></thead><tbody><tr><td class="l">مستوى الدواء في الدم</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">صورة الدم CBC</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">وظائف الكبد</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">وظائف الكلى</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">الصوديوم والأملاح</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">فيتامين د</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">تخطيط الدماغ EEG</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">رنين / أشعة الدماغ</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td class="l">أخرى: ..........</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+  <p class="note">تعبأ من قبل الطبيب أو التمريض، وتُسجل النتيجة كما وردت في التقرير.</p>
+</section>
+<section class="page">
+  <span class="tag">الاستشارات الطبية التخصصية</span>
+  <table><thead><tr><th class="g">تاريخ الزيارة</th><th class="g">التخصص</th><th class="g">اسم الطبيب</th><th class="g">التوصيات</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody></table>
+  <p class="note">أعصاب، أطفال، نفسية، نسائية، جراحة أعصاب، أخرى.</p>
+</section>
+<section class="page">
+<span class="tag">أسئلة لطبيبي</span><ul class="chk"><li>كم نوبة حدثت منذ آخر زيارة؟</li><li>هل أحتاج إلى تعديل الجرعة؟</li><li>هل ظهرت أعراض جانبية يجب أن أنتبه لها؟</li><li>هل أحتاج إلى فحص مستوى الدواء في الدم؟</li><li>ماذا أفعل عند نسيان جرعة؟</li><li>هل أستطيع القيادة أو السفر أو الصيام؟</li><li>هل يتداخل دوائي مع موانع الحمل أو دواء آخر؟</li><li>متى موعد المراجعة القادم؟</li></ul><h3>ملاحظات الطبيب</h3><div class="ruled" style="height:55mm"></div>
+</section>
+<section class="page">
+  <span class="tag">ملاحظات</span> <span class="note">(الدواء، الأعراض الجانبية، أسئلة للطبيب...)</span>
+  <div class="ruled"></div>
+</section>
+<section class="page back">
+  <h2>للمراجعة قبل الطباعة</h2>
+  <p>تمت مراجعة المحتوى الطبي من قبل: ..................................................</p>
+  <p>التخصص / الجهة: ..................................................</p>
+  <p>التاريخ: ........ / ........ / ........</p>
+  <div class="box" style="margin-top:8mm">هذا الكتيب للتوعية والمتابعة الذاتية، ولا يغني عن استشارة الطبيب. لا تبدأ دواءً ولا توقفه ولا تغيّر جرعته دون الرجوع إلى طبيبك.</div>
+  <div class="qr">ضع رمز QR هنا<br><small>للنسخة الإلكترونية أو رقم العيادة</small></div>
+</section>
+
+
+
+<footer class="readerfoot">HealthMood • TechMood Technology — ملف تثقيفي قابل للطباعة</footer><script>document.getElementById("reader-print").addEventListener("click",()=>window.print())</script></body>
+</html>
