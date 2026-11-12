@@ -667,3 +667,69 @@ a.surface:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); bord
     .navlink { padding: 6px 0; }
   }
 }
+
+
+/* TechMood-inspired Halaqati UI refinement — accessible, motion-aware and RTL-safe. */
+@layer components {
+  .surface {
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-1);
+    transition: border-color .22s ease, box-shadow .22s ease, transform .22s ease;
+  }
+  .surface:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-2);
+  }
+  .btn {
+    font-family: inherit;
+    font-weight: 700;
+    letter-spacing: 0;
+    transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, border-color .18s ease;
+  }
+  .btn:not(:disabled):hover { transform: translateY(-1px); box-shadow: var(--shadow-1); }
+  .btn:not(:disabled):active { transform: translateY(0) scale(.985); }
+  .icon-button {
+    transition: background-color .18s ease, color .18s ease, transform .18s ease;
+  }
+  .icon-button:hover { transform: translateY(-1px); }
+  .navlink { transition: background-color .2s ease, color .2s ease, transform .2s ease; }
+  .navlink:hover { transform: translateX(-2px); }
+  .stat-tile { transition: transform .22s ease, box-shadow .22s ease; }
+  .stat-tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  .landing-feature-icon, .landing-mini-icon, .stat-icon {
+    border-radius: 16px;
+    display: inline-grid;
+    place-items: center;
+  }
+  .landing-feature-icon svg, .landing-mini-icon svg, .stat-icon svg {
+    stroke-width: 1.85;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .topbar { box-shadow: 0 2px 14px -12px rgba(0,0,0,.2); }
+  .input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--royal);
+    outline-offset: 2px;
+    border-color: var(--royal);
+  }
+  .landing-hero { isolation: isolate; }
+  .landing-window { box-shadow: var(--shadow-3); }
+}
+@media (max-width: 760px) {
+  .btn { min-height: 46px; }
+  .icon-button { min-width: 44px; min-height: 44px; }
+  .navlink:hover { transform: none; }
+  .tabbar-item { min-height: 44px; }
+}
+@media (hover: none) {
+  .surface:hover, .stat-tile:hover, .btn:not(:disabled):hover, .icon-button:hover {
+    transform: none;
+    box-shadow: var(--shadow-1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .surface, .btn, .icon-button, .navlink, .stat-tile {
+    transition: none !important;
+    transform: none !important;
+  }
+}
