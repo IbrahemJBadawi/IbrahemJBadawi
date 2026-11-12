@@ -190,7 +190,7 @@ export function FormsWorkspace() {
           <Icon name="certificate" size={18} /> طباعة / حفظ PDF
         </button>
       </div>
-      <LocalVaultPanel templateId={selected} templateTitle={current.title} values={values} onRestore={(record) => {
+      <LocalVaultPanel templateId={selected} templateTitle={current.title} values={values} onLock={() => setValues({})} onRestore={(record) => {
         setSelected(record.templateId);
         setValues((previous) => ({
           ...Object.fromEntries(Object.entries(previous).filter(([name]) => !name.startsWith(record.templateId + ":"))),
