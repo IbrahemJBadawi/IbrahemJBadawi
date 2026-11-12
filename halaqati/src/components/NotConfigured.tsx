@@ -1,9 +1,10 @@
 import { Alert } from "@/components/ui";
+import Link from "next/link";
 
 export function NotConfigured() {
   return (
     <Alert tone="warning">
-      لم يتم ربط المنصة بقاعدة البيانات بعد. يحتاج المسؤول التقني إلى ضبط متغيرات Supabase (راجع docs/SETUP.md).
+      لوحات المستخدمين المتصلة تحتاج إعداد Supabase، لكن يمكنك الآن استخدام نماذج حلقاتي وحفظ سجلاتها مشفرة على جهازك. <Link href="/forms" className="font-bold underline">افتح النماذج المحلية</Link>
     </Alert>
   );
 }

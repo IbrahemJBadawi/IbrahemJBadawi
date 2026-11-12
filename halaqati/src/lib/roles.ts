@@ -89,6 +89,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
   ],
   quran_teacher: [
+    { href: "/dashboard/forms", label: "نماذج المركز", icon: "list" },
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/teacher/halaqat", label: "حلقاتي", icon: "halaqa" },
     { href: "/dashboard/teacher/schedule", label: "جدولي", icon: "calendar" },
@@ -99,6 +100,7 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/tasks", label: "مهامي", icon: "tasks" },
   ],
   platform_admin: [
+    { href: "/dashboard/forms", label: "نماذج المركز", icon: "list" },
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/admin/users", label: "المستخدمون", icon: "users" },
     { href: "/dashboard/admin/verifications", label: "التوثيق", icon: "shield" },
@@ -110,11 +112,13 @@ export const NAV: Record<ContextKey, NavItem[]> = {
     { href: "/dashboard/institutions", label: "شعارات المؤسسات", icon: "building" },
   ],
   center_admin: [
+    { href: "/dashboard/forms", label: "نماذج المركز", icon: "list" },
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/staff-messages", label: "رسائل الإدارة", icon: "megaphone" },
     { href: "/dashboard/institutions", label: "مؤسساتي", icon: "building" },
   ],
   org_admin: [
+    { href: "/dashboard/forms", label: "نماذج المركز", icon: "list" },
     { href: "/dashboard", label: "الرئيسية", icon: "home" },
     { href: "/dashboard/staff-messages", label: "رسائل الإدارة", icon: "megaphone" },
     { href: "/dashboard/institutions", label: "مؤسساتي", icon: "building" },
