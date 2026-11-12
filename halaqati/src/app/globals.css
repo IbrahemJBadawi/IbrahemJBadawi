@@ -803,3 +803,39 @@ a.surface:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); bord
   .forms-paper-footer { margin-top:12px; }
 }
 @media (prefers-reduced-motion:reduce) { .forms-pill { transition:none; } }
+
+
+/* Encrypted browser-only records panel (kept out of printed reports). */
+.local-vault { margin:0 0 20px; padding:18px; background:var(--panel); border:1px solid var(--line-strong); border-radius:22px; box-shadow:var(--shadow-1); }
+.local-vault-heading { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.local-vault-mark { display:grid; place-items:center; flex:none; width:48px; height:48px; border-radius:17px; background:var(--sky-tint); color:var(--royal); }
+.local-vault-heading h2 { font-size:1.1rem; font-weight:800; color:var(--ink); }
+.local-vault-heading p { font-size:.84rem; color:var(--ink-soft); margin-top:2px; }
+.local-vault-auth, .local-vault-save, .local-vault-import-fields { display:flex; align-items:end; flex-wrap:wrap; gap:12px; }
+.local-vault-auth .forms-field, .local-vault-save .forms-field, .local-vault-import-fields .forms-field { flex:1; min-width:min(100%,180px); }
+.local-vault-hint { flex-basis:100%; font-size:.83rem; color:var(--ink-soft); }
+.local-vault .forms-field { color:var(--ink); }
+.local-vault .forms-field input { background:var(--bg); border:1px solid var(--line-strong); color:var(--ink); }
+.local-vault-status { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin:12px 0; font-size:.85rem; font-weight:700; color:var(--royal); }
+.local-vault-status>span { display:inline-flex; align-items:center; gap:7px; }
+.local-vault-list { margin:18px 0; }
+.local-vault-list h3 { font-size:.93rem; font-weight:800; margin-bottom:10px; }
+.local-vault-list ul { list-style:none; display:grid; gap:7px; padding:0; }
+.local-vault-list li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border:1px solid var(--line); border-radius:13px; background:var(--bg); }
+.local-vault-list li strong, .local-vault-list li small { display:block; overflow-wrap:anywhere; }
+.local-vault-list li strong { font-size:.85rem; }
+.local-vault-list li small { color:var(--ink-soft); font-size:.74rem; margin-top:3px; }
+.local-vault-list-actions { display:flex; gap:5px; flex:none; }
+.local-vault-import { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); }
+.local-vault-import summary { font-weight:700; font-size:.86rem; cursor:pointer; color:var(--royal); }
+.local-vault-import-fields { padding-top:12px; }
+.local-vault-error { margin:12px 0; padding:10px 12px; background:var(--danger-tint); color:var(--danger-ink); border-radius:10px; font-size:.84rem; }
+.local-vault-success { margin:12px 0; padding:10px 12px; background:var(--sky-tint); color:var(--royal-dark); border-radius:10px; font-size:.84rem; }
+.local-vault-caveat { margin-top:16px; padding-top:12px; border-top:1px solid var(--line); color:var(--ink-soft); font-size:.8rem; line-height:1.7; }
+@media(max-width:650px) {
+  .local-vault { padding:14px; }
+  .local-vault-list li { flex-wrap:wrap; }
+  .local-vault-list-actions { margin-inline-start:auto; }
+  .local-vault .btn { min-height:44px; }
+}
+@media print { .local-vault { display:none!important; } }
