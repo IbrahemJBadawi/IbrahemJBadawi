@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Icon, type IconName } from "@/components/Icon";
+import { LocalVaultPanel } from "./LocalVaultPanel";
 
 type Field = { key: string; label: string; large?: boolean; wide?: boolean; kind?: "date" | "number" | "text" };
 type Template = {
@@ -189,6 +190,13 @@ export function FormsWorkspace() {
           <Icon name="certificate" size={18} /> طباعة / حفظ PDF
         </button>
       </div>
+      <LocalVaultPanel templateId={selected} templateTitle={current.title} values={values} onRestore={(record) => {
+        setSelected(record.templateId);
+        setValues((previous) => ({
+          ...Object.fromEntries(Object.entries(previous).filter(([name]) => !name.startsWith(record.templateId + ":"))),
+          ...record.values,
+        }));
+      }} />
       <article className="forms-sheet" aria-label={current.title}>
         <div className="forms-letterhead">
           <div className="forms-header-mark"><Icon name="bookOpen" size={28} /></div>
@@ -244,7 +252,7 @@ export function FormsWorkspace() {
           <span>ملف عمل داخلي · لا يُنشر دون تفويض</span>
         </footer>
       </article>
-      <p className="forms-tools forms-bottom-note">البيانات المدخلة مؤقتة ولا تُحفظ تلقائيًا. عند تغيير الصفحة أو إعادة تحميلها قد تفقد المدخلات؛ اطبع النموذج قبل المغادرة.</p>
+      <p className="forms-tools forms-bottom-note">للحفاظ على بياناتك بعد إغلاق الصفحة، افتح القاعدة المحلية واضغط «حفظ نسخة من النموذج الحالي». المدخلات غير المحفوظة قد تُفقد عند المغادرة.</p>
     </>
   );
 }
