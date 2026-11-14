@@ -4,6 +4,7 @@ import { Heart, Search, User } from "lucide-react";
 import { getCategories, getStoreSettings } from "@/lib/data/catalog";
 import { Logo } from "@/components/ui/Logo";
 import { CartButton } from "@/components/cart/CartButton";
+import { isBrowserLocalDemo } from "@/lib/db/core";
 import { MobileMenu } from "./MobileMenu";
 import { assistantAvailable } from "@/lib/ai/availability";
 import { NotificationBell } from "@/components/notifications/Bell";
@@ -66,7 +67,7 @@ export function Header() {
             <Link href="/favorites" className={`${iconLink} max-sm:hidden`} aria-label="المفضلة">
               <Heart className="size-5" strokeWidth={1.6} />
             </Link>
-            <Link href="/account" className={`${iconLink} max-md:hidden`} aria-label="حسابي">
+            <Link href={isBrowserLocalDemo() ? "/demo-orders" : "/account"} className={`${iconLink} max-md:hidden`} aria-label={isBrowserLocalDemo() ? "طلباتي التجريبية" : "حسابي"}>
               <User className="size-5" strokeWidth={1.6} />
             </Link>
             <CartButton className={iconLink} />
