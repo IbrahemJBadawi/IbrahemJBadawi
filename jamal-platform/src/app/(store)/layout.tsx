@@ -1,13 +1,22 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { EngagePrompt } from "@/components/pwa/Engage";
 import { getSession } from "@/lib/auth";
 import { hasDemoProducts } from "@/lib/data/catalog";
-import { isDemoRuntime } from "@/lib/db/core";
+import { isBrowserLocalDemo, isDemoRuntime } from "@/lib/db/core";
 
 async function DemoBanner() {
+  if (isBrowserLocalDemo()) {
+    return (
+      <div className="border-b border-warning/20 bg-warning/5 px-4 py-2 text-center text-xs leading-6 text-warning">
+        وضع محلي تجريبي — السلة والطلبات المحفوظة تبقى في هذا المتصفح فقط، ولا توجد طلبات حقيقية أو مدفوعات.{" "}
+        <Link href="/demo-orders" className="font-bold underline">طلباتي التجريبية</Link>
+      </div>
+    );
+  }
   if (!(await hasDemoProducts())) return null;
   return (
     <div className="border-b border-warning/20 bg-warning/5 px-4 py-2 text-center text-xs leading-6 text-warning">
