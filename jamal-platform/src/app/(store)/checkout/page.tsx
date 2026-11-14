@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/ui/States";
 import { getCurrentUser } from "@/lib/auth";
 import { getShippingOptions } from "@/lib/data/catalog";
 import { CheckoutForm } from "@/components/cart/CheckoutForm";
+import { LocalDemoCheckout } from "@/components/cart/LocalDemoCheckout";
+import { isBrowserLocalDemo } from "@/lib/db/core";
 
 export const metadata: Metadata = { title: "إتمام الطلب", robots: { index: false } };
 
@@ -19,12 +21,17 @@ async function Content() {
 }
 
 export default function CheckoutPage() {
+  const browserDemo = isBrowserLocalDemo();
   return (
     <div className="container-page py-8 md:py-12">
-      <h1 className="mb-8 text-2xl font-bold md:text-3xl">إتمام الطلب</h1>
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-        <Content />
-      </Suspense>
+      <h1 className="mb-8 text-2xl font-bold md:text-3xl">{browserDemo ? "حفظ طلب تجريبي" : "إتمام الطلب"}</h1>
+      {browserDemo ? (
+        <LocalDemoCheckout />
+      ) : (
+        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+          <Content />
+        </Suspense>
+      )}
     </div>
   );
 }

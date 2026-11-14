@@ -33,12 +33,18 @@ export type DbContext =
 type GlobalWithDb = typeof globalThis & { __jamalDb?: Promise<Database> };
 
 /** DATABASE_URL, or POSTGRES_URL as set by the Vercel ↔ Supabase integration. */
+/** Browser-local trial mode must never open any configured production DB. */
+export function isBrowserLocalDemo() {
+  return process.env.JAMAL_LOCAL_DEMO === "1";
+}
+
 export function databaseUrl() {
+  if (isBrowserLocalDemo()) return "";
   return process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
 }
 
 export function isDemoRuntime() {
-  return !databaseUrl() && (process.env.JAMAL_DEMO === "1" || Boolean(process.env.VERCEL));
+  return isBrowserLocalDemo() || (!databaseUrl() && (process.env.JAMAL_DEMO === "1" || Boolean(process.env.VERCEL)));
 }
 
 export function projectRoot() {

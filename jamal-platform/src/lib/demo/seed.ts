@@ -102,9 +102,9 @@ export async function seedDemo(tx: Tx) {
       const [cat] = await tx.query<{ id: string }>("select id from public.categories where slug = $1", [p.category]);
       // Inserted as draft: publishing requires an approved primary supplier (DB trigger).
       const [prod] = await tx.query<{ id: string }>(
-        `insert into public.products (slug, name_ar, name_en, description_ar, category_id, price, sale_price, currency_code,
+        `insert into public.products (id, slug, name_ar, name_en, description_ar, category_id, price, sale_price, currency_code,
            images, availability, status, is_featured, is_demo, return_policy, processing_days, stock_confirmed_at)
-         values ($1,$2,$3,$4,$5,$6,$7,'ILS',$8::text::jsonb,$9,'draft',$10,true,$11,2,now()) returning id`,
+         values (md5('jamal-demo-product:' || $1)::uuid,$1,$2,$3,$4,$5,$6,$7,'ILS',$8::text::jsonb,$9,'draft',$10,true,$11,2,now()) returning id`,
         [
           p.slug, p.name, p.nameEn, p.description, cat?.id ?? null, ils(p.price), p.sale ? ils(p.sale) : null,
           JSON.stringify([
@@ -121,8 +121,8 @@ export async function seedDemo(tx: Tx) {
       for (const [colorName, hex] of p.colors) {
         for (const size of sizes) {
           await tx.query(
-            `insert into public.product_variants (product_id, color_name, color_hex, size, sku, availability, sort_order)
-             values ($1,$2,$3,$4,$5,$6,$7)`,
+            `insert into public.product_variants (id, product_id, color_name, color_hex, size, sku, availability, sort_order)
+             values (md5('jamal-demo-variant:' || $1::text || ':' || $2::text || ':' || coalesce($4::text,''))::uuid,$1,$2,$3,$4,$5,$6,$7)`,
             [prod.id, colorName, hex, size, `DEMO-${p.slug.slice(5, 13).toUpperCase()}-${order}`, size === "XL" ? "out_of_stock" : "available", order++],
           );
         }

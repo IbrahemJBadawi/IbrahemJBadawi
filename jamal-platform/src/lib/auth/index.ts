@@ -13,6 +13,7 @@ export type { CurrentUser } from "./types";
 
 /** Explicit AUTH_PROVIDER wins; otherwise Supabase Auth whenever the Supabase keys are present. */
 export function authProvider(): "supabase" | "local" {
+  if (process.env.JAMAL_LOCAL_DEMO === "1") return "local";
   if (process.env.AUTH_PROVIDER === "supabase" || process.env.AUTH_PROVIDER === "local") return process.env.AUTH_PROVIDER;
   return process.env.NEXT_PUBLIC_SUPABASE_URL && supabaseAnonKey() ? "supabase" : "local";
 }
