@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { isBrowserLocalDemo } from "@/lib/db/core";
 import { Suspense } from "react";
 import { getCustomerOrder } from "@/lib/data/orders";
 import { CustomerOrderActions } from "@/components/orders/CustomerOrderActions";
@@ -41,6 +43,7 @@ async function Content({ searchParams }: { searchParams: PageProps<"/track">["se
 }
 
 export default function TrackPage({ searchParams }: PageProps<"/track">) {
+  if (isBrowserLocalDemo()) redirect("/demo-orders");
   return (
     <div className="container-page max-w-3xl py-8 md:py-12">
       <h1 className="mb-2 text-2xl font-bold md:text-3xl">تتبع الطلب</h1>
