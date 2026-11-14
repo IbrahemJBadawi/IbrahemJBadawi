@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { isBrowserLocalDemo } from "@/lib/db/core";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
@@ -26,6 +27,10 @@ export type CheckoutState = {
 const FIELDS = ["customerName", "phone", "country", "governorateId", "city", "address", "notes", "paymentMethod", "idempotencyKey"];
 
 export async function placeOrderAction(_: CheckoutState, form: FormData): Promise<CheckoutState> {
+  // Never accept server-side checkout when browser-local trial mode is enabled.
+  if (isBrowserLocalDemo()) {
+    return { ok: false, error: "هذا المتجر في وضع تجريبي محلي. احفظ طلبك من صفحة إتمام الطلب التجريبي فقط." };
+  }
   const values = Object.fromEntries(FIELDS.map((k) => [k, String(form.get(k) ?? "")]));
   if (!(await rateLimit("order", 8, 10 * 60_000))) {
     return { ok: false, error: "عدد كبير من المحاولات. حاول مرة أخرى بعد قليل.", values };
