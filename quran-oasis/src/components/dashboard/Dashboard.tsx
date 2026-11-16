@@ -62,15 +62,15 @@ function Skeleton({ className }: { className?: string }) {
 
 function QuickAccess() {
   return (
-    <nav aria-label="وصول سريع">
+    <nav aria-label="وصول سريع" className="rounded-[1.75rem] border border-line/70 bg-surface/75 px-2 py-3 sm:px-4">
       <ul className="grid grid-cols-4 gap-x-2 gap-y-4 sm:grid-cols-8">
         {QUICK.map((q) => (
           <li key={q.href}>
-            <Link href={q.href} className="group flex flex-col items-center gap-1.5 rounded-2xl p-1 text-center focus-ring">
-              <span className={cn("card-soft grid h-14 w-14 place-items-center rounded-2xl transition-transform group-hover:-translate-y-0.5", q.tint)}>
-                <q.icon className={cn("h-6 w-6", q.fg)} aria-hidden="true" />
+            <Link href={q.href} className="qo-quick-tile group flex min-h-[5.75rem] flex-col items-center justify-center gap-2 rounded-2xl px-1 py-2 text-center focus-ring">
+              <span className={cn("qo-quick-icon grid h-14 w-14 place-items-center rounded-[1.1rem] transition-transform group-hover:-translate-y-0.5", q.tint)}>
+                <q.icon className={cn("h-6 w-6", q.fg)} strokeWidth={1.8} aria-hidden="true" />
               </span>
-              <span className="text-xs font-semibold text-fg">{q.label}</span>
+              <span className="text-xs font-bold text-fg">{q.label}</span>
             </Link>
           </li>
         ))}
@@ -156,10 +156,29 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-muted">السلام عليكم{name ? `، ${name}` : ""}</p>
-        <h1 className="text-2xl font-bold md:text-3xl">{hydrated ? GREETING[partOfDay()] : "أهلًا بك"}</h1>
+      <header className="qo-dashboard-intro relative overflow-hidden rounded-[1.75rem] p-5 sm:p-7">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <span className="mb-3 inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3 py-1 text-[12px] font-bold text-[#e6eddc]">
+              <Leaf className="h-3.5 w-3.5" aria-hidden="true" />
+              مساحتك اليومية الهادئة
+            </span>
+            <p className="text-sm text-[#dcebdc]">السلام عليكم{name ? `، ${name}` : ""}</p>
+            <h1 className="mt-1 text-2xl font-extrabold text-white sm:text-3xl">{hydrated ? GREETING[partOfDay()] : "أهلًا بك"}</h1>
+            <p className="mt-2 max-w-md text-[13px] text-[#d6e4d6] sm:text-sm">كل يوم خطوة أقرب إلى القرآن، على قدر استطاعتك.</p>
+          </div>
+          <Link
+            href={lastRead ? `/quran/${lastRead.surah}?ayah=${lastRead.ayah}` : "/quran/1"}
+            className="qo-btn inline-flex min-h-11 items-center gap-2 rounded-2xl bg-white px-4 text-sm font-extrabold text-[#184c37] shadow-lg shadow-black/10 focus-ring"
+          >
+            <BookOpen className="h-[18px] w-[18px]" strokeWidth={1.8} aria-hidden="true" />
+            {lastRead ? "تابع وردك" : "ابدأ القراءة"}
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
       </header>
+      
+      <QuickAccess />
 
       {sync.importedGuestData && (
         <div role="status" className="flex items-start justify-between gap-3 rounded-2xl bg-accent-soft p-4 text-sm">
@@ -179,8 +198,6 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
           <StreakCard today={today} />
         </div>
       </div>
-
-      <QuickAccess />
 
       <div className="grid gap-5 lg:grid-cols-3">
         {/* ───────── متابعة القرآن ───────── */}

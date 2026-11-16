@@ -1,10 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Amiri, Amiri_Quran, Cairo } from "next/font/google";
+import { Amiri, Amiri_Quran, Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import { Providers } from "@/components/layout/Providers";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo", display: "swap" });
+const plex = IBM_Plex_Sans_Arabic({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700"], variable: "--font-plex", display: "swap" });
 const amiri = Amiri({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-amiri", display: "swap" });
 const amiriQuran = Amiri_Quran({
   subsets: ["arabic"],
@@ -47,7 +48,7 @@ const themeScript = `(function(){try{var t=localStorage.getItem("qo:theme")||"sy
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} ${amiri.variable} ${amiriQuran.variable}`} suppressHydrationWarning>
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${plex.variable} ${amiri.variable} ${amiriQuran.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>

@@ -6,17 +6,17 @@ type Variant = "primary" | "secondary" | "ghost" | "gold" | "danger" | "outline"
 type Size = "sm" | "md" | "lg" | "icon";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-ring select-none";
+  "qo-btn inline-flex min-h-10 items-center justify-center gap-2 rounded-2xl font-bold disabled:cursor-not-allowed disabled:opacity-50 focus-ring select-none";
 const variants: Record<Variant, string> = {
-  primary: "bg-primary text-primary-fg hover:opacity-90",
-  secondary: "bg-accent-soft text-fg hover:bg-line/70",
+  primary: "qo-btn-primary bg-primary text-primary-fg hover:brightness-110",
+  secondary: "bg-accent-soft text-primary hover:bg-line/70",
   ghost: "text-fg hover:bg-surface-2",
-  gold: "bg-gold text-deep hover:brightness-95",
+  gold: "bg-gold text-deep hover:brightness-95 shadow-sm",
   danger: "bg-danger text-white hover:opacity-90",
-  outline: "border border-line bg-surface text-fg hover:bg-surface-2",
+  outline: "border border-line bg-surface/95 text-fg hover:bg-surface-2 hover:border-accent/30",
 };
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-3.5 text-sm",
+  sm: "h-10 px-4 text-sm",
   md: "h-11 px-5 text-[15px]",
   lg: "h-13 px-7 text-base",
   icon: "h-10 w-10",

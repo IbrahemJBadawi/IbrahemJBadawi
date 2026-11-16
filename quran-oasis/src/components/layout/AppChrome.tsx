@@ -37,24 +37,27 @@ export function AppHeader() {
   if (focus && isReader) return null;
   const desktopNav = [...PRIMARY_NAV, ...DESKTOP_EXTRA];
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
+    <header className="qo-topbar sticky top-0 z-40 border-b border-line/70">
       <OfflineBanner />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link href="/today" className="shrink-0 rounded-xl focus-ring" aria-label="واحة القرآن — اليوم">
+      <div className="mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between gap-3 px-4">
+        <Link href="/today" className="qo-topbar-logo shrink-0 rounded-xl focus-ring" aria-label="واحة القرآن — اليوم">
           <Logo />
         </Link>
-        <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-0.5 lg:flex">
           {desktopNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              aria-label={item.label}
+              title={item.label}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
               className={cn(
-                "rounded-full px-3 py-2 text-[14px] font-semibold transition-colors focus-ring",
-                isActive(pathname, item.href) ? "bg-accent-soft text-fg" : "text-muted hover:text-fg",
+                "qo-nav-link inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-xl px-2 text-[13px] font-bold focus-ring",
+                isActive(pathname, item.href) ? "bg-accent-soft text-primary" : "text-muted hover:bg-surface hover:text-fg",
               )}
             >
-              {item.label}
+              <item.icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} aria-hidden="true" />
+              <span className="hidden xl:inline">{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -67,11 +70,11 @@ export function AppHeader() {
                 aria-label={item.label}
                 title={item.label}
                 className={cn(
-                  "grid h-10 w-10 place-items-center rounded-full focus-ring",
+                  "qo-nav-link grid h-10 w-10 place-items-center rounded-xl focus-ring",
                   isActive(pathname, item.href) ? "bg-accent-soft text-fg" : "text-muted hover:bg-surface-2 hover:text-fg",
                 )}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
               </Link>
             ))}
           </div>
@@ -110,7 +113,7 @@ export function BottomNav() {
       <div
         id="more-menu"
         className={cn(
-          "fixed inset-x-3 bottom-[5.5rem] z-50 rounded-3xl border border-line bg-surface p-3 shadow-xl transition-all lg:hidden",
+          "fixed inset-x-3 bottom-[6.5rem] z-50 mx-auto max-w-lg rounded-[1.5rem] border border-line bg-surface/95 p-3 shadow-xl backdrop-blur-xl transition-all lg:hidden",
           open ? "visible translate-y-0 opacity-100" : "invisible translate-y-4 opacity-0",
         )}
       >
@@ -121,11 +124,11 @@ export function BottomNav() {
               href={item.href}
               tabIndex={open ? 0 : -1}
               className={cn(
-                "flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 text-center text-[13px] font-semibold focus-ring",
+                "qo-quick-tile flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-3 text-center text-[12px] font-bold focus-ring",
                 isActive(pathname, item.href) ? "bg-accent-soft text-fg" : "text-muted hover:bg-surface-2",
               )}
             >
-              <item.icon className="h-5 w-5 text-accent" aria-hidden="true" />
+              <item.icon className="h-5 w-5 text-accent" strokeWidth={1.8} aria-hidden="true" />
               {item.label}
             </Link>
           ))}
@@ -133,9 +136,9 @@ export function BottomNav() {
       </div>
       <nav
         aria-label="التنقل السفلي"
-        className="safe-bottom fixed inset-x-3 bottom-3 z-50 mx-auto max-w-lg rounded-[1.75rem] border border-line/70 bg-surface/90 shadow-[0_12px_32px_-12px_rgba(35,67,52,.35)] backdrop-blur-md lg:hidden"
+        className="qo-bottom-nav safe-bottom fixed inset-x-3 bottom-3 z-50 mx-auto max-w-lg rounded-[1.5rem] border border-line/70 lg:hidden"
       >
-        <ul className="grid h-16 grid-cols-5 px-1">
+        <ul className="grid h-[4.25rem] grid-cols-5 px-1.5">
           {PRIMARY_NAV.map((item) => {
             const active = isActive(pathname, item.href);
             return (
@@ -144,12 +147,12 @@ export function BottomNav() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex h-full flex-col items-center justify-center gap-0.5 text-[11px] font-semibold focus-ring",
+                    "flex h-full flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold focus-ring",
                     active ? "text-primary" : "text-muted",
                   )}
                 >
-                  <span className={cn("grid h-7 w-12 place-items-center rounded-full", active && "bg-accent-soft")}>
-                    <item.icon className="h-5 w-5" aria-hidden="true" />
+                  <span className={cn("grid h-8 w-12 place-items-center rounded-xl transition-colors", active && "bg-accent-soft")}>
+                    <item.icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} aria-hidden="true" />
                   </span>
                   {item.label}
                 </Link>
@@ -163,11 +166,11 @@ export function BottomNav() {
               aria-expanded={open}
               aria-controls="more-menu"
               className={cn(
-                "flex h-full w-full flex-col items-center justify-center gap-0.5 text-[11px] font-semibold focus-ring",
+                "flex h-full w-full flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold focus-ring",
                 open || moreActive ? "text-primary" : "text-muted",
               )}
             >
-              <span className={cn("grid h-7 w-12 place-items-center rounded-full", (open || moreActive) && "bg-accent-soft")}>
+              <span className={cn("grid h-8 w-12 place-items-center rounded-xl", (open || moreActive) && "bg-accent-soft")}>
                 {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
               </span>
               المزيد
