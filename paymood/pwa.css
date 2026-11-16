@@ -1,0 +1,7 @@
+.techmood-pwa{position:fixed;z-index:1500;bottom:88px;left:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:min(92vw,420px);direction:rtl;font-family:inherit}
+.techmood-pwa button{font-family:inherit;font-weight:700;font-size:12px;line-height:1.4;color:#fff;background:#145a3a;border:1px solid rgba(255,255,255,.18);border-radius:100px;box-shadow:0 5px 18px rgba(0,0,0,.18);padding:9px 13px;cursor:pointer}
+.techmood-pwa button:hover,.techmood-pwa button:focus-visible{background:#0b4d32;outline-offset:2px}
+.techmood-pwa button[hidden],.techmood-pwa span[hidden]{display:none}
+.techmood-pwa span{font-size:11px;color:#fff;background:#9a3412;border-radius:9px;padding:6px 9px;max-width:250px}
+@media(min-width:900px){.techmood-pwa{bottom:18px}}
+@media(max-width:360px){.techmood-pwa{left:7px;bottom:76px}.techmood-pwa button{font-size:11px;padding:7px 9px}}

@@ -15,6 +15,13 @@ A standalone static site in the `paymood/` root directory within `IbrahemJBadawi
 
 The shared hosting repository is only an interim location because repository creation is not available through the connected GitHub actions. It does not modify the existing products.
 
+### PWA preview
+
+- Manifest, app icons, service worker and browser-install control are included for the static **demo**.
+- After loading while online, the previously cached demo shell and browser-local draft state can be reopened offline on that device.
+- «تجربة إشعار» requests permission on a user click and shows a local test notification. It is **not** an operational server push channel, a financial transaction notice or proof that a payment settled.
+- Do not use the local offline copy as a payment ledger. Real background push, reliable shared records and mobile device acceptance tests remain release requirements.
+
 ## Release gates before production
 
 1. Decide what licensed external parties actually collect, hold, settle, or refund funds, then obtain any necessary legal/regulatory review.
