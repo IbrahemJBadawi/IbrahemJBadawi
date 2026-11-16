@@ -1,6 +1,7 @@
 import { Crescent, Skyline } from "@/components/brand/Skyline";
 import { ButtonLink, Card } from "@/components/ui";
 import { Icon, type IconName } from "@/components/Icon";
+import { isSupabaseConfigured } from "@/lib/env";
 
 const AUDIENCES = [
   { title: "للطالب", text: "خطة حفظ ومراجعة واضحة، وسجلّ لكل تسميع، ومتابعة للحضور والواجب القادم." },
@@ -20,8 +21,16 @@ export default function HomePage() {
           <h1 id="landing-title">كل حلقة، كل طالب، <span className="landing-gradient">كل إنجاز في مكان واحد.</span></h1>
           <p className="landing-lead">حلقتي تجمع إدارة حلقات القرآن ومتابعة الحفظ والمراجعة والحضور في تجربة واضحة للمعلم والطالب وولي الأمر والمركز.</p>
           <div className="landing-actions">
-            <ButtonLink href="/register">ابدأ رحلتك مجانًا <Icon name="chevron" size={18} /></ButtonLink>
-            <ButtonLink href="/halaqat" variant="secondary"><Icon name="search" size={18} /> استعرض الحلقات</ButtonLink>
+            {isSupabaseConfigured ? (
+              <ButtonLink href="/register">ابدأ رحلتك مجانًا <Icon name="chevron" size={18} /></ButtonLink>
+            ) : (
+              <ButtonLink href="/forms"><Icon name="bookOpen" size={18} /> إدارة النماذج محليًا</ButtonLink>
+            )}
+            {isSupabaseConfigured ? (
+              <ButtonLink href="/halaqat" variant="secondary"><Icon name="search" size={18} /> استعرض الحلقات</ButtonLink>
+            ) : (
+              <span className="inline-flex items-center gap-2 rounded-full bg-brand-100 px-4 py-2 text-sm font-bold text-brand-900"><Icon name="shield" size={18} /> حفظ محلي مشفر دون حساب</span>
+            )}
           </div>
           <div className="landing-trust">
             <span><Icon name="checkCircle" size={17} /> متابعة الحفظ والمراجعة</span>
