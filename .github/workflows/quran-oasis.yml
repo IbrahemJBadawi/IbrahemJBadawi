@@ -12,7 +12,8 @@ defaults:
 
 jobs:
   app:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.x لا يدعم تثبيت Chromium على Ubuntu 26.04 بعد.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
