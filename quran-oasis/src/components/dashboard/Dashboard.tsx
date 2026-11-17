@@ -66,15 +66,19 @@ function Skeleton({ className }: { className?: string }) {
 
 function QuickAccess() {
   return (
-    <nav aria-label="وصول سريع">
-      <ul className="grid grid-cols-5 gap-x-1 gap-y-4 sm:grid-cols-10">
+    <nav aria-label="وصول سريع" className="min-w-0">
+      <div className="mb-3 flex items-baseline justify-between gap-2 px-1">
+        <h2 className="font-naskh text-[1.65rem] font-bold leading-tight">مساحات الواحة</h2>
+        <span className="text-xs text-muted sm:hidden">اسحب لاستكشاف المزيد</span>
+      </div>
+      <ul className="quick-strip -mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-5 sm:gap-3 sm:overflow-visible sm:px-0 lg:grid-cols-10">
         {QUICK.map((q) => (
-          <li key={q.href}>
-            <Link href={q.href} className="group flex flex-col items-center gap-1.5 rounded-2xl p-1 text-center focus-ring">
-              <span className={cn("card-soft grid h-12 w-12 place-items-center rounded-2xl transition-colors group-hover:ring-2 group-hover:ring-accent/30 sm:h-14 sm:w-14", q.tint)}>
-                <q.icon className={cn("h-6 w-6", q.fg)} aria-hidden="true" />
+          <li key={q.href} className="quick-item w-[4.85rem] shrink-0 sm:w-auto">
+            <Link href={q.href} className="group flex flex-col items-center gap-2 rounded-2xl p-1 text-center focus-ring">
+              <span className={cn("grid h-14 w-14 place-items-center rounded-[1.1rem] border border-line/60 transition-colors group-hover:border-accent/50 sm:h-14 sm:w-14", q.tint)}>
+                <q.icon className={cn("h-6 w-6", q.fg)} strokeWidth={1.8} aria-hidden="true" />
               </span>
-              <span className="text-xs font-semibold text-fg">{q.label}</span>
+              <span className="whitespace-nowrap text-[12px] font-semibold text-fg">{q.label}</span>
             </Link>
           </li>
         ))}
@@ -163,9 +167,17 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-muted">السلام عليكم{name ? `، ${name}` : ""}</p>
-        <h1 className="text-2xl font-bold md:text-3xl">{hydrated ? GREETING[partOfDay()] : "أهلًا بك"}</h1>
+      <header className="daily-header rounded-[1.7rem] px-5 py-5 sm:px-7 sm:py-6">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-primary">السلام عليكم{name ? `، ${name}` : ""}</p>
+            <h1 className="mt-1 font-naskh text-[2.2rem] font-bold leading-[1.3] text-fg sm:text-[2.65rem]">{hydrated ? GREETING[partOfDay()] : "أهلًا بك"}</h1>
+            <p className="mt-1 text-sm text-muted">لحظات قليلة مع القرآن تُنير يومك.</p>
+          </div>
+          <Link href={lastRead ? `/quran/${lastRead.surah}?ayah=${lastRead.ayah}` : "/quran/1"} className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-bold text-primary-fg shadow-sm focus-ring hover:opacity-90">
+            <BookOpen className="h-4 w-4" aria-hidden="true" />{lastRead ? "تابع قراءتك" : "افتح المصحف"}<ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
       </header>
 
       {sync.importedGuestData && (
@@ -179,6 +191,13 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
           </button>
         </div>
       )}
+
+      <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
+        <PrayerHero />
+        <div className="hidden lg:block"><StreakCard today={today} /></div>
+      </div>
+
+      <QuickAccess />
 
       <section aria-label="مساحات جديدة" className="grid gap-4 md:grid-cols-[1.35fr_1fr]">
         <Link href="/khalwa" className="khalwa-hero group relative overflow-hidden rounded-[1.75rem] p-6 text-ivory focus-ring sm:p-7">
@@ -194,15 +213,6 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
           <span className="relative z-10 mt-5 inline-flex items-center gap-2 font-bold">{activeChallenges.length ? `${activeChallenges.length} تحدٍّ جارٍ · عرض التقدّم` : "ابدأ تحدّيًا مع خليل"}<ChevronLeft className="h-4 w-4" /></span>
         </Link>
       </section>
-
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
-        <PrayerHero />
-        <div className="hidden lg:block">
-          <StreakCard today={today} />
-        </div>
-      </div>
-
-      <QuickAccess />
 
       <div className="grid gap-5 lg:grid-cols-3">
         {/* ───────── متابعة القرآن ───────── */}

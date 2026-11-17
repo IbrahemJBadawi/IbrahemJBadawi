@@ -255,8 +255,8 @@ export function Reader({ meta, text, basmala }: { meta: SurahMeta; text: SurahTe
         </div>
       </div>
 
-      <header className="relative mb-6 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface px-5 py-6 text-center pattern-bg">
-        <h1 id="surah-title" className="text-3xl font-bold text-fg">
+      <header className="mushaf-header relative mb-6 overflow-hidden rounded-[1rem] px-5 py-7 text-center sm:py-8">
+        <h1 id="surah-title" className="font-naskh text-[2.4rem] font-bold leading-relaxed text-fg sm:text-[2.9rem]">
           سورة {meta.name}
         </h1>
         <p className="mt-2 text-sm text-muted">
@@ -273,7 +273,7 @@ export function Reader({ meta, text, basmala }: { meta: SurahMeta; text: SurahTe
       )}
 
       {/* ───────── نص السورة ───────── */}
-      <div ref={containerRef} lang="ar" className="quran-text rounded-[var(--radius-card)] bg-surface px-4 py-6 text-fg sm:px-8">
+      <div ref={containerRef} lang="ar" className="mushaf-page quran-text rounded-[1rem] px-4 py-7 text-fg sm:px-10 sm:py-9">
         {text.ayahs.map((a) => {
           const br = pageBreaks.get(a.a);
           return (
