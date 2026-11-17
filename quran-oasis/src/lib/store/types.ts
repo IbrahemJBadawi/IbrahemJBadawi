@@ -22,7 +22,35 @@ export interface Settings extends Stamped {
     morning: string | null; // "06:30"
     evening: string | null;
     reading: string | null;
+    khalwa: string | null;
+    challenge: string | null;
   };
+}
+
+export type KhalwaStageId = "prepare" | "repent" | "adhkar" | "quran" | "tadabbur" | "dua" | "khushu";
+
+/** هذه معلومات جلسة شخصية؛ لا تُشارك مع المنافسين. */
+export interface KhalwaSession extends Stamped {
+  id: string; // تاريخ اليوم
+  minutes: number;
+  completedStages: KhalwaStageId[];
+  reflection: string;
+  finishedAt?: string;
+}
+
+export type ChallengeKind = "reading" | "hifz" | "review";
+
+/** تحدٍ ثنائي، والتحديثات بين الجهازين تُتبادل يدويًا بروابط المشاركة في النسخة المحلية. */
+export interface DuoChallenge extends Stamped {
+  id: string;
+  kind: ChallengeKind;
+  myName: string;
+  partnerName: string;
+  startDate: string;
+  days: number;
+  myCheckins: Record<string, boolean>;
+  partnerCheckins: Record<string, boolean>;
+  createdAt: string;
 }
 
 export interface LastRead extends Stamped {
@@ -131,6 +159,8 @@ export interface UserState {
   tasbih: Record<string, Record<string, DhikrCount>>;
   /** متابعة اختيارية للصلوات: اليوم ← الصلاة ← تمت */
   prayerLog: Record<string, Record<string, TaskMark>>;
+  khalwa: Record<string, KhalwaSession>;
+  challenges: Record<string, DuoChallenge>;
 }
 
 /** الشرائح التي تُخزّن كل منها كوثيقة مستقلة في قاعدة البيانات. */
@@ -151,6 +181,8 @@ export const SYNC_SLICES = [
   "oasisSeen",
   "tasbih",
   "prayerLog",
+  "khalwa",
+  "challenges",
 ] as const;
 
 export type SyncSlice = (typeof SYNC_SLICES)[number];

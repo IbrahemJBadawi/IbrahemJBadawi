@@ -9,6 +9,7 @@ import {
   Leaf,
   Lock,
   Moon,
+  HeartHandshake,
   Smartphone,
   Sparkles,
   UserRound,
@@ -37,6 +38,8 @@ const SECTIONS: { href: string; title: string; text: string; icon: LucideIcon }[
   { href: "/tasbih", title: "المسبحة", text: "عدّاد تسبيح هادئ بدورات ٣٣ و١٠٠، يحفظ عدّك تلقائيًا.", icon: CircleDot },
   { href: "/hifz", title: "الحفظ والمراجعة", text: "سجّل محفوظك، ودوّن ملاحظاتك، واعرف ما يحين وقت مراجعته.", icon: BookMarked },
   { href: "/learn", title: "التعلّم", text: "مسارات قصيرة في التجويد والقراءة الصحيحة والحفظ والتدبّر.", icon: GraduationCap },
+  { href: "/khalwa", title: "الخلوة", text: "وقت شخصي هادئ للذكر، والتوبة، والقرآن، والتدبّر، والدعاء، مع مؤقّت اختياري.", icon: Moon },
+  { href: "/khalili", title: "خليلي", text: "تحدٍّ ودّي مع خليل في ورد القرآن والحفظ والمراجعة، مع متابعة الإنجاز دون مقارنة لقيمة العبادة.", icon: HeartHandshake },
 ];
 
 const FEATURES: { title: string; text: string; icon: LucideIcon }[] = [
@@ -104,8 +107,7 @@ export default async function HomePage() {
               <span className="text-accent">في كل يوم</span>
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
-              رفيق يومي هادئ يجمع لك المصحف، والأذكار، والورد، والتدبّر، والحفظ في مكان واحد — لتبني صلة ثابتة بكتاب الله، خطوة
-              بعد خطوة، دون ضغط أو مقارنة.
+              رفيق يومي يجمع لك المصحف والأذكار والورد والتدبّر والحفظ والخلوة، مع خيار التحدّي الودّي مع خليل لتتشجعا على الاستمرار، دون ضغط.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <ButtonLink href="/today" size="lg">
@@ -182,7 +184,7 @@ export default async function HomePage() {
               },
               {
                 t: "تابع يومك بهدوء",
-                d: "مهام يومك في لوحة واحدة: الورد، والأذكار، والمراجعة. تقدّمك لك وحدك، بلا مقارنة بالآخرين.",
+                d: "مهام يومك في لوحة واحدة: الورد، والأذكار، والخلوة. ويمكنك اختيار تحدٍّ وديّ للأنشطة القابلة للقياس، دون مشاركة خواطرك الخاصة.",
               },
             ].map((step, i) => (
               <li key={step.t} className="rounded-3xl bg-white/5 p-6 ring-1 ring-white/10">

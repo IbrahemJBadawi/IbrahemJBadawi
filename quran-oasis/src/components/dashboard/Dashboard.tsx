@@ -12,6 +12,8 @@ import {
   Flame,
   GraduationCap,
   Leaf,
+  Moon,
+  HeartHandshake,
   Pencil,
   Sparkles,
   Target,
@@ -54,6 +56,8 @@ const QUICK: { href: string; label: string; icon: LucideIcon; tint: string; fg: 
   { href: "/oasis", label: "لحظة واحة", icon: Leaf, tint: "bg-tint-sage", fg: "text-accent" },
   { href: "/hifz", label: "الحفظ", icon: BookMarked, tint: "bg-tint-rose", fg: "text-[#9a4b4b] dark:text-[#e3a5a5]" },
   { href: "/learn", label: "التعلّم", icon: GraduationCap, tint: "bg-tint-sky", fg: "text-[#3e6b80] dark:text-[#9cc3d4]" },
+  { href: "/khalwa", label: "الخلوة", icon: Moon, tint: "bg-tint-sage", fg: "text-primary" },
+  { href: "/khalili", label: "خليلي", icon: HeartHandshake, tint: "bg-tint-sand", fg: "text-gold-fg" },
 ];
 
 function Skeleton({ className }: { className?: string }) {
@@ -63,11 +67,11 @@ function Skeleton({ className }: { className?: string }) {
 function QuickAccess() {
   return (
     <nav aria-label="وصول سريع">
-      <ul className="grid grid-cols-4 gap-x-2 gap-y-4 sm:grid-cols-8">
+      <ul className="grid grid-cols-5 gap-x-1 gap-y-4 sm:grid-cols-10">
         {QUICK.map((q) => (
           <li key={q.href}>
             <Link href={q.href} className="group flex flex-col items-center gap-1.5 rounded-2xl p-1 text-center focus-ring">
-              <span className={cn("card-soft grid h-14 w-14 place-items-center rounded-2xl transition-transform group-hover:-translate-y-0.5", q.tint)}>
+              <span className={cn("card-soft grid h-12 w-12 place-items-center rounded-2xl transition-colors group-hover:ring-2 group-hover:ring-accent/30 sm:h-14 sm:w-14", q.tint)}>
                 <q.icon className={cn("h-6 w-6", q.fg)} aria-hidden="true" />
               </span>
               <span className="text-xs font-semibold text-fg">{q.label}</span>
@@ -134,6 +138,8 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
   const settings = useStore((s) => s.settings);
   const khatmas = useStore((s) => s.khatmas);
   const adhkarLog = useStore((s) => s.adhkarLog);
+  const khalwa = useStore((s) => s.khalwa[today]);
+  const challenges = useStore((s) => s.challenges);
   const [goalOpen, setGoalOpen] = useState(false);
   const tasks = useActiveTasks();
 
@@ -153,6 +159,7 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
   const name = profile?.display_name || (user?.user_metadata?.display_name as string | undefined);
   const lastMeta = lastRead ? getSurahMeta(lastRead.surah) : null;
   const tracked = settings.trackedAdhkar.length ? settings.trackedAdhkar : ["morning", "evening"];
+  const activeChallenges = Object.values(challenges).filter((c) => !c.deleted && today >= c.startDate && today < addDays(c.startDate, c.days));
 
   return (
     <div className="space-y-6">
@@ -172,6 +179,21 @@ export function Dashboard({ adhkar, categories, moments }: { adhkar: Dhikr[]; ca
           </button>
         </div>
       )}
+
+      <section aria-label="مساحات جديدة" className="grid gap-4 md:grid-cols-[1.35fr_1fr]">
+        <Link href="/khalwa" className="khalwa-hero group relative overflow-hidden rounded-[1.75rem] p-6 text-ivory focus-ring sm:p-7">
+          <span className="relative z-10 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold"><Moon className="h-4 w-4" /> هدوء اليوم</span>
+          <h2 className="relative z-10 mt-4 font-naskh text-3xl font-bold leading-relaxed">خذ لنفسك خلوة مع القرآن</h2>
+          <p className="relative z-10 mt-1 max-w-lg text-sm leading-7 text-[#e2e9df]">ذكر، وتوبة، وتدبّر، ودعاء. خذ وقتك بعيدًا عن ضجيج اليوم.</p>
+          <span className="relative z-10 mt-5 inline-flex items-center gap-2 font-bold text-[#ecd59d]">{khalwa?.finishedAt ? "أتممت خلوة اليوم ✓" : khalwa?.completedStages.length ? `${khalwa.completedStages.length} من ٧ خطوات · متابعة الخلوة` : "ابدأ خلوتك"}<ChevronLeft className="h-4 w-4" /></span>
+        </Link>
+        <Link href="/khalili" className="khalili-hero group relative overflow-hidden rounded-[1.75rem] p-6 text-deep focus-ring sm:p-7">
+          <span className="relative z-10 inline-flex items-center gap-2 rounded-full bg-white/60 px-3 py-1 text-xs font-bold"><HeartHandshake className="h-4 w-4" /> رفقة في الخير</span>
+          <h2 className="relative z-10 mt-4 font-naskh text-3xl font-bold leading-relaxed">خليلي، نتشجّع سويًا</h2>
+          <p className="relative z-10 mt-1 max-w-md text-sm leading-7 text-[#395444]">تحدّي لطيف مع شخص تحبه في الورد أو الحفظ أو المراجعة.</p>
+          <span className="relative z-10 mt-5 inline-flex items-center gap-2 font-bold">{activeChallenges.length ? `${activeChallenges.length} تحدٍّ جارٍ · عرض التقدّم` : "ابدأ تحدّيًا مع خليل"}<ChevronLeft className="h-4 w-4" /></span>
+        </Link>
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         <PrayerHero />

@@ -175,12 +175,14 @@ function RemindersSection() {
       />
       {r.enabled && (
         <>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {(
               [
                 ["morning", "أذكار الصباح"],
                 ["evening", "أذكار المساء"],
                 ["reading", "الورد اليومي"],
+                ["khalwa", "الخلوة"],
+                ["challenge", "تحدّي خليلي"],
               ] as const
             ).map(([k, label]) => (
               <Field key={k} label={label} hint={r[k] ? undefined : "غير مفعّل"}>
@@ -217,7 +219,7 @@ function RemindersSection() {
             </div>
           </div>
           <div className="rounded-xl bg-surface-2 p-3 text-xs leading-relaxed text-muted">
-            تظهر التذكيرات أثناء فتح المنصة على جهازك (أو عند فتح التطبيق المثبّت). لا نرسل إشعارات من خوادمنا.
+            تُضبط التذكيرات حسب الأيام والأوقات أعلاه، وتُتخطّى عند إنجاز الهدف أو إتمام الخلوة أو تسجيل تحدّي اليوم. تعمل عند فتح المنصة، وقد تظهر كإشعارات نظام إذا بقي التطبيق يعمل في الخلفية وسمحت بها. لا تُرسل Push عند إغلاقه تمامًا دون خدمة إرسال خلفية.
             {perm === "default" && (
               <button
                 type="button"

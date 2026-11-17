@@ -9,6 +9,8 @@ import type {
   DailyTask,
   HifzSegment,
   Khatma,
+  KhalwaStageId,
+  DuoChallenge,
   Settings,
   TaskType,
 } from "./types";
@@ -18,6 +20,79 @@ const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+// ───────── الخلوة الشخصية ─────────
+export function saveKhalwaStage(stage: KhalwaStageId, done: boolean, minutes = 20, date = dayKey()) {
+  setState((s) => {
+    const current = s.khalwa[date] ?? { id: date, minutes, completedStages: [], reflection: "", updatedAt: now() };
+    const stages = new Set(current.completedStages);
+    if (done) stages.add(stage);
+    else stages.delete(stage);
+    return {
+      ...s,
+      khalwa: { ...s.khalwa, [date]: { ...current, minutes, completedStages: [...stages], finishedAt: undefined, updatedAt: now() } },
+    };
+  }, ["khalwa"]);
+}
+
+export function saveKhalwaReflection(text: string, date = dayKey()) {
+  setState((s) => {
+    const current = s.khalwa[date] ?? { id: date, minutes: 20, completedStages: [], reflection: "", updatedAt: now() };
+    return { ...s, khalwa: { ...s.khalwa, [date]: { ...current, reflection: text.slice(0, 1200), updatedAt: now() } } };
+  }, ["khalwa"]);
+}
+
+export function finishKhalwa(date = dayKey()) {
+  setState((s) => {
+    const current = s.khalwa[date];
+    if (!current || current.completedStages.length < 7) return s;
+    return { ...s, khalwa: { ...s.khalwa, [date]: { ...current, finishedAt: now(), updatedAt: now() } } };
+  }, ["khalwa"]);
+}
+
+// ───────── خليلي: متابعة اختيارية لأعمال قابلة للقياس، لا للتوبة أو الإخلاص ─────────
+export function createChallenge(input: Pick<DuoChallenge, "id" | "kind" | "myName" | "partnerName" | "startDate" | "days">) {
+  const challenge: DuoChallenge = {
+    ...input,
+    id: input.id || uid(),
+    myName: input.myName.trim().slice(0, 40),
+    partnerName: input.partnerName.trim().slice(0, 40),
+    days: Math.max(1, Math.min(30, Math.round(input.days))),
+    myCheckins: {},
+    partnerCheckins: {},
+    createdAt: now(),
+    updatedAt: now(),
+  };
+  setState((s) => ({ ...s, challenges: { ...s.challenges, [challenge.id]: challenge } }), ["challenges"]);
+  return challenge.id;
+}
+
+export function markChallengeDay(id: string, date: string, done: boolean) {
+  setState((s) => {
+    const c = s.challenges[id];
+    if (!c || c.deleted || date < c.startDate || date >= addDays(c.startDate, c.days)) return s;
+    return { ...s, challenges: { ...s.challenges, [id]: { ...c, myCheckins: { ...c.myCheckins, [date]: done }, updatedAt: now() } } };
+  }, ["challenges"]);
+}
+
+export function importChallengeReport(id: string, completedDays: string[]) {
+  setState((s) => {
+    const c = s.challenges[id];
+    if (!c || c.deleted) return s;
+    const valid = completedDays.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= c.startDate && d < addDays(c.startDate, c.days));
+    return {
+      ...s,
+      challenges: { ...s.challenges, [id]: { ...c, partnerCheckins: Object.fromEntries(valid.map((d) => [d, true])), updatedAt: now() } },
+    };
+  }, ["challenges"]);
+}
+
+export function removeChallenge(id: string) {
+  setState((s) => {
+    const c = s.challenges[id];
+    return c ? { ...s, challenges: { ...s.challenges, [id]: { ...c, deleted: true, updatedAt: now() } } } : s;
+  }, ["challenges"]);
+}
 
 // ───────── الإعدادات ─────────
 export function updateSettings(patch: Partial<Omit<Settings, "updatedAt">>) {

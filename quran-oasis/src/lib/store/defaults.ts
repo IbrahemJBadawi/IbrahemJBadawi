@@ -10,7 +10,7 @@ export function defaultSettings(): Settings {
     focusMode: false,
     dailyGoal: { enabled: true, unit: "pages", amount: 2 },
     trackedAdhkar: ["morning", "evening"],
-    reminders: { enabled: false, days: [0, 1, 2, 3, 4, 5, 6], morning: null, evening: null, reading: null },
+    reminders: { enabled: false, days: [0, 1, 2, 3, 4, 5, 6], morning: null, evening: null, reading: null, khalwa: null, challenge: null },
   };
 }
 
@@ -34,6 +34,8 @@ export function emptyState(): UserState {
     oasisSeen: {},
     tasbih: {},
     prayerLog: {},
+    khalwa: {},
+    challenges: {},
   };
 }
 
@@ -69,5 +71,7 @@ export function hydrate(raw: unknown): UserState {
     oasisSeen: isObj(r.oasisSeen) ? r.oasisSeen : {},
     tasbih: isObj(r.tasbih) ? r.tasbih : {},
     prayerLog: isObj(r.prayerLog) ? r.prayerLog : {},
+    khalwa: isObj(r.khalwa) ? r.khalwa : {},
+    challenges: isObj(r.challenges) ? r.challenges : {},
   };
 }
