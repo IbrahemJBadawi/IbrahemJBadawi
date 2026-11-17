@@ -231,3 +231,42 @@ dialog::backdrop {
 .hero-gradient .ring-value {
   stroke: var(--gold);
 }
+
+/* خلوة: تركيز بصري على الهدوء والعمق، والخلفية الزخرفية لا تتداخل مع النص. */
+.khalwa-hero {
+  background:
+    radial-gradient(circle at 90% 12%, rgb(211 187 125 / 0.22), transparent 35%),
+    radial-gradient(circle at 8% 100%, rgb(129 163 135 / 0.17), transparent 50%),
+    #203f32;
+}
+.khalwa-hero::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -3rem;
+  inset-block-end: -7rem;
+  width: 24rem;
+  height: 24rem;
+  border: 1px solid rgb(225 207 156 / 0.20);
+  border-radius: 44% 56% 40% 60%;
+  transform: rotate(32deg);
+  box-shadow: 0 0 0 3rem rgb(211 187 125 / 0.025), 0 0 0 6rem rgb(211 187 125 / 0.025);
+  pointer-events: none;
+}
+.khalwa-timer {
+  background: radial-gradient(circle at top, var(--gold-soft), transparent 65%), var(--surface-2);
+}
+.khalili-hero {
+  background: linear-gradient(125deg, #e3eddd 0%, #d6e7d5 62%, #efdca8 100%);
+}
+.khalili-ornament {
+  position: absolute;
+  inset-inline-end: 2rem;
+  inset-block-end: -2.5rem;
+  transform: rotate(-18deg);
+  color: rgb(35 67 52 / 0.12);
+  pointer-events: none;
+}
+@media (max-width: 480px) {
+  .khalwa-hero::after { opacity: .35; }
+  .khalili-ornament { opacity: .45; }
+}

@@ -13,6 +13,8 @@ import {
   Settings,
   Shield,
   Sparkles,
+  Moon,
+  HeartHandshake,
   type LucideIcon,
 } from "lucide-react";
 
@@ -25,19 +27,20 @@ export interface NavItem {
 export const PRIMARY_NAV: NavItem[] = [
   { href: "/today", label: "اليوم", icon: Home },
   { href: "/quran", label: "القرآن", icon: BookOpen },
-  { href: "/prayer", label: "الصلاة", icon: Clock },
-  { href: "/adhkar", label: "الأذكار", icon: Sparkles },
+  { href: "/khalwa", label: "الخلوة", icon: Moon },
+  { href: "/khalili", label: "خليلي", icon: HeartHandshake },
 ];
 
 /** روابط إضافية في القائمة العلوية للحاسوب */
 export const DESKTOP_EXTRA: NavItem[] = [
-  { href: "/oasis", label: "لحظة واحة", icon: Leaf },
+  { href: "/prayer", label: "الصلاة", icon: Clock },
+  { href: "/adhkar", label: "الأذكار", icon: Sparkles },
   { href: "/plan", label: "الورد", icon: CalendarCheck },
-  { href: "/hifz", label: "الحفظ", icon: BookMarked },
-  { href: "/learn", label: "التعلّم", icon: GraduationCap },
 ];
 
 export const SECONDARY_NAV: NavItem[] = [
+  { href: "/prayer", label: "مواقيت الصلاة", icon: Clock },
+  { href: "/adhkar", label: "الأذكار", icon: Sparkles },
   { href: "/oasis", label: "لحظة واحة", icon: Leaf },
   { href: "/tasbih", label: "المسبحة", icon: CircleDot },
   { href: "/qibla", label: "القبلة", icon: Compass },
