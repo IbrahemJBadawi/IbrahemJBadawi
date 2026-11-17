@@ -94,22 +94,22 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* ───────── البطل ───────── */}
-      <section className="pattern-bg relative overflow-hidden">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-12 md:grid-cols-2 md:pb-24 md:pt-20">
-          <div>
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-gold-soft px-3 py-1 text-sm font-semibold text-gold-fg">
+      <section className="mihrab-landing relative overflow-hidden">
+        <div className="mx-auto grid max-w-6xl items-center gap-7 px-4 pb-14 pt-10 md:grid-cols-[1fr_.96fr] md:gap-12 md:pb-24 md:pt-20">
+          <div className="relative z-10">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold-soft px-3 py-1 text-xs font-bold text-gold-fg sm:text-sm">
               <Leaf className="h-4 w-4" aria-hidden="true" />
               {SITE.tagline}
             </p>
-            <h1 className="text-4xl font-bold leading-[1.35] text-fg md:text-5xl md:leading-[1.3]">
+            <h1 className="font-naskh text-[2.9rem] font-bold leading-[1.35] text-fg sm:text-6xl md:text-[4.5rem] md:leading-[1.35]">
               اجعل للقرآن مكانًا
               <br />
-              <span className="text-accent">في كل يوم</span>
+              <span className="text-primary">في كل يوم</span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
+            <p className="mt-5 max-w-lg text-base leading-8 text-muted sm:text-lg sm:leading-9">
               رفيق يومي يجمع لك المصحف والأذكار والورد والتدبّر والحفظ والخلوة، مع خيار التحدّي الودّي مع خليل لتتشجعا على الاستمرار، دون ضغط.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <ButtonLink href="/today" size="lg">
                 ابدأ رحلتك
               </ButtonLink>
@@ -118,12 +118,12 @@ export default async function HomePage() {
                 تصفّح القرآن
               </ButtonLink>
             </div>
-            <p className="mt-4 text-sm text-muted">مجانية · بلا إعلانات · لا تحتاج إلى حساب للبدء</p>
+            <p className="mt-4 text-xs text-muted sm:text-sm">مجانية، بلا إعلانات، ولا تحتاج إلى حساب للبدء.</p>
           </div>
-          <div className="relative">
-            <OasisScene className="w-full" />
+          <div className="mihrab-frame relative mx-auto w-full max-w-[31rem]">
+            <OasisScene className="w-full drop-shadow-[0_20px_34px_rgba(25,63,50,.16)]" />
             {ayah && (
-              <figure className="relative -mt-16 mx-4 rounded-3xl border border-line bg-surface/95 p-5 shadow-sm backdrop-blur md:mx-8">
+              <figure className="mihrab-verse relative -mt-14 mx-2 rounded-[1.3rem] p-5 backdrop-blur sm:mx-8 sm:p-6">
                 <figcaption className="mb-2 flex items-center justify-between text-xs font-semibold text-muted">
                   <span className="inline-flex items-center gap-1.5 text-accent">
                     <Leaf className="h-3.5 w-3.5" aria-hidden="true" />
@@ -133,7 +133,7 @@ export default async function HomePage() {
                     سورة {meta.name} · الآية {toArabicDigits(ayah.a)}
                   </span>
                 </figcaption>
-                <blockquote className="quran-inline text-fg" lang="ar">
+                <blockquote className="quran-inline text-center text-fg" lang="ar">
                   {ayah.t}
                   <AyahMarker n={ayah.a} />
                 </blockquote>
@@ -145,31 +145,31 @@ export default async function HomePage() {
 
       {/* ───────── الأقسام ───────── */}
       <section className="mx-auto max-w-6xl px-4 py-16" aria-labelledby="sections-title">
-        <h2 id="sections-title" className="text-2xl font-bold md:text-3xl">
+        <h2 id="sections-title" className="font-naskh text-3xl font-bold md:text-4xl">
           كل ما تحتاجه لصحبة القرآن
         </h2>
         <p className="mt-2 text-muted">أقسام مترابطة، كل منها يخدم وردك اليومي.</p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SECTIONS.map((s) => (
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+          {SECTIONS.map((s, i) => (
             <Link
               key={s.href}
               href={s.href}
-              className="group rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-colors hover:border-accent focus-ring"
+              className={`sacred-tile group rounded-[1.4rem] p-5 focus-ring sm:p-6 ${i < 2 ? "sacred-tile-featured lg:col-span-2" : ""}`}
             >
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-accent-soft text-accent">
-                <s.icon className="h-6 w-6" aria-hidden="true" />
+              <span className={`grid h-12 w-12 place-items-center rounded-[1rem] ${i < 2 ? "bg-primary text-primary-fg" : "bg-accent-soft text-primary"}`}>
+                <s.icon className="h-6 w-6" strokeWidth={1.8} aria-hidden="true" />
               </span>
-              <h3 className="mt-4 text-lg font-bold group-hover:text-accent">{s.title}</h3>
-              <p className="mt-1 text-[15px] leading-relaxed text-muted">{s.text}</p>
+              <h3 className={`mt-4 font-bold group-hover:text-primary ${i < 2 ? "font-naskh text-[1.65rem]" : "text-lg"}`}>{s.title}</h3>
+              <p className="mt-1 max-w-xl text-sm leading-7 text-muted sm:text-[15px]">{s.text}</p>
             </Link>
           ))}
         </div>
       </section>
 
       {/* ───────── كيف تبني وردك ───────── */}
-      <section className="bg-deep text-ivory" aria-labelledby="wird-title">
+      <section className="pattern-bg bg-deep text-ivory" aria-labelledby="wird-title">
         <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 id="wird-title" className="text-2xl font-bold md:text-3xl">
+          <h2 id="wird-title" className="font-naskh text-3xl font-bold md:text-4xl">
             كيف تساعدك الواحة على بناء وردك اليومي؟
           </h2>
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
@@ -199,7 +199,7 @@ export default async function HomePage() {
 
       {/* ───────── المزايا ───────── */}
       <section className="mx-auto max-w-6xl px-4 py-16" aria-labelledby="features-title">
-        <h2 id="features-title" className="text-2xl font-bold md:text-3xl">
+          <h2 id="features-title" className="font-naskh text-3xl font-bold md:text-4xl">
           صُممت لتكون بسيطة وهادئة
         </h2>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -217,7 +217,7 @@ export default async function HomePage() {
       <section className="pattern-bg border-y border-line" aria-labelledby="oasis-title">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-16 md:grid-cols-2 md:items-center">
           <div>
-            <h2 id="oasis-title" className="text-2xl font-bold md:text-3xl">
+            <h2 id="oasis-title" className="font-naskh text-3xl font-bold md:text-4xl">
               لحظة واحة: دقيقتان من السكينة كل يوم
             </h2>
             <p className="mt-3 leading-relaxed text-muted">

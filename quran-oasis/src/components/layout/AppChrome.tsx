@@ -37,9 +37,9 @@ export function AppHeader() {
   if (focus && isReader) return null;
   const desktopNav = [...PRIMARY_NAV, ...DESKTOP_EXTRA];
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-bg/95 shadow-[0_1px_16px_-14px_rgba(25,63,50,.35)] backdrop-blur-xl supports-[backdrop-filter]:bg-bg/85">
       <OfflineBanner />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4">
         <Link href="/today" className="shrink-0 rounded-xl focus-ring" aria-label="واحة القرآن — اليوم">
           <Logo />
         </Link>
@@ -50,8 +50,8 @@ export function AppHeader() {
               href={item.href}
               aria-current={isActive(pathname, item.href) ? "page" : undefined}
               className={cn(
-                "rounded-full px-3 py-2 text-[14px] font-semibold transition-colors focus-ring",
-                isActive(pathname, item.href) ? "bg-accent-soft text-fg" : "text-muted hover:text-fg",
+                "rounded-xl px-3 py-2 text-[14px] font-semibold transition-colors focus-ring",
+                isActive(pathname, item.href) ? "bg-accent-soft text-primary shadow-[inset_0_-2px_0_var(--accent)]" : "text-muted hover:bg-surface-2 hover:text-fg",
               )}
             >
               {item.label}
@@ -110,7 +110,7 @@ export function BottomNav() {
       <div
         id="more-menu"
         className={cn(
-          "fixed inset-x-3 bottom-[5.5rem] z-50 rounded-3xl border border-line bg-surface p-3 shadow-xl transition-all lg:hidden",
+          "fixed inset-x-3 bottom-[5.5rem] z-50 rounded-[1.5rem] border border-line bg-surface p-3 shadow-xl transition-all lg:hidden",
           open ? "visible translate-y-0 opacity-100" : "invisible translate-y-4 opacity-0",
         )}
       >
@@ -133,7 +133,7 @@ export function BottomNav() {
       </div>
       <nav
         aria-label="التنقل السفلي"
-        className="safe-bottom fixed inset-x-3 bottom-3 z-50 mx-auto max-w-lg rounded-[1.75rem] border border-line/70 bg-surface/90 shadow-[0_12px_32px_-12px_rgba(35,67,52,.35)] backdrop-blur-md lg:hidden"
+        className="app-dock safe-bottom fixed inset-x-3 bottom-3 z-50 mx-auto max-w-lg rounded-[1.65rem] border border-line bg-surface/95 backdrop-blur-xl lg:hidden"
       >
         <ul className="grid h-16 grid-cols-5 px-1">
           {PRIMARY_NAV.map((item) => {
@@ -148,7 +148,7 @@ export function BottomNav() {
                     active ? "text-primary" : "text-muted",
                   )}
                 >
-                  <span className={cn("grid h-7 w-12 place-items-center rounded-full", active && "bg-accent-soft")}>
+                  <span className={cn("grid h-8 w-12 place-items-center rounded-xl transition-colors", active && "bg-accent-soft ring-1 ring-accent/15")}>
                     <item.icon className="h-5 w-5" aria-hidden="true" />
                   </span>
                   {item.label}
@@ -167,7 +167,7 @@ export function BottomNav() {
                 open || moreActive ? "text-primary" : "text-muted",
               )}
             >
-              <span className={cn("grid h-7 w-12 place-items-center rounded-full", (open || moreActive) && "bg-accent-soft")}>
+              <span className={cn("grid h-8 w-12 place-items-center rounded-xl", (open || moreActive) && "bg-accent-soft ring-1 ring-accent/15")}>
                 {open ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
               </span>
               المزيد
