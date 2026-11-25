@@ -18,6 +18,7 @@
   <script defer src="world-network.js"></script>
   <script defer src="economy-engine.js"></script>
   <script defer src="mobility-engine.js"></script>
+  <script defer src="audio-engine.js"></script>
   <script defer src="world-map.js"></script>
   <script defer src="art-library.js"></script>
   <script defer src="pixi-renderer.js"></script>
@@ -44,7 +45,7 @@
    <div class="metric"><span class="metric-icon green" data-icon="heart"></span><div><small>رضا السكان</small><strong id="metric-happiness">—</strong></div></div>
    <div class="metric compact"><span class="metric-icon purple" data-icon="trophy"></span><div><small>المستوى</small><strong id="metric-level">—</strong></div></div>
   </section>
-  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="economy" aria-pressed="false"><span data-icon="wallet"></span> الاقتصاد</button><button data-view="mobility" aria-pressed="false"><span data-icon="road"></span> النقل</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
+  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="economy" aria-pressed="false"><span data-icon="wallet"></span> الاقتصاد</button><button data-view="mobility" aria-pressed="false"><span data-icon="road"></span> النقل</button><button data-view="audio" aria-pressed="false"><span data-icon="music"></span> الصوت</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
   <main class="dashboard">
    <aside class="sidebar side-regions" aria-label="المناطق والتحديات">
     <section class="panel intro-panel" data-tool="intro" hidden>
@@ -112,6 +113,13 @@
  <p class="fine-print">شبكة الطرق داخل المدينة تحدد الوصول للعمل والخدمات. ابنِ محطة حافلات متصلة لتفعيل رحلات الحافلات. الحركة تمثيلية وليست بيانات تنقل حقيقية.</p>
  <div class="economy-metrics"><div><small>الأسر المقدرة</small><strong id="mobility-households">—</strong></div><div><small>الوصول للطرق</small><strong id="mobility-roads">—</strong></div><div><small>الوصول للعمل</small><strong id="mobility-work">—</strong></div><div><small>الازدحام</small><strong id="mobility-congestion">—</strong></div><div><small>الرحلات المقدرة</small><strong id="mobility-trips">—</strong></div><div><small>وحدات الحركة المرئية</small><strong id="mobility-agents">—</strong></div></div>
  <h3 class="world-subheading">الوصول إلى الخدمات عبر الطرق</h3><div id="mobility-services"></div><h3 class="world-subheading">وسائل النقل النشطة</h3><p id="mobility-mode-list" class="fine-print"></p>
+ </section><section class="panel audio-panel" data-tool="audio" hidden>
+ <div class="panel-heading"><h2>الصوت والموسيقى</h2><span class="mini-label" id="audio-status" role="status">الصوت مكتوم</span></div>
+ <p class="fine-print">موسيقى وأصوات أصلية تولّد داخل المتصفح. يبدأ الصوت فقط بعد موافقتك، ويتوقف عند إخفاء الصفحة.</p>
+ <button id="audio-toggle" class="secondary-btn audio-toggle" type="button">تشغيل الصوت</button>
+ <div class="audio-setting"><label for="audio-master">الصوت العام</label><output id="audio-master-value" for="audio-master">—</output><input id="audio-master" type="range" min="0" max="100" step="1" value="50"></div><div class="audio-setting"><label for="audio-music">الموسيقى</label><output id="audio-music-value" for="audio-music">—</output><input id="audio-music" type="range" min="0" max="100" step="1" value="50"></div><div class="audio-setting"><label for="audio-effects">المؤثرات</label><output id="audio-effects-value" for="audio-effects">—</output><input id="audio-effects" type="range" min="0" max="100" step="1" value="50"></div><div class="audio-setting"><label for="audio-ambient">أجواء المدينة</label><output id="audio-ambient-value" for="audio-ambient">—</output><input id="audio-ambient" type="range" min="0" max="100" step="1" value="50"></div>
+ <button id="audio-reset" class="secondary-btn" type="button">استعادة الإعدادات الأصلية</button>
+ <p class="fine-print">تُحفظ مستويات الصوت محليًا. الموسيقى تتأثر بالليل، وأجواء المدينة تتأثر بحركة المرور المقدرة.</p>
  </section><section class="panel indicators-panel" data-tool="stats" hidden>
       <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات القطاع</h2><span class="mini-label">مباشر</span></div>
       <div id="service-bars"></div>
