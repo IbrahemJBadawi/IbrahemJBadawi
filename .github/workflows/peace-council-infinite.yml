@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js
+      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js && node --check peace-council/game-shell.js
       - run: node --test peace-council/infinite-world.test.cjs
       - name: Verify pinned geographic dataset
         run: |
@@ -34,3 +34,11 @@ jobs:
             if(!fs.existsSync('peace-council/gaza-governorates.geojson'))console.log('GAZA_GEOJSON='+JSON.stringify(geo));
           })().catch(e=>{console.error(e);process.exitCode=1});
           NODE
+      - name: Install browser test tooling
+        run: |
+          npm install --no-save --no-package-lock playwright@1.51.1
+          npx playwright install --with-deps chromium
+      - name: Browser smoke test
+        run: |
+          python3 -m http.server 4173 --directory peace-council >/tmp/peace-council-server.log 2>&1 &
+          node peace-council/browser-smoke.cjs

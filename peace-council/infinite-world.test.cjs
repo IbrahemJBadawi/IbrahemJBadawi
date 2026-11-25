@@ -12,7 +12,7 @@ function load(){
   let saved=JSON.stringify(old);
   const context={document:{hidden:false,getElementById:get,querySelectorAll:()=>[],addEventListener(){},createElement:node},window:{addEventListener(){},devicePixelRatio:1},localStorage:{getItem:()=>saved,setItem:(k,v)=>saved=v},navigator:{},location:{protocol:'http:'},requestAnimationFrame(){},setInterval(){},setTimeout(){},clearTimeout(){},console};
   vm.createContext(context);
-  const exposed=source.replace(/\}\)\(\);\s*$/, 'globalThis.api={get state(){return state},validated,fresh,chooseBuild,place,upgrade,select:id=>{selectedBuilding=id},currentMission,completeMission,stats,canBuildType,finishJobs,crewLimit};})();');
+  const exposed=source.replace(/\}\)\(\);\s*$/, 'globalThis.api={get state(){return state},validated,fresh,chooseBuild,place,upgrade,select:id=>{selectedBuilding=id},currentMission,completeMission,stats,canBuildType,finishJobs,crewLimit,save};})();');
   assert.notEqual(exposed,source);
   vm.runInContext(exposed,context);
   return {api:context.api,nodes,getSaved:()=>JSON.parse(saved),switchRegion:i=>get('regions').listeners.click({target:{closest:()=>({dataset:{region:String(i)}})}}),research:key=>get('research-list').listeners.click({target:{closest:()=>({dataset:{research:key}})}})};
@@ -20,7 +20,7 @@ function load(){
 test('v1 migration, upgrades beyond level 6, and saved levels survive validation',()=>{
   const {api,getSaved}=load();assert.equal(api.state.region,1);assert.equal(api.state.buildings[0].region,2);
   api.select(1);for(let i=0;i<15;i++){api.upgrade();for(let d=0;d<12;d++)api.finishJobs();}
-  assert.equal(api.state.buildings[0].level,21);assert.equal(api.validated(getSaved()).buildings[0].level,21);
+  assert.equal(api.state.buildings[0].level,21);api.save();assert.equal(api.validated(getSaved()).buildings[0].level,21);
 });
 test('all five regions are selectable; identical coordinates coexist in different regions',()=>{
   const {api,switchRegion,getSaved}=load();
