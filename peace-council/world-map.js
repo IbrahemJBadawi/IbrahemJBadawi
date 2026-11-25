@@ -41,8 +41,16 @@ function render(features){
     svg.appendChild(path);
   }
   for(const f of features){const [x,y]=project(f.center);const label=element('text',{x,y:y+4,class:'geo-label','text-anchor':'middle','pointer-events':'none'});label.textContent=f.name;svg.appendChild(label)}
+  for(const m of [{point:[34.43056,31.52583],name:'ميناء غزة • موقع مرجعي',symbol:'⚓',index:1},{point:[34.27588,31.24313],name:'مطار ياسر عرفات • موقع تاريخي',symbol:'✈',index:4}]){
+    const [x,y]=project(m.point);const g=element('g',{tabindex:0,role:'button','aria-label':m.name,style:'cursor:pointer'});
+    const title=element('title',{});title.textContent=m.name;g.appendChild(title);
+    g.appendChild(element('circle',{cx:x,cy:y,r:8,fill:'#143d56',stroke:'#f8d98d','stroke-width':1.5}));
+    const symbol=element('text',{x,y:y+3.5,'text-anchor':'middle','font-size':10,fill:'#fff','pointer-events':'none'});symbol.textContent=m.symbol;g.appendChild(symbol);
+    const select=()=>root.dispatchEvent(new CustomEvent('pc-region',{detail:m.index}));
+    g.addEventListener('click',select);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select()}});svg.appendChild(g);
+  }
   highlight(current);
-  status.textContent='حدود المحافظات الجغرافية • بيانات 2017';
+  status.textContent='حدود المحافظات • بيانات 2017 | ⚓ ميناء غزة · ✈ المطار التاريخي';
 }
 root.PCWorldMap={highlight};
 async function load(){
