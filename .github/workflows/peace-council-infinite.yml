@@ -18,5 +18,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js
+      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js
       - run: node --test peace-council/infinite-world.test.cjs
+      - name: Verify pinned geographic dataset
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs');
+          const {extract,SOURCE}=require('./peace-council/world-map.js');
+          (async()=>{
+            const data=fs.existsSync('peace-council/gaza-governorates.geojson')?JSON.parse(fs.readFileSync('peace-council/gaza-governorates.geojson','utf8')):await (await fetch(SOURCE)).json();
+            const features=extract(data);
+            if(features.length!==5)throw Error('Expected five governorates');
+            const geo={type:'FeatureCollection',features:features.map(f=>({type:'Feature',properties:{shapeISO:f.iso},geometry:{type:'MultiPolygon',coordinates:f.polygons}}))};
+            console.log('Validated governorates:',features.map(f=>f.iso).join(', '));
+            if(!fs.existsSync('peace-council/gaza-governorates.geojson'))console.log('GAZA_GEOJSON='+JSON.stringify(geo));
+          })().catch(e=>{console.error(e);process.exitCode=1});
+          NODE
