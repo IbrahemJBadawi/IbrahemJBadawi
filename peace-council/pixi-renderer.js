@@ -83,7 +83,7 @@ function render(f){if(!app||!api.active)return false;try{
    for(const b of [...f.buildings].sort((a,b)=>(a.c+a.r)-(b.c+b.r)||a.c-b.c))building(structures,f,b,by);
  }
  motion.clear();const z=f.zoom;
- for(const b of f.buildings.filter(b=>b.type==='road'&&!b.job).slice(0,45)){const n=[[1,0],[0,1]].map(([dc,dr])=>by.get((b.c+dc)+':'+(b.r+dr))).find(n=>n?.type==='road'&&!n.job);if(n){const t=(f.tick*.045+b.id*.173)%1,p=point(f,b.c+(n.c-b.c)*t,b.r+(n.r-b.r)*t);if(W.PCArt)drawArt(motion,W.PCArt.vehicle(b.id),p.x,p.y,z);else motion.roundRect(p.x-5*z,p.y-4*z,10*z,6*z,2*z).fill(b.id%2?0xf0cc79:0x92d9db);}}
+ for(const a of f.traffic||[]){const p=point(f,a.c,a.r);if(W.PCArt?.traveler)drawArt(motion,W.PCArt.traveler(a.mode,a.seed),p.x,p.y,z);}
  if(f.hover){const p=point(f,f.hover.c,f.hover.r);diamond(motion,p.x,p.y,64*z,34*z,{color:f.canPlace(f.hover.c,f.hover.r)?0xf1c879:0xd96b65,alpha:.27},0xe6cf9b);}
  const selected=f.buildings.find(b=>b.id===f.selectedBuilding);if(selected){const p=point(f,selected.c,selected.r);motion.ellipse(p.x,p.y,31*z,16*z).stroke({color:0xf7d380,width:2*z});}
  if(f.night)motion.rect(0,0,f.width,f.height).fill({color:0x15244c,alpha:.21});

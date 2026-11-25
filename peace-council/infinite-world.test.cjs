@@ -10,7 +10,7 @@ function load(){
   const get=id=>{if(!nodes.has(id))nodes.set(id,node());return nodes.get(id)};
   const old={version:1,day:1,coins:1000000,materials:100000,xp:0,mission:7,introDone:true,buildings:[{c:6,r:4,type:'house',level:6,id:1}]};
   let saved=JSON.stringify(old);
-  const context={document:{hidden:false,getElementById:get,querySelectorAll:()=>[],addEventListener(){},createElement:node},window:{addEventListener(){},devicePixelRatio:1,PCNetwork:require('./world-network.js'),PCEconomy:require('./economy-engine.js')},localStorage:{getItem:()=>saved,setItem:(k,v)=>saved=v},navigator:{},location:{protocol:'http:'},requestAnimationFrame(){},setInterval(){},setTimeout(){},clearTimeout(){},console};
+  const context={document:{hidden:false,getElementById:get,querySelectorAll:()=>[],addEventListener(){},createElement:node},window:{addEventListener(){},devicePixelRatio:1,PCNetwork:require('./world-network.js'),PCEconomy:require('./economy-engine.js'),PCMobility:require('./mobility-engine.js')},localStorage:{getItem:()=>saved,setItem:(k,v)=>saved=v},navigator:{},location:{protocol:'http:'},requestAnimationFrame(){},setInterval(){},setTimeout(){},clearTimeout(){},console};
   vm.createContext(context);
   const exposed=source.replace(/\}\)\(\);\s*$/, 'globalThis.api={get state(){return state},validated,fresh,chooseBuild,place,upgrade,select:id=>{selectedBuilding=id},currentMission,completeMission,stats,canBuildType,finishJobs,crewLimit,save,investRoute,selectDistrict,tradeGoods,takeLoan,nextDay};})();');
   assert.notEqual(exposed,source);
