@@ -13,9 +13,11 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="refinements.css">
+  <link rel="stylesheet" href="visual-alpha.css">
   <script defer src="icons.js"></script>
   <script defer src="world-map.js"></script>
   <script defer src="game.js"></script>
+  <script defer src="game-shell.js"></script>
 </head>
 <body>
  <div class="app" id="app">
@@ -37,15 +39,16 @@
    <div class="metric"><span class="metric-icon green" data-icon="heart"></span><div><small>رضا السكان</small><strong id="metric-happiness">—</strong></div></div>
    <div class="metric compact"><span class="metric-icon purple" data-icon="trophy"></span><div><small>المستوى</small><strong id="metric-level">—</strong></div></div>
   </section>
+  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
   <main class="dashboard">
    <aside class="sidebar side-regions" aria-label="المناطق والتحديات">
-    <section class="panel intro-panel">
+    <section class="panel intro-panel" data-tool="intro" hidden>
       <div class="eyebrow"><span data-icon="sparkles"></span> رحلة إعادة الإعمار</div>
       <h1>من الأمل <em>تبدأ المدينة</em></h1>
       <p>خطّط، ابنِ، ووازن بين احتياجات الناس والموارد المتاحة. قراراتك تصنع الفرق.</p>
       <div class="game-clock"><span class="clock-line"><span data-icon="calendar"></span> اليوم <b id="game-day">1</b></span><span class="clock-speed">يوم جديد كل 25 ثانية</span></div>
     </section>
-    <section class="panel">
+    <section class="panel" data-tool="world" hidden>
      <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">5 محافظات</span></div>
      <svg id="gaza-world-map" class="geo-map" viewBox="0 0 260 300" role="group" aria-label="الخريطة الجغرافية التفاعلية لقطاع غزة"></svg>
      <p class="fine-print" id="map-data-status" role="status">جارٍ تحميل الحدود الجغرافية...</p>
@@ -53,7 +56,7 @@
      <div class="regions" id="regions"></div>
      <p class="fine-print">حدود الأحياء داخل مساحة اللعب تخطيطية وليست خريطة مساحية فعلية.</p>
     </section>
-    <section class="panel mission-panel">
+    <section class="panel mission-panel" data-tool="missions" hidden>
      <div class="panel-heading"><h2><span data-icon="trophy"></span> مهمة الإعمار</h2><span class="mission-counter" id="mission-counter">1 / ∞</span></div>
      <div id="mission-card"></div>
     </section>
@@ -62,7 +65,7 @@
     <div class="game-header">
      <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2></div>
      <div class="game-header-actions">
-      <span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
+      <span class="alpha-tag">VISUAL ALPHA</span><span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
       <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>
       <button class="map-control info" id="reset-camera" type="button" title="العودة إلى منتصف المدينة"><span data-icon="locate"></span></button>
      </div>
@@ -80,18 +83,18 @@
     </div>
    </section>
    <aside class="sidebar side-build" aria-label="المشاريع والإحصاءات">
-    <section class="panel build-panel">
+    <section class="panel build-panel" data-tool="build">
       <div class="panel-heading"><h2><span data-icon="build"></span> ابنِ مدينتك</h2><span class="mini-label">منشآت ومشاريع</span></div>
       <p class="build-helper">اختر المنشأة، ثم اضغط على مربع فارغ داخل الخريطة.</p>
-      <div class="build-list" id="build-list"></div>
+      <div class="construction-hud"><span>الفرق الهندسية</span><strong id="crew-count">0 / 2</strong></div><div id="construction-list"></div><div class="build-list" id="build-list"></div>
       <div class="build-actions"><button id="cancel-build" class="secondary-btn" type="button">إلغاء الاختيار</button></div>
     </section>
-    <section class="panel">
+    <section class="panel" data-tool="research" hidden>
       <div class="panel-heading"><h2>مدارس التنمية</h2><span class="mini-label">تطوير متجدد</span></div>
       <p class="build-helper">استثمر في الأبحاث لتحسين اقتصاد القطاع. المسارات مستوحاة من تجارب دولية، ومزاياها افتراضية.</p>
       <div class="build-list" id="research-list"></div>
     </section>
-    <section class="panel indicators-panel">
+    <section class="panel indicators-panel" data-tool="stats" hidden>
       <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات القطاع</h2><span class="mini-label">مباشر</span></div>
       <div id="service-bars"></div>
       <div class="income-strip"><span>الدخل اليومي</span><strong id="income-label">—</strong></div>

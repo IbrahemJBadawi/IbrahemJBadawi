@@ -67,3 +67,9 @@ The game is separate from all other TechMood products, with local-only saves and
 
 ## بيانات الخريطة
 geoBoundaries gbOpen PSE ADM2، مرجع 2017، Open Data Watch، CC BY 4.0. الإصدار المثبت 9469f09592ced973a3448cf66b6100b741b64c0d. الحدود الإدارية ليست خريطة لواقع الميدان أو الملكيات العقارية. الخريطة تفاعلية للتنقل، والبناء محاكاة تخطيطية.
+
+## Visual Alpha v4
+- Game-first HUD with five functional tool tabs; compact phone layout.
+- Construction and upgrades reserve a crew, charge immediately, complete after simulated days, and award XP upon completion. Existing saves v1–v3 migrate to v4; projects remain in saved state. Time advances while the game is active, not while closed.
+- Construction sites, moving vehicles on connected roads, subtle water motion and evening tint. Canvas remains the renderer; this is a transitional visual alpha, not PixiJS or a commercial 3D release.
+- No new paid dependencies or third-party art. Online accounts, multiplayer, store releases, actual connected street-level maps and original 3D asset production remain pending.

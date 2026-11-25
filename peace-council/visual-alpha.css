@@ -1,0 +1,23 @@
+/* Peace Council: original game HUD; no third-party visual assets. */
+:root{--alpha-ink:#071b28;--alpha-gold:#e8c57b;--alpha-line:#466474;}
+.game-nav{display:flex;gap:6px;margin:8px 0 12px;padding:6px;border:1px solid #2f5065;border-radius:14px;background:#0b2639;overflow-x:auto}
+.game-nav button{display:flex;align-items:center;justify-content:center;gap:7px;flex:1;min-width:80px;border:1px solid transparent;border-radius:9px;padding:10px 12px;background:transparent;color:#b8ccd6;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.game-nav button[aria-pressed="true"]{background:#e8c57b;color:#142c38;border-color:#ffe1a0;box-shadow:0 2px 10px #0004}
+.game-nav .pc-icon{width:17px;height:17px}
+.dashboard{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,320px);grid-template-areas:"game tool";align-items:start;gap:12px}
+.side-build,.side-regions{display:contents}
+.game-panel{grid-area:game;min-width:0;border-color:#486779;box-shadow:0 15px 40px #0003}
+[data-tool]{grid-area:tool;min-width:0}
+[data-tool][hidden]{display:none!important}
+.canvas-wrap{height:clamp(480px,70vh,830px);min-height:480px;background:#153a4d}
+.game-header{background:#102b3b}
+.alpha-tag{font-size:9px;letter-spacing:.08em;color:#e8c57b;white-space:nowrap}
+.construction-hud{display:flex;justify-content:space-between;align-items:center;color:#e8c57b;border-top:1px solid #355264;padding:9px 0;font-size:13px}
+#construction-list{display:grid;gap:6px;margin:0 0 12px}
+.job-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#102c3e;border:1px solid #365366;border-radius:10px;padding:9px;font-size:11px}
+.job-row>div{flex:1;min-width:0}.job-row strong,.job-row small{display:block}.job-row small{color:#b2c7d1;font-size:10px;margin:4px 0}
+.job-track{height:4px;background:#294656;border-radius:4px;overflow:hidden}.job-track span{display:block;height:100%;background:#e8c57b}
+.build-item{min-height:94px;background:#173347;border-color:#456579}.build-item.active{outline:2px solid #e8c57b;outline-offset:-2px}
+.build-icon{background:#234d5d;color:#f1ce81}.game-panel .map-top-hint{background:#0a2637eb}
+@media(max-width:850px){.dashboard{grid-template-columns:1fr;grid-template-areas:"game" "tool"}.canvas-wrap{height:clamp(380px,64vh,660px);min-height:380px}.build-list{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:640px){.resource-strip{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:6px 0}.metric{min-height:43px;padding:5px;gap:5px}.metric-icon{width:25px;height:25px;flex:0 0 25px}.metric-icon .pc-icon{width:14px;height:14px}.metric strong{font-size:14px}.metric small{font-size:9px}.metric.compact{grid-column:span 2;min-height:43px}.game-nav{position:sticky;top:0;z-index:45;gap:3px;padding:4px;margin:5px 0 8px}.game-nav button{min-width:62px;font-size:10px;flex-direction:column;gap:2px;padding:6px 2px}.alpha-tag{display:none}.canvas-wrap{height:clamp(350px,60vh,530px);min-height:350px}.build-list{grid-template-columns:repeat(3,minmax(0,1fr))}.mobile-build-jump{display:none}.bottom-bar{padding-bottom:20px}.toast{bottom:20px}}
