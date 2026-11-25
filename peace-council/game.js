@@ -73,7 +73,7 @@
   ];
   const fresh = () => ({version:VERSION,day:1,coins:4800,materials:85,xp:0,mission:0,nextId:8,introDone:false,region:1,district:null,links:network.normalize(),economy:economy.fresh(),actions:0,missionStart:0,research:{japan:0,turkey:0,china:0,usa:0},buildings:[...initialBuildings.map(b=>({...b,region:1})),{c:7,r:7,type:'council',level:1,id:7,region:1,paid:0}],history:[]});
   let state = fresh(), selectedType = null, selectedBuilding = null, hover = null;
-  let camera = {zoom:1,panX:0,panY:0}, canvas,ctx,dpr=1,cw=1,ch=1,rafPending=false,toastTimer=0,dayTimer=0,soundOn=false,audioCtx=null,manualPaused=false;
+  let camera = {zoom:1,panX:0,panY:0}, canvas,ctx,dpr=1,cw=1,ch=1,rafPending=false,toastTimer=0,dayTimer=0,manualPaused=false;
   const pointers = new Map();
   let gesture = null;
   const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
@@ -147,18 +147,17 @@
   }
   try{const previous=localStorage.getItem(KEY);if(previous){const x=validated(JSON.parse(previous));if(x)state=x}}catch(e){/* game is still playable without storage */}
   const toast=(message,bad=false)=>{const el=$('toast');el.textContent=message;el.classList.toggle('bad',bad);el.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('visible'),3300)};
-  const playSound=(kind='click')=>{
-    if(!soundOn)return;
-    try{
-      const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-      audioCtx=audioCtx||new AC();if(audioCtx.state==='suspended')audioCtx.resume();
-      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),now=audioCtx.currentTime;
-      osc.type='sine';osc.frequency.setValueAtTime(kind==='reward'?550:380,now);osc.frequency.exponentialRampToValueAtTime(kind==='reward'?880:500,now+.16);
-      gain.gain.setValueAtTime(.035,now);gain.gain.exponentialRampToValueAtTime(.001,now+.18);osc.connect(gain).connect(audioCtx.destination);osc.start(now);osc.stop(now+.18);
-    }catch(e){/* audio is optional */}
-  };
+  const audio=window.PCAudio?.create(window);
+  const playSound=(kind='click')=>audio?.effect(kind);
+  function renderAudio(){if(!audio)return;const enabled=audio.enabled;$('sound-btn').innerHTML=icon(enabled?'music':'mute',20);$('sound-btn').setAttribute('aria-label',enabled?'إيقاف الصوت':'تشغيل الصوت');$('sound-btn').setAttribute('aria-pressed',String(enabled));$('audio-status').textContent=enabled?'الصوت يعمل':'الصوت مكتوم';$('audio-toggle').textContent=enabled?'كتم الصوت':'تشغيل الصوت';for(const key of ['master','music','effects','ambient']){$('audio-'+key).value=String(audio.settings[key]);$('audio-'+key+'-value').textContent=audio.settings[key]+'%';}}
+  async function toggleAudio(){if(!audio)return;if(audio.enabled){audio.disable();renderAudio();return;}const ok=await audio.enable();renderAudio();if(ok)playSound();else toast('تعذّر تشغيل الصوت في هذا المتصفح.',true);}
+  function refreshSoundScene(){audio?.setScene({region:state.region,night:state.day%12>=9,congestion:mobilityReports()[state.region].congestion});}
+  for(const key of ['master','music','effects','ambient'])$('audio-'+key).addEventListener('input',e=>{audio?.set(key,e.target.value);renderAudio();});
+  $('audio-toggle').addEventListener('click',toggleAudio);
+  $('audio-reset').addEventListener('click',()=>{audio?.reset();renderAudio();});
+  document.addEventListener('visibilitychange',()=>audio?.setHidden(document.hidden));
   function updateUi(){
-    const s=stats();
+    const s=stats();refreshSoundScene();
     $('metric-coins').textContent=fmt(state.coins)+' ◈';
     $('metric-materials').textContent=fmt(state.materials);
     $('metric-population').textContent=fmt(s.population);
@@ -203,7 +202,7 @@
     $('economy-goods').innerHTML=economy.KEYS.map(k=>{const buy=economy.price(stock,k,'buy')*5,sell=economy.price(stock,k,'sell')*5;return `<div class="goods-row"><div><strong>${economy.GOODS[k].name}</strong><small>المخزون ${fmt(stock[k])}</small></div><button type="button" data-good="${k}" data-side="buy" ${!access||state.coins<buy||economy.used(stock)+5>economy.capacity(state.buildings,i)?'disabled':''}>شراء 5<small>${fmt(buy)} ◈</small></button><button type="button" data-good="${k}" data-side="sell" ${!access||stock[k]<5?'disabled':''}>بيع 5<small>${fmt(sell)} ◈</small></button></div>`}).join('');
     $('economy-recipes').innerHTML=Object.entries(economy.RECIPES).map(([k,r])=>`<div class="recipe-row"><strong>${TYPES[k].name}</strong><small>${Object.entries(r.in).map(([g,n])=>n+' '+economy.GOODS[g].name).join(' + ')||'إنتاج أولي'} ← ${Object.entries(r.out).map(([g,n])=>n+' '+economy.GOODS[g].name).join(' + ')}${r.materials?' + '+r.materials+' مواد بناء':''} • ${r.jobs} عمال</small></div>`).join('');
   }
-  function tradeGoods(key,side){const delta=economy.trade(state.economy,state.buildings,state.region,key,side,state.coins);if(delta===null)return false;state.coins=safeInt(state.coins+delta);save();updateUi();return true;}
+  function tradeGoods(key,side){const delta=economy.trade(state.economy,state.buildings,state.region,key,side,state.coins);if(delta===null)return false;state.coins=safeInt(state.coins+delta);playSound('trade');save();updateUi();return true;}
   function takeLoan(){const amount=economy.borrow(state.economy,state.buildings,state.region);if(!amount)return false;state.coins=safeInt(state.coins+amount);save();updateUi();return true;}
   $('economy-goods').addEventListener('click',e=>{const el=e.target.closest('[data-good]');if(el)tradeGoods(el.dataset.good,el.dataset.side)});
   $('economy-loan').addEventListener('click',takeLoan);
@@ -236,7 +235,7 @@
     state.coins-=cost.price;state.materials-=cost.mat;
     const duration=jobDays(t);
     state.buildings.push({id:state.nextId++,c,r,region:state.region,type:selectedType,level:1,paid:cost.price,job:{kind:'build',remaining:duration,duration}});
-    toast(`بدأ إنشاء ${t.name} • ${fmt(duration)} يوم`);playSound();save();updateUi();
+    toast(`بدأ إنشاء ${t.name} • ${fmt(duration)} يوم`);playSound('build');save();updateUi();
   }
   function upgrade(){
     const b=state.buildings.find(x=>x.id===selectedBuilding);if(!b||b.level>=LIMIT||b.job)return;
@@ -244,7 +243,7 @@
     const t=TYPES[b.type],{price,mat}=upgradeCost(t,b.level);
     if(state.coins<price||state.materials<mat){toast('الموارد غير كافية للترقية.',true);return}
     state.coins-=price;state.materials-=mat;const duration=jobDays(t,b.level+1);b.job={kind:'upgrade',remaining:duration,duration};
-    toast(`بدأ تطوير ${t.name} إلى المستوى ${fmt(b.level+1)}`);playSound();save();updateUi();
+    toast(`بدأ تطوير ${t.name} إلى المستوى ${fmt(b.level+1)}`);playSound('upgrade');save();updateUi();
   }
   const showModal=(title,body,buttons)=>{
     const host=$('modal-host');host.hidden=false;
@@ -273,8 +272,8 @@
     if(manualPaused||document.hidden)return;
     const s=stats();state.day=safeInt(state.day+1,1);state.coins=safeInt(state.coins+s.income);state.materials=safeInt(state.materials+s.materialIncome);
     const production=economy.day(state.economy,state.buildings,state.links,network.ROUTES);state.materials=safeInt(state.materials+production.materials);state.coins=safeInt(state.coins-production.wages);state.coins-=economy.repay(state.economy,state.coins);
-    const completed=finishJobs();if(completed){toast('✓ اكتمل '+fmt(completed)+' مشروع');playSound('reward');}
-    else if(state.day%7===0)toast(`☀ بدأ يوم جديد. دخل +${fmt(s.income)} ومواد +${fmt(s.materialIncome)}`);
+    const completed=finishJobs();if(completed){toast('✓ اكتمل '+fmt(completed)+' مشروع');playSound('complete');}
+    else if(state.day%7===0){playSound('day');toast(`☀ بدأ يوم جديد. دخل +${fmt(s.income)} ومواد +${fmt(s.materialIncome)}`);}
     save();updateUi();
   }
   const canvasNode=$('world');canvas=canvasNode;ctx=canvas.getContext('2d',{alpha:false});
@@ -426,14 +425,14 @@
   canvas.addEventListener('wheel',e=>{e.preventDefault();camera.zoom=clamp(camera.zoom*(e.deltaY<0?1.08:.92),.48,1.7);invalidate()},{passive:false});
   $('zoom-in').addEventListener('click',()=>{camera.zoom=clamp(camera.zoom*1.16,.48,1.7);invalidate()});
   $('zoom-out').addEventListener('click',()=>{camera.zoom=clamp(camera.zoom/1.16,.48,1.7);invalidate()});
-  $('pause-game').addEventListener('click',()=>{manualPaused=!manualPaused;$('pause-game').innerHTML=icon(manualPaused?'play':'pause',20);$('pause-game').setAttribute('aria-label',manualPaused?'استئناف الوقت':'إيقاف الوقت مؤقتًا');$('pause-game').setAttribute('aria-pressed',String(manualPaused));$('pause-game').title=manualPaused?'استئناف الوقت':'إيقاف الوقت مؤقتًا';$('pause-game').classList.toggle('is-paused',manualPaused);toast(manualPaused?'تم إيقاف الزمن مؤقتًا':'استؤنف زمن اللعبة')});
+  $('pause-game').addEventListener('click',()=>{manualPaused=!manualPaused;audio?.setPaused(manualPaused);$('pause-game').innerHTML=icon(manualPaused?'play':'pause',20);$('pause-game').setAttribute('aria-label',manualPaused?'استئناف الوقت':'إيقاف الوقت مؤقتًا');$('pause-game').setAttribute('aria-pressed',String(manualPaused));$('pause-game').title=manualPaused?'استئناف الوقت':'إيقاف الوقت مؤقتًا';$('pause-game').classList.toggle('is-paused',manualPaused);toast(manualPaused?'تم إيقاف الزمن مؤقتًا':'استؤنف زمن اللعبة')});
   $('mobile-build-jump').addEventListener('click',()=>document.querySelector('.build-panel')?.scrollIntoView({behavior:'smooth',block:'start'}));
   $('reset-camera').addEventListener('click',()=>{camera.panX=0;camera.panY=0;camera.zoom=cw<550?.72:cw<870?.94:1.03;invalidate();toast('عادت الكاميرا إلى منتصف الخريطة')});
   $('research-list').addEventListener('click',e=>{const key=e.target.closest('[data-research]')?.dataset.research;if(!Object.hasOwn(SCHOOLS,key)||state.research[key]>=LIMIT)return;const cost=researchCost(key);if(state.coins<cost.coins||state.materials<cost.materials)return;state.coins-=cost.coins;state.materials-=cost.materials;state.research[key]++;state.actions=safeInt(state.actions+1);state.xp=safeInt(state.xp+40);save();updateUi();toast('✓ تم تطوير المدرسة '+SCHOOLS[key].name)});
   $('build-list').addEventListener('click',e=>{const el=e.target.closest('[data-build]');if(el)chooseBuild(el.dataset.build)});
   $('cancel-build').addEventListener('click',()=>{selectedType=null;updateUi()});
   function switchRegion(region,district=null){if(!Number.isInteger(region)||!LABELS[region])return;state.region=region;state.district=district?.id||null;selectedType=null;selectedBuilding=null;hover=null;camera.panX=camera.panY=0;if(district){const p=iso(...district.tile);camera.panX=cw/2-p.x;camera.panY=ch/2-p.y;}save();updateUi();toast('أنت الآن في '+(district?.name||LABELS[region].name))}
-  function investRoute(id){const route=network.ROUTES.find(r=>r.id===id);if(!route)return false;const level=state.links[id],cost=network.cost(route,level);if(level>=LIMIT||state.coins<cost.coins||state.materials<cost.materials)return false;state.coins-=cost.coins;state.materials-=cost.materials;state.links[id]++;state.actions=safeInt(state.actions+1);state.xp=safeInt(state.xp+25);save();updateUi();toast('✓ تم تطوير '+route.name);return true;}
+  function investRoute(id){const route=network.ROUTES.find(r=>r.id===id);if(!route)return false;const level=state.links[id],cost=network.cost(route,level);if(level>=LIMIT||state.coins<cost.coins||state.materials<cost.materials)return false;state.coins-=cost.coins;state.materials-=cost.materials;state.links[id]++;state.actions=safeInt(state.actions+1);state.xp=safeInt(state.xp+25);save();updateUi();toast('✓ تم تطوير '+route.name);playSound('route');return true;}
   function selectDistrict(id){const p=network.PLACES.find(x=>x.id===id);if(p)switchRegion(p.region,p);}
   $('transport-list').addEventListener('click',e=>{const id=e.target.closest('[data-route]')?.dataset.route;if(id)investRoute(id)});
   $('district-list').addEventListener('click',e=>{const id=e.target.closest('[data-district]')?.dataset.district;if(id)selectDistrict(id)});
@@ -448,7 +447,7 @@
     {label:'إلغاء'}
   ]));
   $('help-btn').addEventListener('click',()=>showModal('كيف تلعب مجلس السلام؟',`<p>أنت المسؤول عن تطوير مدينة تجريبية ضمن قطاع غزة. ابدأ بتلبية احتياجات السكان وتطوير الخدمات.</p><ul><li>اختر منشأة من قائمة «ابنِ مدينتك»، ثم اضغط على مربع فارغ داخل الأرض الخضراء.</li><li>اسحب الخريطة بإصبعك، وكبّر بإصبعين أو أزرار (+/−).</li><li>اضغط على أي مبنى لرؤية مستوى تطويره وترقيته أو إزالته.</li><li>كل 25 ثانية يمر يوم جديد وتصل الإيرادات وتتقدم الإنشاءات. لديك فريقان هندسيان ويزيد العدد بترقية المقر.</li><li>أنجز المهام لتحصل على موارد ونقاط خبرة ومكافآت.</li><li>التقدم يُحفظ محليًا في المتصفح؛ صدّر ملف الحفظ للاحتفاظ بنسخة.</li></ul><p><small>هذه خريطة فنية تخطيطية وليست تمثيلًا جغرافيًا أو إحصائيًا دقيقًا لغزة.</small></p>`,[{label:'فهمت، لنبدأ!',primary:true}]));
-  $('sound-btn').addEventListener('click',()=>{soundOn=!soundOn;$('sound-btn').innerHTML=icon(soundOn?'music':'mute',20);$('sound-btn').setAttribute('aria-label',soundOn?'إيقاف الصوت':'تشغيل الصوت');if(soundOn)playSound();toast(soundOn?'تم تشغيل المؤثرات الصوتية':'تم كتم المؤثرات الصوتية')});
+  $('sound-btn').addEventListener('click',toggleAudio);
   $('export-button').addEventListener('click',()=>{
     try{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`peace-council-day-${state.day}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);toast('✓ تم تصدير ملف الحفظ')}catch(e){toast('تعذّر تصدير الحفظ.',true)}
   });
@@ -471,7 +470,7 @@
   });
   const ro=typeof ResizeObserver==='function'?new ResizeObserver(viewport):null;
   ro?.observe($('canvas-wrap'));window.addEventListener('resize',viewport);
-  $('sound-btn').innerHTML=icon('mute',20);
+  renderAudio();
   viewport();updateUi();
   window.PCPixi?.start(canvas,invalidate);
   dayTimer=setInterval(nextDay,DAY_MS);
