@@ -12,19 +12,19 @@ function load(){
   let saved=JSON.stringify(old);
   const context={document:{hidden:false,getElementById:get,querySelectorAll:()=>[],addEventListener(){},createElement:node},window:{addEventListener(){},devicePixelRatio:1},localStorage:{getItem:()=>saved,setItem:(k,v)=>saved=v},navigator:{},location:{protocol:'http:'},requestAnimationFrame(){},setInterval(){},setTimeout(){},clearTimeout(){},console};
   vm.createContext(context);
-  const exposed=source.replace(/\}\)\(\);\s*$/, 'globalThis.api={get state(){return state},validated,fresh,chooseBuild,place,upgrade,select:id=>{selectedBuilding=id},currentMission,completeMission,stats,canBuildType};})();');
+  const exposed=source.replace(/\}\)\(\);\s*$/, 'globalThis.api={get state(){return state},validated,fresh,chooseBuild,place,upgrade,select:id=>{selectedBuilding=id},currentMission,completeMission,stats,canBuildType,finishJobs,crewLimit,save};})();');
   assert.notEqual(exposed,source);
   vm.runInContext(exposed,context);
   return {api:context.api,nodes,getSaved:()=>JSON.parse(saved),switchRegion:i=>get('regions').listeners.click({target:{closest:()=>({dataset:{region:String(i)}})}}),research:key=>get('research-list').listeners.click({target:{closest:()=>({dataset:{research:key}})}})};
 }
 test('v1 migration, upgrades beyond level 6, and saved levels survive validation',()=>{
   const {api,getSaved}=load();assert.equal(api.state.region,1);assert.equal(api.state.buildings[0].region,2);
-  api.select(1);for(let i=0;i<15;i++)api.upgrade();
-  assert.equal(api.state.buildings[0].level,21);assert.equal(api.validated(getSaved()).buildings[0].level,21);
+  api.select(1);for(let i=0;i<15;i++){api.upgrade();for(let d=0;d<12;d++)api.finishJobs();}
+  assert.equal(api.state.buildings[0].level,21);api.save();assert.equal(api.validated(getSaved()).buildings[0].level,21);
 });
 test('all five regions are selectable; identical coordinates coexist in different regions',()=>{
   const {api,switchRegion,getSaved}=load();
-  for(let i=0;i<5;i++){switchRegion(i);assert.equal(api.state.region,i);if(i!==2){api.chooseBuild('house');api.place(6,4);}}
+  for(let i=0;i<5;i++){switchRegion(i);assert.equal(api.state.region,i);if(i!==2){api.chooseBuild('house');api.place(6,4);for(let d=0;d<12;d++)api.finishJobs();}}
   assert.equal(api.state.buildings.length,6);assert.equal(api.validated(getSaved()).buildings.length,6);
 });
 test('future port and airport enforce region and port coastal placement',()=>{
@@ -44,3 +44,6 @@ test('invalid duplicate tiles or unsafe levels rejected',()=>{
 });
 
 test('new game starts at Gaza City with council headquarters',()=>{const {api}=load();const state=api.fresh();assert.equal(state.region,1);assert.equal(state.buildings.filter(b=>b.region===1).length,7);assert.equal(state.buildings.filter(b=>b.type==='council').length,1);assert.equal(api.state.buildings.filter(b=>b.type==='council').length,1);assert.equal(api.state.buildings.find(b=>b.type==='house').region,2);});
+
+test('construction is queued, consumes resources, and only activates after completion',()=>{const {api,getSaved}=load();api.chooseBuild('clinic');const before=api.state.coins;api.place(8,4);const b=api.state.buildings.find(x=>x.type==='clinic');assert.ok(b.job);assert.ok(api.state.coins<before);assert.equal(api.stats().healthPct,0);assert.ok(api.validated(getSaved()).buildings.find(x=>x.type==='clinic').job);for(let d=0;d<12;d++)api.finishJobs();assert.equal(b.job,undefined);assert.ok(api.stats().healthPct>0);});
+test('crew capacity prevents simultaneous overbooking',()=>{const {api}=load();api.chooseBuild('house');api.place(8,4);api.place(9,4);api.place(10,4);assert.equal(api.state.buildings.filter(b=>b.job).length,api.crewLimit());assert.equal(api.state.buildings.some(b=>b.c===10&&b.r===4&&b.region===1),false);});
