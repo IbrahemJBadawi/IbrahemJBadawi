@@ -1,0 +1,22 @@
+name: Peace Council regression tests
+on:
+  push:
+    paths:
+      - 'peace-council/**'
+      - '.github/workflows/peace-council-infinite.yml'
+  pull_request:
+    paths:
+      - 'peace-council/**'
+      - '.github/workflows/peace-council-infinite.yml'
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js
+      - run: node --test peace-council/infinite-world.test.cjs
