@@ -1,4 +1,4 @@
-const CACHE='peace-council-v2.0';
+const CACHE='peace-council-v3.0';
 const FILES=['/','/index.html','/styles.css','/game.js','/icons.js','/refinements.css','/favicon.svg','/peace-council-logo.webp','/manifest.webmanifest'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});
