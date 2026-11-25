@@ -6,9 +6,10 @@
   const $ = id => document.getElementById(id);
   const KEY = 'peace-council-game-v1';
   const icon=(name,size=22)=>window.PCIcons?.icon(name,size)||'';
-  const TYPE_ICONS={council:'build',port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
+  const TYPE_ICONS={farm:'depot',ranch:'depot',mill:'depot',bakery:'depot',quarry:'depot',cementworks:'depot',steelworks:'depot',factory:'depot',warehouse:'depot',bank:'depot',council:'build',port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
   document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon,20)});
-  const VERSION = 5;
+  const VERSION = 6;
+  const economy=window.PCEconomy;
   const network=window.PCNetwork;
   const LIMIT = Number.MAX_SAFE_INTEGER;
   const safeInt = (n,min=0) => Number.isFinite(Number(n)) ? Math.max(min,Math.min(LIMIT,Math.floor(Number(n)))) : min;
@@ -22,6 +23,16 @@
     {name:'رفح',sub:'المطار والخدمات اللوجستية',icon:'◇'}
   ];
   const TYPES = {
+    farm: {name:'مزرعة حبوب',price:360,materials:7,height:14,color:'#cdb875',side:'#84968d',roof:'#e4dfc9',desc:'إنتاج الحبوب',xp:35},
+    ranch: {name:'مزرعة ألبان',price:460,materials:9,height:20,color:'#d4c8ad',side:'#84968d',roof:'#e4dfc9',desc:'حبوب ← حليب',xp:35},
+    mill: {name:'مطحنة',price:520,materials:11,height:26,color:'#ddbf92',side:'#84968d',roof:'#e4dfc9',desc:'حبوب ← دقيق',xp:35},
+    bakery: {name:'مخبز',price:450,materials:8,height:23,color:'#d9ac7f',side:'#84968d',roof:'#e4dfc9',desc:'دقيق ← خبز',xp:35},
+    quarry: {name:'مركز خامات',price:600,materials:12,height:18,color:'#b4afa0',side:'#84968d',roof:'#e4dfc9',desc:'إنتاج الحجر وخام الحديد',xp:35},
+    cementworks: {name:'مصنع إسمنت',price:780,materials:17,height:30,color:'#b8bcb9',side:'#84968d',roof:'#e4dfc9',desc:'حجر ← إسمنت',xp:35},
+    steelworks: {name:'مصنع فولاذ',price:900,materials:20,height:35,color:'#a1b3bd',side:'#84968d',roof:'#e4dfc9',desc:'خام الحديد ← فولاذ',xp:35},
+    factory: {name:'مصنع أدوات',price:1100,materials:24,height:34,color:'#c3b5a0',side:'#84968d',roof:'#e4dfc9',desc:'إسمنت وفولاذ ← أدوات ومواد بناء',xp:35},
+    warehouse: {name:'مستودع',price:450,materials:8,height:22,color:'#c9ad8d',side:'#84968d',roof:'#e4dfc9',desc:'زيادة سعة المخزون',xp:35},
+    bank: {name:'بنك التنمية',price:950,materials:18,height:36,color:'#e7d9b5',side:'#84968d',roof:'#e4dfc9',desc:'تمويل تنموي افتراضي',xp:35},
     house: {name:'منزل',icon:'🏠',price:320,materials:6,height:25,color:'#f7ba79',side:'#a96f5c',roof:'#e5d6b0',desc:'يزيد عدد السكان',xp:15},
     clinic: {name:'مركز صحي',icon:'🏥',price:750,materials:14,height:29,color:'#e9ecec',side:'#8aaebd',roof:'#edf7ff',desc:'يحسّن التغطية الصحية',xp:35},
     school: {name:'مدرسة',icon:'🏫',price:650,materials:12,height:28,color:'#e6c77e',side:'#b08055',roof:'#e9a25d',desc:'يوفّر خدمات التعليم',xp:30},
@@ -58,7 +69,7 @@
     {c:7,r:5,type:'road',level:1,id:5},
     {c:6,r:6,type:'park',level:1,id:6}
   ];
-  const fresh = () => ({version:VERSION,day:1,coins:4800,materials:85,xp:0,mission:0,nextId:8,introDone:false,region:1,district:null,links:network.normalize(),actions:0,missionStart:0,research:{japan:0,turkey:0,china:0,usa:0},buildings:[...initialBuildings.map(b=>({...b,region:1})),{c:7,r:7,type:'council',level:1,id:7,region:1,paid:0}],history:[]});
+  const fresh = () => ({version:VERSION,day:1,coins:4800,materials:85,xp:0,mission:0,nextId:8,introDone:false,region:1,district:null,links:network.normalize(),economy:economy.fresh(),actions:0,missionStart:0,research:{japan:0,turkey:0,china:0,usa:0},buildings:[...initialBuildings.map(b=>({...b,region:1})),{c:7,r:7,type:'council',level:1,id:7,region:1,paid:0}],history:[]});
   let state = fresh(), selectedType = null, selectedBuilding = null, hover = null;
   let camera = {zoom:1,panX:0,panY:0}, canvas,ctx,dpr=1,cw=1,ch=1,rafPending=false,toastTimer=0,dayTimer=0,soundOn=false,audioCtx=null,manualPaused=false;
   const pointers = new Map();
@@ -77,7 +88,8 @@
     const ratio = (capacity,demand) => demand ? clamp(capacity/demand,0,1) : 1;
     const waterPct = Math.round(ratio(water,population)*100), energyPct = Math.round(ratio(energy,population)*100);
     const healthPct = Math.round(ratio(health,population)*100),educationPct = Math.round(ratio(education,population*.72)*100);
-    const happiness = Math.round(clamp(24+waterPct*.2+energyPct*.2+healthPct*.15+educationPct*.13+Math.min(20,Math.log1p(total('park'))*9)+Math.min(2,total('market'))*3,0,100));
+    const food=state.economy.last?.regions;const foodNeed=food?.reduce((n,r)=>n+r.foodNeed,0)||0,foodFed=food?.reduce((n,r)=>n+r.foodFed,0)||0;const foodPenalty=foodNeed?Math.round(8*(1-foodFed/foodNeed)):0;
+    const happiness = Math.round(clamp(24-foodPenalty+waterPct*.2+energyPct*.2+healthPct*.15+educationPct*.13+Math.min(20,Math.log1p(total('park'))*9)+Math.min(2,total('market'))*3,0,100));
     const transport=network.economy(state.links,state.buildings);
     const income = Math.round(transport.income+60+population*2.3+(total('market')*75+total('port')*210+total('airport')*275)*(1+researchBonus('usa'))+total('road')*2-total('clinic')*22-total('school')*17-total('water')*13-total('power')*19-total('depot')*13);
     const materialIncome = transport.materials+2+Math.round(total('depot')*4*(1+researchBonus('china')));
@@ -109,10 +121,10 @@
     catch(e){$('save-status').textContent='● تعذّر الحفظ';$('save-status').classList.add('error');return false}
   };
   function validated(raw){
-    if(!raw || typeof raw!=='object'||![1,2,3,4,VERSION].includes(raw.version)||!Array.isArray(raw.buildings)||raw.buildings.length>COLS*ROWS*LABELS.length||raw.buildings.length<0)return null;
+    if(!raw || typeof raw!=='object'||![1,2,3,4,5,VERSION].includes(raw.version)||!Array.isArray(raw.buildings)||raw.buildings.length>COLS*ROWS*LABELS.length||raw.buildings.length<0)return null;
     const safe={...fresh(),day:safeInt(raw.day,1),coins:safeInt(raw.coins),materials:safeInt(raw.materials),xp:safeInt(raw.xp),mission:safeInt(raw.mission),region:raw.version<3?1:clamp(safeInt(raw.region??1),0,4),actions:safeInt(raw.actions),missionStart:safeInt(raw.missionStart),introDone:Boolean(raw.introDone)};
     safe.missionStart=Math.min(safe.actions,safe.missionStart);
-    safe.links=network.normalize(raw.links);safe.district=network.PLACES.some(p=>p.id===raw.district&&p.region===safe.region)?raw.district:null;
+    safe.links=network.normalize(raw.links);safe.economy=economy.normalize(raw.economy);safe.district=network.PLACES.some(p=>p.id===raw.district&&p.region===safe.region)?raw.district:null;
     for(const key of Object.keys(SCHOOLS))safe.research[key]=safeInt(raw.research?.[key]);
     const used=new Set(),buildings=[];
     for(const b of raw.buildings){
@@ -164,10 +176,27 @@
     $('research-list').innerHTML=Object.entries(SCHOOLS).map(([key,school])=>{const cost=researchCost(key);return `<button type="button" class="build-item" data-research="${key}" ${state.research[key]>=LIMIT||state.coins<cost.coins||state.materials<cost.materials?'disabled':''}><strong>${school.name} • ${fmt(state.research[key])}</strong><small>${school.desc}</small><div class="build-cost"><span>◈ ${fmt(cost.coins)}</span><span>▣ ${fmt(cost.materials)}</span></div></button>`}).join('');
     $('crew-count').textContent=jobs().length+' / '+crewLimit();
     $('construction-list').innerHTML=jobs().length?jobs().map(b=>`<div class="job-row"><div><strong>${TYPES[b.type].name}</strong><small>${LABELS[b.region].name} • ${b.job.kind==='build'?'إنشاء':'ترقية'} • ${fmt(b.job.remaining)} يوم</small><div class="job-track"><span style="width:${100*(1-b.job.remaining/b.job.duration)}%"></span></div></div><b>${fmt(b.job.remaining*25)} ث</b></div>`).join(''):'<p class="fine-print">فرق البناء جاهزة لاستلام مشروع جديد.</p>';
-    renderMission(); renderSelection();
+    renderEconomy();renderMission(); renderSelection();
     $('mode-hint').textContent=selectedType?`اختر أرضًا فارغة لبناء ${TYPES[selectedType].name} — ${fmt(buildCost(TYPES[selectedType]).price)} ◈ و${fmt(buildCost(TYPES[selectedType]).mat)} مواد`:'اختر منشأة ثم اضغط على أرض فارغة للبناء';
     invalidate();
   }
+  function renderEconomy(){
+    const e=state.economy,i=state.region,stock=e.stock[i],report=e.last?.regions[i],access=economy.access(state.buildings,i,['market','port','airport','council']);
+    $('economy-region').textContent=LABELS[i].name;
+    $('stock-capacity').textContent=fmt(economy.used(stock))+' / '+fmt(economy.capacity(state.buildings,i));
+    $('economy-jobs').textContent=fmt(report?.jobs||0)+' / '+fmt(economy.workers(state.buildings,i));
+    $('economy-food').textContent=report?fmt(report.foodFed)+' / '+fmt(report.foodNeed):'—';
+    $('economy-production').textContent=report?fmt(report.produced)+' • متوقفة '+fmt(report.blocked):'—';
+    $('economy-freight').textContent=report?fmt(report.shipped):'—';
+    $('economy-debt').textContent=fmt(e.debt)+' ◈';
+    $('economy-loan').disabled=!!e.debt||!economy.access(state.buildings,i,['bank']);
+    $('economy-goods').innerHTML=economy.KEYS.map(k=>{const buy=economy.price(stock,k,'buy')*5,sell=economy.price(stock,k,'sell')*5;return `<div class="goods-row"><div><strong>${economy.GOODS[k].name}</strong><small>المخزون ${fmt(stock[k])}</small></div><button type="button" data-good="${k}" data-side="buy" ${!access||state.coins<buy||economy.used(stock)+5>economy.capacity(state.buildings,i)?'disabled':''}>شراء 5<small>${fmt(buy)} ◈</small></button><button type="button" data-good="${k}" data-side="sell" ${!access||stock[k]<5?'disabled':''}>بيع 5<small>${fmt(sell)} ◈</small></button></div>`}).join('');
+    $('economy-recipes').innerHTML=Object.entries(economy.RECIPES).map(([k,r])=>`<div class="recipe-row"><strong>${TYPES[k].name}</strong><small>${Object.entries(r.in).map(([g,n])=>n+' '+economy.GOODS[g].name).join(' + ')||'إنتاج أولي'} ← ${Object.entries(r.out).map(([g,n])=>n+' '+economy.GOODS[g].name).join(' + ')}${r.materials?' + '+r.materials+' مواد بناء':''} • ${r.jobs} عمال</small></div>`).join('');
+  }
+  function tradeGoods(key,side){const delta=economy.trade(state.economy,state.buildings,state.region,key,side,state.coins);if(delta===null)return false;state.coins=safeInt(state.coins+delta);save();updateUi();return true;}
+  function takeLoan(){const amount=economy.borrow(state.economy,state.buildings,state.region);if(!amount)return false;state.coins=safeInt(state.coins+amount);save();updateUi();return true;}
+  $('economy-goods').addEventListener('click',e=>{const el=e.target.closest('[data-good]');if(el)tradeGoods(el.dataset.good,el.dataset.side)});
+  $('economy-loan').addEventListener('click',takeLoan);
   function renderMission(){
     const i=state.mission;$('mission-counter').textContent=`${fmt(i+1)} / ∞`;
     const m=currentMission(),p=clamp(m.progress(),0,m.target),done=p>=m.target;
@@ -233,6 +262,7 @@
   function nextDay(){
     if(manualPaused||document.hidden)return;
     const s=stats();state.day=safeInt(state.day+1,1);state.coins=safeInt(state.coins+s.income);state.materials=safeInt(state.materials+s.materialIncome);
+    const production=economy.day(state.economy,state.buildings,state.links,network.ROUTES);state.materials=safeInt(state.materials+production.materials);state.coins=safeInt(state.coins-production.wages);state.coins-=economy.repay(state.economy,state.coins);
     const completed=finishJobs();if(completed){toast('✓ اكتمل '+fmt(completed)+' مشروع');playSound('reward');}
     else if(state.day%7===0)toast(`☀ بدأ يوم جديد. دخل +${fmt(s.income)} ومواد +${fmt(s.materialIncome)}`);
     save();updateUi();

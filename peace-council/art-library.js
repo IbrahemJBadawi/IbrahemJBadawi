@@ -1,7 +1,7 @@
 /* Peace Council — original procedural vector art, TechMood. No external images. */
 (function(root){
 'use strict';
-const TYPES=['house','clinic','school','water','power','market','depot','park','council','port','airport','road'];
+const TYPES=['house','clinic','school','water','power','market','depot','park','council','port','airport','road','farm','ranch','mill','bakery','quarry','cementworks','steelworks','factory','warehouse','bank'];
 const names=['العمارة المحلية','التطوير الحضري','المدينة الذكية','عمارة المستقبل'];
 function tier(level){return level>=100?3:level>=25?2:level>=6?1:0;}
 function style(level){return names[tier(level)];}
@@ -54,6 +54,26 @@ function model(type,level=1){
  p([[-29,-4],[-22,-10],[-8,-5],[-17,1]],C.white,C.dark);p([[-24,-5],[-19,-8],[-13,-5],[-18,-2]],C.red);if(k>=2)panel(12,-17-k*4,14);break;
  case 'airport':
  base('#bfc7c0');p([[-29,-2],[-13,-11],[29,10],[13,17]],'#6a7c82',C.dark);for(let i=0;i<5;i++)l(-19+i*9,-2+i*4,-15+i*9,i*4,C.white,1.4);block(-3,-8,33,14,12+k*6,C.white,C.steel,'#c3d6d5');windows(-3,-8,15,12+k*6,k+1,2);block(14,-6,9,7,20+k*5,C.steel,'#718c93',C.glass);p([[9,10],[-10,2],[-9,-1],[-2,1],[4,-5],[7,-4],[5,4],[15,8],[17,5],[19,7],[17,12]],C.white,C.dark);if(k>=2)panel(-4,-22-k*6,18);if(k===3)block(-2,-20-k*6,17,8,9,C.glass,C.steel);break;
+ case 'farm':
+ base('#8aab72');for(let i=0;i<5;i++){const x=-22+i*9;d(x,3-i*3,13,17,i%2?'#bda25c':'#6c9154');for(let j=0;j<3;j++)l(x-3,1-j*4-i*3,x-2, -3-j*4-i*3,'#e4c677',1.8);}block(12,-9,15,8,8+k*3,C.stone,C.shade);if(k>=1)panel(12,-18-k*3);break;
+ case 'ranch':
+ base('#8eb182');block(-9,-4,30,17,12+k*5,C.cream,C.shade,C.roof);for(let j=0;j<3;j++){const x=-14+j*13;r(x,3-j*2,7,4,C.white);r(x+4,2-j*2,3,3,C.dark);l(x+1,7-j*2,x+1,9-j*2,C.dark);l(x+5,7-j*2,x+5,9-j*2,C.dark);}if(k>=1)tank(10,-12-k*5);break;
+ case 'mill':
+ base();block(-4,0,34,20,18+k*7,C.stone,C.shade,C.cream);windows(-4,0,20,18+k*7,k+1,2);tank(15,-5-k*4);c(-8,-18-k*7,7,C.gold);for(let j=0;j<4;j++){const x=Math.cos(j*Math.PI/2)*7,y=Math.sin(j*Math.PI/2)*7;l(-8,-18-k*7,-8+x,-18-k*7+y,C.dark,1.6);}if(k>=2)panel(9,-20-k*7);break;
+ case 'bakery':
+ base();block(-2,0,42,20,14+k*6,C.stone,C.shade,C.roof);arch(8,4);for(let j=0;j<4;j++)r(-18+j*8,0,6,3,j%2?C.cream:C.red);r(-12,-24-k*6,6,10,C.steel);if(k>=1)panel(8,-17-k*6);break;
+ case 'quarry':
+ base('#bba991');for(let i=0;i<5;i++)block(-18+i*8,8-i*3,9,6,4+(i%3)*3,C.stone,C.shade);block(10,-9,22,13,12+k*4,C.steel,C.shade);l(-18,4,-7,-23-k*4,C.gold,3);l(-7,-23-k*4,10,-19-k*4,C.gold,3);if(k>=2)panel(10,-23-k*4);break;
+ case 'cementworks':
+ base('#b8b9a6');block(-5,0,30,18,16+k*6,C.steel,'#879693');for(let j=0;j<2;j++){const x=11+j*10,y=3-j*4;r(x-4,y-22-k*5,8,22+k*5,C.steel);c(x,y-22-k*5,4,C.cream);}if(k>=1)panel(-5,-19-k*6);break;
+ case 'steelworks':
+ base('#aab9b4');block(-5,0,42,22,19+k*7,'#a7b4b8','#71838a','#d3d8cc');for(let j=0;j<2;j++){const x=9+j*8;r(x,-28-k*7,5,20,C.steel);r(x-1,-29-k*7,7,3,C.dark);}windows(-5,0,18,19+k*7,k+1,3);if(k>=2)panel(-9,-21-k*7);break;
+ case 'factory':
+ base('#bac4af');block(-5,0,46,22,19+k*7,C.stone,C.steel,'#d1ddd5');for(let j=0;j<3;j++){r(-17+j*12,1-j*3,7,5,C.dark);panel(-15+j*12,-21-k*7,10);}if(k>=2)block(7,-20-k*7,17,10,8,C.glass,C.steel);break;
+ case 'warehouse':
+ base();block(-3,0,47,24,17+k*6,'#d2b38b','#927b63','#d9d4bb');for(let j=0;j<3;j++){r(-13+j*9,0-j*3,7,7,C.dark);block(-17+j*10,10-j*4,8,5,4,j%2?C.gold:C.steel,C.shade);}if(k>=1)panel(5,-20-k*6,20);break;
+ case 'bank':
+ base();block(0,2,47,23,18+k*8,C.stone,C.shade,C.cream);for(let j=0;j<4;j++)r(-15+j*8,4-j*2,3,15+k*6,C.cream);arch(0,5);d(0,-19-k*8,38,17,C.roof,C.dark);c(0,-23-k*8,5,C.gold);if(k>=2)panel(11,-24-k*8);break;
  case 'road':
  base('#a8b99a');d(0,0,56,30,'#687c80','#c8d1c4');for(let i=-2;i<=2;i++)l(i*8-3,i*4-1,i*8+3,i*4+2,C.cream,1.5);break;
  }
