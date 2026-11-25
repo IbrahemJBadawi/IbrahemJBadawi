@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="refinements.css">
   <link rel="stylesheet" href="visual-alpha.css">
   <script defer src="icons.js"></script>
+  <script defer src="world-network.js"></script>
   <script defer src="world-map.js"></script>
   <script defer src="art-library.js"></script>
   <script defer src="pixi-renderer.js"></script>
@@ -52,11 +53,11 @@
     </section>
     <section class="panel" data-tool="world" hidden>
      <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">5 محافظات</span></div>
-     <svg id="gaza-world-map" class="geo-map" viewBox="0 0 260 300" role="group" aria-label="الخريطة الجغرافية التفاعلية لقطاع غزة"></svg>
+     <svg id="gaza-world-map" class="geo-map" viewBox="0 0 340 420" role="group" aria-label="الخريطة الجغرافية التفاعلية لقطاع غزة"></svg>
      <p class="fine-print" id="map-data-status" role="status">جارٍ تحميل الحدود الجغرافية...</p>
      <p class="fine-print">المصدر: <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a> / Open Data Watch، <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>، بيانات 2017.</p>
      <div class="regions" id="regions"></div>
-     <p class="fine-print">حدود الأحياء داخل مساحة اللعب تخطيطية وليست خريطة مساحية فعلية.</p>
+     <div class="network-legend"><span><i class="salah"></i> صلاح الدين</span><span><i class="rashid"></i> الرشيد</span></div><h3 class="world-subheading">التجمعات والمدن</h3><div id="district-list" class="regions"></div><h3 class="world-subheading">شبكة الربط والتنمية</h3><p class="network-summary" id="transport-summary">1 / 5</p><div id="transport-list"></div><p class="fine-print">النقاط الجغرافية تقريبية؛ خطوط الربط ومساحة البناء نماذج لعب، وليست مسارات ملاحة أو وصفًا لحالة الطرق. أسماء ومواقع التجمعات: <a href="https://www.geonames.org/" target="_blank" rel="noopener">GeoNames</a>.</p>
     </section>
     <section class="panel mission-panel" data-tool="missions" hidden>
      <div class="panel-heading"><h2><span data-icon="trophy"></span> مهمة الإعمار</h2><span class="mission-counter" id="mission-counter">1 / ∞</span></div>
@@ -65,7 +66,7 @@
    </aside>
    <section class="game-panel" aria-label="مساحة بناء المدينة">
     <div class="game-header">
-     <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2></div>
+     <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2><small id="district-name" class="district-name">اختر منطقة من خريطة العالم</small></div>
      <div class="game-header-actions">
       <button type="button" id="renderer-toggle" class="renderer-toggle" aria-label="تبديل محرك الرسومات" title="تبديل محرك الرسومات">Canvas</button><span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
       <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>

@@ -9,7 +9,7 @@ const assert=require('node:assert/strict');
     assert.equal(await page.locator('#crew-count').textContent(),'0 / 2');assert.ok(await page.locator('[data-build="house"] .art-preview svg polygon').count()>0);assert.equal(await page.evaluate(()=>window.PCArt.TYPES.length),12);
     await page.locator('[data-view="world"]').click();
     await page.locator('#gaza-world-map [data-governorate]').first().waitFor({state:'visible'});
-    assert.equal(await page.locator('#gaza-world-map [data-governorate]').count(),5);
+    assert.equal(await page.locator('#gaza-world-map [data-governorate]').count(),5);assert.equal(await page.locator('#gaza-world-map [data-place]').count(),11);assert.equal(await page.locator('#gaza-world-map [data-link]').count(),8);await page.locator('[data-route="salah-1"]').click();assert.match(await page.locator('#transport-summary').textContent(),/2 \/ 5/);await page.locator('#gaza-world-map [data-place="nuseirat"]').click();assert.match(await page.locator('#district-name').textContent(),/النصيرات/);
     await page.locator('#gaza-world-map [data-governorate="4"]').click();
     assert.match(await page.locator('#region-title').textContent(),/رفح/);
     await page.locator('[data-view="research"]').click();assert.equal(await page.locator('[data-research]').count(),4);
