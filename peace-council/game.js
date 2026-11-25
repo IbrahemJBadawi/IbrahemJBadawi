@@ -6,16 +6,16 @@
   const $ = id => document.getElementById(id);
   const KEY = 'peace-council-game-v1';
   const icon=(name,size=22)=>window.PCIcons?.icon(name,size)||'';
-  const TYPE_ICONS={port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
+  const TYPE_ICONS={council:'build',port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
   document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon,20)});
-  const VERSION = 2;
+  const VERSION = 3;
   const LIMIT = Number.MAX_SAFE_INTEGER;
   const safeInt = (n,min=0) => Number.isFinite(Number(n)) ? Math.max(min,Math.min(LIMIT,Math.floor(Number(n)))) : min;
   const COLS = 14, ROWS = 12;
   const DAY_MS = 25000;
   const LABELS = [
     {name:'شمال غزة',sub:'الزراعة والإسكان',icon:'◇'},
-    {name:'غزة',sub:'الميناء والتجارة',icon:'◇'},
+    {name:'مدينة غزة',sub:'المقر الرئيسي • الميناء والتجارة',icon:'◇'},
     {name:'دير البلح',sub:'الأسواق والخدمات',icon:'◈'},
     {name:'خان يونس',sub:'الصحة والزراعة',icon:'◇'},
     {name:'رفح',sub:'المطار والخدمات اللوجستية',icon:'◇'}
@@ -29,6 +29,7 @@
     market: {name:'سوق',icon:'🛒',price:520,materials:10,height:24,color:'#f0b680',side:'#ad5f55',roof:'#d87964',desc:'يرفع الإيرادات اليومية',xp:35},
     depot: {name:'مركز مواد',icon:'🧱',price:490,materials:9,height:23,color:'#b2babc',side:'#778b90',roof:'#c7a782',desc:'ينتج مواد البناء يوميًا',xp:30},
     park: {name:'حديقة',icon:'🌳',price:240,materials:4,height:14,color:'#7fbe7e',side:'#448e6a',roof:'#9bd37f',desc:'ترفع رضا السكان',xp:15},
+    council: {name:'مقر مجلس السلام',price:1000,materials:20,height:46,color:'#ece0c4',side:'#ab9875',roof:'#719d8a',desc:'مركز إدارة القطاع والبحث',xp:100,region:1},
     port: {name:'ميناء غزة (مستقبلي)',price:2400,materials:45,height:38,color:'#89b6c8',side:'#426b83',roof:'#c6e5ed',desc:'مشروع تجاري ساحلي في غزة',xp:100,region:1},
     airport: {name:'مطار ياسر عرفات (مستقبلي)',price:3200,materials:65,height:31,color:'#c6d2d9',side:'#788b9d',roof:'#edf2f8',desc:'مشروع نقل مستقبلي في رفح',xp:130,region:4},
     road: {name:'طريق',icon:'🛣️',price:80,materials:1,height:2,color:'#a3a8aa',side:'#656f75',roof:'#b7b5a9',desc:'توسّع شبكة المدينة',xp:4}
@@ -56,7 +57,7 @@
     {c:7,r:5,type:'road',level:1,id:5},
     {c:6,r:6,type:'park',level:1,id:6}
   ];
-  const fresh = () => ({version:VERSION,day:1,coins:4800,materials:85,xp:0,mission:0,nextId:7,introDone:false,region:2,actions:0,missionStart:0,research:{japan:0,turkey:0,china:0,usa:0},buildings:initialBuildings.map(b=>({...b,region:2})),history:[]});
+  const fresh = () => ({version:VERSION,day:1,coins:4800,materials:85,xp:0,mission:0,nextId:8,introDone:false,region:1,actions:0,missionStart:0,research:{japan:0,turkey:0,china:0,usa:0},buildings:[...initialBuildings.map(b=>({...b,region:1})),{c:7,r:7,type:'council',level:1,id:7,region:1,paid:0}],history:[]});
   let state = fresh(), selectedType = null, selectedBuilding = null, hover = null;
   let camera = {zoom:1,panX:0,panY:0}, canvas,ctx,dpr=1,cw=1,ch=1,rafPending=false,toastTimer=0,dayTimer=0,soundOn=false,audioCtx=null,manualPaused=false;
   const pointers = new Map();
@@ -101,8 +102,8 @@
     catch(e){$('save-status').textContent='● تعذّر الحفظ';$('save-status').classList.add('error');return false}
   };
   function validated(raw){
-    if(!raw || typeof raw!=='object'||![1,VERSION].includes(raw.version)||!Array.isArray(raw.buildings)||raw.buildings.length>COLS*ROWS*LABELS.length||raw.buildings.length<0)return null;
-    const safe={...fresh(),day:safeInt(raw.day,1),coins:safeInt(raw.coins),materials:safeInt(raw.materials),xp:safeInt(raw.xp),mission:safeInt(raw.mission),region:clamp(safeInt(raw.region??2),0,4),actions:safeInt(raw.actions),missionStart:safeInt(raw.missionStart),introDone:Boolean(raw.introDone)};
+    if(!raw || typeof raw!=='object'||![1,2,VERSION].includes(raw.version)||!Array.isArray(raw.buildings)||raw.buildings.length>COLS*ROWS*LABELS.length||raw.buildings.length<0)return null;
+    const safe={...fresh(),day:safeInt(raw.day,1),coins:safeInt(raw.coins),materials:safeInt(raw.materials),xp:safeInt(raw.xp),mission:safeInt(raw.mission),region:raw.version<VERSION?1:clamp(safeInt(raw.region??1),0,4),actions:safeInt(raw.actions),missionStart:safeInt(raw.missionStart),introDone:Boolean(raw.introDone)};
     safe.missionStart=Math.min(safe.actions,safe.missionStart);
     for(const key of Object.keys(SCHOOLS))safe.research[key]=safeInt(raw.research?.[key]);
     const used=new Set(),buildings=[];
@@ -113,6 +114,7 @@
       const key=`${region}:${b.c}:${b.r}`;if(used.has(key))return null;used.add(key);
       buildings.push({c:b.c,r:b.r,type:b.type,level:b.level,region,id:buildings.length+1,paid:Math.min(TYPES[b.type].price,safeInt(b.paid??TYPES[b.type].price))});
     }
+    if(!buildings.some(b=>b.type==='council')){const spot=Array.from({length:COLS*ROWS},(_,i)=>({c:i%COLS,r:Math.floor(i/COLS)})).find(p=>p.c>=5&&!isWater(p.c,p.r,1)&&!used.has(`1:${p.c}:${p.r}`));if(spot)buildings.push({...spot,region:1,type:'council',level:1,id:buildings.length+1,paid:0});}
     safe.buildings=buildings;safe.nextId=buildings.length+1;
     return safe;
   }
@@ -142,6 +144,7 @@
     ].map(([label,pct,color])=>`<div class="bar-item"><div class="bar-row"><span>${label}</span><span>${pct}%</span></div><div class="bar-bg"><div class="bar-fill ${color}" style="width:${pct}%"></div></div></div>`).join('');
     $('build-list').innerHTML=Object.entries(TYPES).filter(([,t])=>t.region===undefined||t.region===state.region).map(([id,t])=>{const cost=buildCost(t);return `<button type="button" class="build-item ${selectedType===id?'active':''}" data-build="${id}" title="${t.desc}" aria-label="${t.name}، ${fmt(cost.price)} عملة و ${fmt(cost.mat)} مواد" aria-pressed="${selectedType===id}"><span class="build-icon">${icon(TYPE_ICONS[id],22)}</span><strong>${t.name}</strong><div class="build-cost"><span>◈ ${fmt(cost.price)}</span><span class="subcost">▣ ${fmt(cost.mat)}</span></div></button>`}).join('');
     $('regions').innerHTML=LABELS.map((r,i)=>`<button type="button" class="region-button ${i===state.region?'active':''}" data-region="${i}"><span><strong>${r.name}</strong><small>${r.sub}</small></span><span class="region-symbol">${i===state.region?icon('check',15):icon('pin',15)}</span></button>`).join('');
+    window.PCWorldMap?.highlight(state.region);
     $('region-title').textContent=LABELS[state.region].name;
     $('region-subtitle').textContent=LABELS[state.region].sub+' • اقتصاد مشترك';
     $('research-list').innerHTML=Object.entries(SCHOOLS).map(([key,school])=>{const cost=researchCost(key);return `<button type="button" class="build-item" data-research="${key}" ${state.research[key]>=LIMIT||state.coins<cost.coins||state.materials<cost.materials?'disabled':''}><strong>${school.name} • ${fmt(state.research[key])}</strong><small>${school.desc}</small><div class="build-cost"><span>◈ ${fmt(cost.coins)}</span><span>▣ ${fmt(cost.materials)}</span></div></button>`}).join('');
@@ -159,7 +162,7 @@
     if(!b){selectedBuilding=null;el.hidden=true;return}
     el.hidden=false;
     const t=TYPES[b.type],{price:upgradePrice,mat:upgradeMat}=upgradeCost(t,b.level);
-    el.innerHTML=`<div class="selection-line"><strong>${icon(TYPE_ICONS[b.type],18)} ${t.name}</strong><small>المستوى ${fmt(b.level)}</small></div><div class="selection-actions">${b.level<LIMIT?`<button type="button" id="upgrade-building">⬆ ترقية (◈ ${fmt(upgradePrice)}، ▣ ${fmt(upgradeMat)})</button>`:''}<button type="button" class="demolish" id="demolish-building">إزالة المبنى</button><button type="button" id="close-selection">✕</button></div>`;
+    el.innerHTML=`<div class="selection-line"><strong>${icon(TYPE_ICONS[b.type],18)} ${t.name}</strong><small>المستوى ${fmt(b.level)}</small></div><div class="selection-actions">${b.level<LIMIT?`<button type="button" id="upgrade-building">⬆ ترقية (◈ ${fmt(upgradePrice)}، ▣ ${fmt(upgradeMat)})</button>`:''}${b.type==='council'?'':'<button type="button" class="demolish" id="demolish-building">إزالة المبنى</button>'}<button type="button" id="close-selection">✕</button></div>`;
   }
   function chooseBuild(type){
     if(!Object.hasOwn(TYPES,type))return;
@@ -194,7 +197,7 @@
     dialog.appendChild(actions);host.appendChild(dialog);actions.querySelector('button')?.focus();
   };
   function demolish(){
-    const b=state.buildings.find(x=>x.id===selectedBuilding);if(!b)return;
+    const b=state.buildings.find(x=>x.id===selectedBuilding);if(!b||b.type==='council')return;
     const t=TYPES[b.type];
     showModal('إزالة المنشأة',`<p>هل تريد إزالة <b>${t.name}</b>؟ ستسترد 40% من تكلفة بنائها الأساسية، ولن تعود الموارد المستخدمة في تطويرها.</p>`,[
       {label:'تأكيد الإزالة',primary:true,action:()=>{state.buildings=state.buildings.filter(x=>x.id!==b.id);state.coins=safeInt(state.coins+Math.floor((b.paid??t.price)*.4));selectedBuilding=null;save();updateUi();toast('تمت إزالة المنشأة واسترداد جزء من الميزانية.')}},
@@ -290,6 +293,8 @@
       ctx.strokeStyle='#94745b';ctx.lineWidth=2*z;for(let i=-1;i<2;i++){ctx.beginPath();ctx.moveTo(cx-11*z,cy-h+(i+1)*4*z);ctx.lineTo(cx+11*z,cy-h+(i+1)*4*z);ctx.stroke()}
     } else if(b.type==='market'){
       for(let i=-2;i<=2;i++){ctx.strokeStyle=i%2?'#f9dfc4':'#ca6961';ctx.lineWidth=3*z;ctx.beginPath();ctx.moveTo(cx+i*5*z,cy-h-5*z);ctx.lineTo(cx+i*5*z,cy-h+5*z);ctx.stroke()}
+    } else if(b.type==='council'){
+      ctx.fillStyle='#264f46';ctx.font=`bold ${15*z}px system-ui`;ctx.textAlign='center';ctx.fillText('◆',cx,cy-h-4*z);
     } else if(b.type==='port'||b.type==='airport'){
       ctx.fillStyle='#173d4d';ctx.font=`bold ${18*z}px system-ui`;ctx.textAlign='center';ctx.fillText(b.type==='port'?'⚓':'✈',cx,cy-h-4*z);
     } else if(b.type==='house'){
@@ -355,7 +360,9 @@
   $('research-list').addEventListener('click',e=>{const key=e.target.closest('[data-research]')?.dataset.research;if(!Object.hasOwn(SCHOOLS,key)||state.research[key]>=LIMIT)return;const cost=researchCost(key);if(state.coins<cost.coins||state.materials<cost.materials)return;state.coins-=cost.coins;state.materials-=cost.materials;state.research[key]++;state.actions=safeInt(state.actions+1);state.xp=safeInt(state.xp+40);save();updateUi();toast('✓ تم تطوير المدرسة '+SCHOOLS[key].name)});
   $('build-list').addEventListener('click',e=>{const el=e.target.closest('[data-build]');if(el)chooseBuild(el.dataset.build)});
   $('cancel-build').addEventListener('click',()=>{selectedType=null;updateUi()});
-  $('regions').addEventListener('click',e=>{const el=e.target.closest('[data-region]');if(!el)return;const region=Number(el.dataset.region);if(!Number.isInteger(region)||!LABELS[region])return;state.region=region;selectedType=null;selectedBuilding=null;hover=null;camera.panX=camera.panY=0;save();updateUi();toast('أنت الآن في '+LABELS[region].name);});
+  function switchRegion(region){if(!Number.isInteger(region)||!LABELS[region])return;state.region=region;selectedType=null;selectedBuilding=null;hover=null;camera.panX=camera.panY=0;save();updateUi();toast('أنت الآن في '+LABELS[region].name)}
+  window.addEventListener('pc-region',e=>switchRegion(e.detail));
+  $('regions').addEventListener('click',e=>{const el=e.target.closest('[data-region]');if(!el)return;const region=Number(el.dataset.region);if(!Number.isInteger(region)||!LABELS[region])return;switchRegion(region);});
   $('mission-card').addEventListener('click',e=>{if(e.target.closest('#claim-mission'))completeMission()});
   $('selection-info').addEventListener('click',e=>{if(e.target.closest('#upgrade-building'))upgrade();else if(e.target.closest('#demolish-building'))demolish();else if(e.target.closest('#close-selection')){selectedBuilding=null;updateUi()}});
   $('save-button').addEventListener('click',()=>{const ok=save();toast(ok?'✓ تم حفظ التقدم على هذا الجهاز.':'تعذّر الحفظ، استخدم تصدير الحفظ.',!ok)});
@@ -391,7 +398,7 @@
   viewport();updateUi();
   dayTimer=setInterval(nextDay,DAY_MS);
   if(!state.introDone){
-    showModal('أهلًا بك في مجلس السلام 🌍',`<p>هنا تبدأ رحلتك في <b>إعادة بناء مدينة في غزة</b>؛ أعد تشغيل الخدمات وساعد السكان على بناء مستقبل أفضل.</p><ul><li>تبدأ بميزانية <b>4,800</b> ووحدات مواد بناء <b>85</b>.</li><li>ابنِ <b>مركزًا صحيًا</b> لإنجاز أول مهمة.</li><li>اهتم بالمياه والطاقة والتعليم والاقتصاد، وليس بعدد المباني فقط.</li></ul><p><small>هذه نسخة MVP ذات خريطة تخطيطية. بيانات السكان والتكاليف افتراضية لأغراض اللعب.</small></p>`,[
+    showModal('أهلًا بك في مجلس السلام 🌍',`<p>هنا تبدأ رحلتك في <b>إعادة بناء قطاع غزة انطلاقًا من مدينة غزة</b>؛ أعد تشغيل الخدمات وساعد السكان على بناء مستقبل أفضل.</p><ul><li>تبدأ في مقر مجلس السلام بمدينة غزة بميزانية <b>4,800</b> ووحدات مواد بناء <b>85</b>.</li><li>ابنِ <b>مركزًا صحيًا</b> لإنجاز أول مهمة.</li><li>اهتم بالمياه والطاقة والتعليم والاقتصاد، وليس بعدد المباني فقط.</li></ul><p><small>هذه نسخة MVP ذات خريطة تخطيطية. بيانات السكان والتكاليف افتراضية لأغراض اللعب.</small></p>`,[
       {label:'ابدأ رحلة الإعمار',primary:true,action:()=>{state.introDone=true;save();updateUi();toast('اختر «مركز صحي» وابدأ مهمتك الأولى!')}},
       {label:'لاحقًا',action:()=>{state.introDone=true;save()}}
     ]);
