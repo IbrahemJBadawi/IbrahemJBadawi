@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="refinements.css">
   <script defer src="icons.js"></script>
+  <script defer src="world-map.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
@@ -46,6 +47,9 @@
     </section>
     <section class="panel">
      <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">5 محافظات</span></div>
+     <svg id="gaza-world-map" class="geo-map" viewBox="0 0 260 300" role="group" aria-label="الخريطة الجغرافية التفاعلية لقطاع غزة"></svg>
+     <p class="fine-print" id="map-data-status" role="status">جارٍ تحميل الحدود الجغرافية...</p>
+     <p class="fine-print">المصدر: <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a> / Open Data Watch، <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>، بيانات 2017.</p>
      <div class="regions" id="regions"></div>
      <p class="fine-print">حدود الأحياء داخل مساحة اللعب تخطيطية وليست خريطة مساحية فعلية.</p>
     </section>
@@ -56,7 +60,7 @@
    </aside>
    <section class="game-panel" aria-label="مساحة بناء المدينة">
     <div class="game-header">
-     <div><span class="eyebrow" id="region-subtitle">منطقة الوسطى • نموذج أولي</span><h2 id="region-title">مدينة دير البلح</h2></div>
+     <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2></div>
      <div class="game-header-actions">
       <span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
       <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>
