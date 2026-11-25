@@ -18,8 +18,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js && node --check peace-council/game-shell.js && node --check peace-council/pixi-renderer.js
-      - run: node --test peace-council/infinite-world.test.cjs
+      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js && node --check peace-council/game-shell.js && node --check peace-council/pixi-renderer.js && node --check peace-council/art-library.js
+      - run: node --test peace-council/infinite-world.test.cjs peace-council/art-library.test.cjs
       - name: Verify pinned geographic dataset
         run: |
           node <<'NODE'

@@ -79,3 +79,6 @@ geoBoundaries gbOpen PSE ADM2، مرجع 2017، Open Data Watch، CC BY 4.0. ا�
 - Browser dependency pinned to CDN version, loaded asynchronously; failed loads/context loss automatically fall back to Canvas. Local test harness serves exact npm package. Offline startup can use Canvas when GPU library is unavailable.
 - Procedural 2.5D graphics, not imported 3D models. Production-ready commercial art, street-level world, multiplayer and store distribution remain separate milestones.
 - PixiJS MIT license: https://github.com/pixijs/pixijs/blob/v8.14.3/LICENSE
+
+## Art direction v6
+Original shared vector model library: 12 building categories, four visual generations (1–5, 6–24, 25–99, 100+), 48 category/tier combinations (roads use connectivity on the map; catalog road variants share a design), four vehicle colors, local limestone/flat roofs, water tanks, arches, palms, olives, rooftop solar, council civic architecture, port cranes and containers, future airport terminal and aircraft. Shared Canvas/PixiJS rendering and actual asset previews in the build catalog. No external art or paid assets. These are procedural 2.5D vector models, not handcrafted 3D mesh files or reproductions of real landmarks. Buildings continue to level up beyond the visual tier thresholds; further visual styles may be added without save migration.

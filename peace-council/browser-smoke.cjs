@@ -6,7 +6,7 @@ const assert=require('node:assert/strict');
     await page.goto('http://127.0.0.1:4173/?renderer=canvas',{waitUntil:'domcontentloaded'});
     await page.locator('#modal-host button').first().click();
     await page.locator('#metric-coins').waitFor();assert.match(await page.locator('#region-title').textContent(),/غزة/);
-    assert.equal(await page.locator('#crew-count').textContent(),'0 / 2');
+    assert.equal(await page.locator('#crew-count').textContent(),'0 / 2');assert.ok(await page.locator('[data-build="house"] .art-preview svg polygon').count()>0);assert.equal(await page.evaluate(()=>window.PCArt.TYPES.length),12);
     await page.locator('[data-view="world"]').click();
     await page.locator('#gaza-world-map [data-governorate]').first().waitFor({state:'visible'});
     assert.equal(await page.locator('#gaza-world-map [data-governorate]').count(),5);
