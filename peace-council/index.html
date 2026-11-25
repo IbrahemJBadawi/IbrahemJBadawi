@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="visual-alpha.css">
   <script defer src="icons.js"></script>
   <script defer src="world-network.js"></script>
+  <script defer src="economy-engine.js"></script>
   <script defer src="world-map.js"></script>
   <script defer src="art-library.js"></script>
   <script defer src="pixi-renderer.js"></script>
@@ -42,7 +43,7 @@
    <div class="metric"><span class="metric-icon green" data-icon="heart"></span><div><small>رضا السكان</small><strong id="metric-happiness">—</strong></div></div>
    <div class="metric compact"><span class="metric-icon purple" data-icon="trophy"></span><div><small>المستوى</small><strong id="metric-level">—</strong></div></div>
   </section>
-  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
+  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="economy" aria-pressed="false"><span data-icon="wallet"></span> الاقتصاد</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
   <main class="dashboard">
    <aside class="sidebar side-regions" aria-label="المناطق والتحديات">
     <section class="panel intro-panel" data-tool="intro" hidden>
@@ -96,6 +97,14 @@
       <div class="panel-heading"><h2>مدارس التنمية</h2><span class="mini-label">تطوير متجدد</span></div>
       <p class="build-helper">استثمر في الأبحاث لتحسين اقتصاد القطاع. المسارات مستوحاة من تجارب دولية، ومزاياها افتراضية.</p>
       <div class="build-list" id="research-list"></div>
+    </section>
+    <section class="panel economy-panel" data-tool="economy" hidden>
+      <div class="panel-heading"><h2>اقتصاد المحافظات</h2><span class="mini-label" id="economy-region"></span></div>
+      <p class="fine-print">اختر المحافظة من خريطة العالم. تُحسب الموارد والإنتاج والوظائف يوميًا في المحاكاة.</p>
+      <div class="economy-metrics"><div><small>المخزون / السعة</small><strong id="stock-capacity">—</strong></div><div><small>الوظائف / العمال</small><strong id="economy-jobs">—</strong></div><div><small>الغذاء / الاحتياج</small><strong id="economy-food">—</strong></div><div><small>الإنتاج والمنشآت</small><strong id="economy-production">—</strong></div><div><small>شحنات صادرة</small><strong id="economy-freight">—</strong></div><div><small>التمويل المتبقي</small><strong id="economy-debt">—</strong></div></div>
+      <h3 class="world-subheading">السوق المحلي</h3><p class="fine-print">شراء وبيع 5 وحدات بأسعار مرتبطة بالمخزون. يتطلب سوقًا أو مقرًا أو ميناءً أو مطارًا مكتملًا.</p><div id="economy-goods"></div>
+      <h3 class="world-subheading">بنك التنمية</h3><p class="fine-print">تمويل افتراضي 500 عملة، إجمالي السداد 550، حتى 55 يوميًا حسب الرصيد. يتطلب بنكًا مكتملًا.</p><button class="secondary-btn" id="economy-loan" type="button">طلب تمويل</button>
+      <h3 class="world-subheading">سلاسل الإنتاج</h3><div id="economy-recipes"></div>
     </section>
     <section class="panel indicators-panel" data-tool="stats" hidden>
       <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات القطاع</h2><span class="mini-label">مباشر</span></div>
