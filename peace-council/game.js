@@ -6,9 +6,10 @@
   const $ = id => document.getElementById(id);
   const KEY = 'peace-council-game-v1';
   const icon=(name,size=22)=>window.PCIcons?.icon(name,size)||'';
-  const TYPE_ICONS={farm:'depot',ranch:'depot',mill:'depot',bakery:'depot',quarry:'depot',cementworks:'depot',steelworks:'depot',factory:'depot',warehouse:'depot',bank:'depot',council:'build',port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
+  const TYPE_ICONS={busstop:'road',farm:'depot',ranch:'depot',mill:'depot',bakery:'depot',quarry:'depot',cementworks:'depot',steelworks:'depot',factory:'depot',warehouse:'depot',bank:'depot',council:'build',port:'depot',airport:'depot',house:'house',clinic:'clinic',school:'school',water:'water',power:'power',market:'market',depot:'depot',park:'park',road:'road'};
   document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon,20)});
   const VERSION = 6;
+  const mobility=window.PCMobility;
   const economy=window.PCEconomy;
   const network=window.PCNetwork;
   const LIMIT = Number.MAX_SAFE_INTEGER;
@@ -23,6 +24,7 @@
     {name:'رفح',sub:'المطار والخدمات اللوجستية',icon:'◇'}
   ];
   const TYPES = {
+    busstop:{name:'محطة حافلات',price:380,materials:7,height:12,color:'#d4c9a7',side:'#839a94',roof:'#719c9e',desc:'تتيح رحلات الحافلات على الطرق المتصلة',xp:25},
     farm: {name:'مزرعة حبوب',price:360,materials:7,height:14,color:'#cdb875',side:'#84968d',roof:'#e4dfc9',desc:'إنتاج الحبوب',xp:35},
     ranch: {name:'مزرعة ألبان',price:460,materials:9,height:20,color:'#d4c8ad',side:'#84968d',roof:'#e4dfc9',desc:'حبوب ← حليب',xp:35},
     mill: {name:'مطحنة',price:520,materials:11,height:26,color:'#ddbf92',side:'#84968d',roof:'#e4dfc9',desc:'حبوب ← دقيق',xp:35},
@@ -80,6 +82,8 @@
   const discount = () => 1/(1+researchBonus('turkey'));
   const buildCost = t => ({price:safeInt(t.price*discount(),1),mat:safeInt(t.materials*discount(),1)});
   const researchCost = key => ({coins:safeInt(SCHOOLS[key].cost*(1+state.research[key]*.35),1),materials:safeInt(8+state.research[key]*2,1)});
+  let mobilityCacheKey='',mobilityCache=[];
+  function mobilityReports(){const key=state.buildings.map(b=>[b.id,b.region,b.c,b.r,b.type,b.level,b.job?.kind].join(':')).join('|');if(key!==mobilityCacheKey){mobilityCacheKey=key;mobilityCache=LABELS.map((_,i)=>mobility.analyze(state.buildings,i));}return mobilityCache;}
   const stats = () => {
     const total = t => state.buildings.filter(b=>b.type===t&&b.job?.kind!=='build').reduce((n,b)=>n+(1+(b.level-1)*.65),0);
     const population = Math.round(total('house')*18);
@@ -89,7 +93,8 @@
     const waterPct = Math.round(ratio(water,population)*100), energyPct = Math.round(ratio(energy,population)*100);
     const healthPct = Math.round(ratio(health,population)*100),educationPct = Math.round(ratio(education,population*.72)*100);
     const food=state.economy.last?.regions;const foodNeed=food?.reduce((n,r)=>n+r.foodNeed,0)||0,foodFed=food?.reduce((n,r)=>n+r.foodFed,0)||0;const foodPenalty=foodNeed?Math.round(8*(1-foodFed/foodNeed)):0;
-    const happiness = Math.round(clamp(24-foodPenalty+waterPct*.2+energyPct*.2+healthPct*.15+educationPct*.13+Math.min(20,Math.log1p(total('park'))*9)+Math.min(2,total('market'))*3,0,100));
+    const travel=mobilityReports();const populationWeight=travel.reduce((n,r)=>n+r.population,0);const trafficPenalty=populationWeight?Math.round(5*travel.reduce((n,r)=>n+r.congestion*r.population,0)/populationWeight/100):0;
+    const happiness = Math.round(clamp(24-foodPenalty-trafficPenalty+waterPct*.2+energyPct*.2+healthPct*.15+educationPct*.13+Math.min(20,Math.log1p(total('park'))*9)+Math.min(2,total('market'))*3,0,100));
     const transport=network.economy(state.links,state.buildings);
     const income = Math.round(transport.income+60+population*2.3+(total('market')*75+total('port')*210+total('airport')*275)*(1+researchBonus('usa'))+total('road')*2-total('clinic')*22-total('school')*17-total('water')*13-total('power')*19-total('depot')*13);
     const materialIncome = transport.materials+2+Math.round(total('depot')*4*(1+researchBonus('china')));
@@ -176,9 +181,14 @@
     $('research-list').innerHTML=Object.entries(SCHOOLS).map(([key,school])=>{const cost=researchCost(key);return `<button type="button" class="build-item" data-research="${key}" ${state.research[key]>=LIMIT||state.coins<cost.coins||state.materials<cost.materials?'disabled':''}><strong>${school.name} • ${fmt(state.research[key])}</strong><small>${school.desc}</small><div class="build-cost"><span>◈ ${fmt(cost.coins)}</span><span>▣ ${fmt(cost.materials)}</span></div></button>`}).join('');
     $('crew-count').textContent=jobs().length+' / '+crewLimit();
     $('construction-list').innerHTML=jobs().length?jobs().map(b=>`<div class="job-row"><div><strong>${TYPES[b.type].name}</strong><small>${LABELS[b.region].name} • ${b.job.kind==='build'?'إنشاء':'ترقية'} • ${fmt(b.job.remaining)} يوم</small><div class="job-track"><span style="width:${100*(1-b.job.remaining/b.job.duration)}%"></span></div></div><b>${fmt(b.job.remaining*25)} ث</b></div>`).join(''):'<p class="fine-print">فرق البناء جاهزة لاستلام مشروع جديد.</p>';
-    renderEconomy();renderMission(); renderSelection();
+    renderMobility();renderEconomy();renderMission(); renderSelection();
     $('mode-hint').textContent=selectedType?`اختر أرضًا فارغة لبناء ${TYPES[selectedType].name} — ${fmt(buildCost(TYPES[selectedType]).price)} ◈ و${fmt(buildCost(TYPES[selectedType]).mat)} مواد`:'اختر منشأة ثم اضغط على أرض فارغة للبناء';
     invalidate();
+  }
+  function renderMobility(){
+    const r=mobilityReports()[state.region];$('mobility-region').textContent=LABELS[state.region].name;$('mobility-households').textContent=fmt(r.households);$('mobility-roads').textContent=r.roadAccess+'%';$('mobility-work').textContent=r.workAccess+'%';$('mobility-congestion').textContent=r.congestion+'%';$('mobility-trips').textContent=fmt(r.trips);$('mobility-agents').textContent=fmt(r.agents.length);
+    $('mobility-services').innerHTML=[['clinic','الصحة'],['school','التعليم'],['market','الأسواق'],['park','الحدائق']].map(([id,label])=>`<div class="bar-item"><div class="bar-row"><span>${label}</span><span>${r.services[id]}%</span></div><div class="bar-bg"><div class="bar-fill mint" style="width:${r.services[id]}%"></div></div></div>`).join('');
+    $('mobility-mode-list').textContent=['person','car','bus','truck','ship','plane'].map((k,i)=>['مشاة','سيارات','حافلات','شاحنات','سفن','طائرات'][i]+' '+r.agents.filter(a=>a.mode===k).length).join(' • ');
   }
   function renderEconomy(){
     const e=state.economy,i=state.region,stock=e.stock[i],report=e.last?.regions[i],access=economy.access(state.buildings,i,['market','port','airport','council']);
@@ -360,10 +370,12 @@
   }
   function drawConstruction(b,p){const {tw,th}=dims(),z=camera.zoom;tilePoly(p.x,p.y,tw*.88,th*.88,'#b9a484','#f4d08b');ctx.strokeStyle='#f4c262';ctx.lineWidth=2*z;ctx.beginPath();ctx.moveTo(p.x-12*z,p.y);ctx.lineTo(p.x-12*z,p.y-30*z);ctx.lineTo(p.x+16*z,p.y-30*z);ctx.lineTo(p.x+16*z,p.y-15*z);ctx.stroke();ctx.fillStyle='#e7c585';ctx.fillRect(p.x+7*z,p.y-16*z,12*z,6*z);ctx.fillStyle='#193945';ctx.fillRect(p.x-20*z,p.y+8*z,40*z,5*z);ctx.fillStyle='#e5bd65';ctx.fillRect(p.x-20*z,p.y+8*z,40*z*(1-b.job.remaining/b.job.duration),5*z);}
   let visualTick=0;
-  function drawTraffic(){const roads=localBuildings().filter(b=>b.type==='road'&&!b.job);const z=camera.zoom;for(const b of roads.slice(0,45)){const neighbor=[[1,0],[0,1]].map(([dc,dr])=>occupied(b.c+dc,b.r+dr)).find(x=>x?.type==='road'&&!x.job);if(!neighbor)continue;const t=((visualTick*.045+b.id*.173)%1),p=iso(b.c+(neighbor.c-b.c)*t,b.r+(neighbor.r-b.r)*t);if(window.PCArt)drawArtCanvas(window.PCArt.vehicle(b.id),p.x,p.y,z);else{roundedRect(p.x-5*z,p.y-4*z,10*z,6*z,2*z,b.id%2?'#efd18b':'#9be1d6');ctx.fillStyle='#234954';ctx.fillRect(p.x-1*z,p.y-4*z,3*z,3*z);}}}
+  function trafficFrame(){const r=mobilityReports()[state.region];return r.agents.map(a=>({...mobility.position(a,visualTick,r.congestion),mode:a.mode,seed:a.seed}));}
+  function drawTraffic(frame){const z=camera.zoom;for(const a of frame){const p=iso(a.c,a.r);if(window.PCArt?.traveler)drawArtCanvas(window.PCArt.traveler(a.mode,a.seed),p.x,p.y,z);}}
   function draw(){
     rafPending=false;
-    if(window.PCPixi?.active && window.PCPixi.render({width:cw,height:ch,dpr,cols:COLS,rows:ROWS,zoom:camera.zoom,origin:origin(),buildings:localBuildings(),types:TYPES,water:(c,r)=>isWater(c,r),hover,selectedBuilding,selectedType,tick:visualTick,night:state.day%12>=9,canPlace:(c,r)=>canPlace(c,r)&&(!selectedType||canBuildType(selectedType,c,r))}))return;
+    const traffic=trafficFrame();
+    if(window.PCPixi?.active && window.PCPixi.render({traffic,width:cw,height:ch,dpr,cols:COLS,rows:ROWS,zoom:camera.zoom,origin:origin(),buildings:localBuildings(),types:TYPES,water:(c,r)=>isWater(c,r),hover,selectedBuilding,selectedType,tick:visualTick,night:state.day%12>=9,canPlace:(c,r)=>canPlace(c,r)&&(!selectedType||canBuildType(selectedType,c,r))}))return;
     ctx.setTransform(dpr,0,0,dpr,0,0);
     const bg=ctx.createLinearGradient(0,0,0,ch);bg.addColorStop(0,'#18445b');bg.addColorStop(.55,'#0f3b54');bg.addColorStop(1,'#0a293d');ctx.fillStyle=bg;ctx.fillRect(0,0,cw,ch);
     // ambient water ripples
@@ -373,7 +385,7 @@
     }
     for(let row=0;row<ROWS;row++)for(let col=0;col<COLS;col++)drawTile(col,row);
     for(const b of localBuildings().sort((a,b)=>(a.c+a.r)-(b.c+b.r)||(a.c-b.c)))drawBuilding(b);
-    drawTraffic();
+    drawTraffic(traffic);
     const night=(state.day%12>=9);if(night){ctx.fillStyle='rgba(13,25,72,.20)';ctx.fillRect(0,0,cw,ch);}
     ctx.fillStyle='rgba(238,249,255,.55)';ctx.textAlign='center';ctx.font=`${10*camera.zoom}px system-ui`;
     for(const [c,r] of [[2,1],[3,3],[11,8]]){const p=iso(c,r);ctx.fillText(c<3?'البحر':'منطقة تطوير',p.x,p.y+9*camera.zoom)}

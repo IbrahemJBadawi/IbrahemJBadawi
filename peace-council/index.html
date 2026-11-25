@@ -17,6 +17,7 @@
   <script defer src="icons.js"></script>
   <script defer src="world-network.js"></script>
   <script defer src="economy-engine.js"></script>
+  <script defer src="mobility-engine.js"></script>
   <script defer src="world-map.js"></script>
   <script defer src="art-library.js"></script>
   <script defer src="pixi-renderer.js"></script>
@@ -43,7 +44,7 @@
    <div class="metric"><span class="metric-icon green" data-icon="heart"></span><div><small>رضا السكان</small><strong id="metric-happiness">—</strong></div></div>
    <div class="metric compact"><span class="metric-icon purple" data-icon="trophy"></span><div><small>المستوى</small><strong id="metric-level">—</strong></div></div>
   </section>
-  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="economy" aria-pressed="false"><span data-icon="wallet"></span> الاقتصاد</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
+  <nav class="game-nav" aria-label="أقسام اللعبة"><button data-view="build" aria-pressed="true"><span data-icon="build"></span> البناء</button><button data-view="world" aria-pressed="false"><span data-icon="pin"></span> العالم</button><button data-view="research" aria-pressed="false"><span data-icon="sparkles"></span> الأبحاث</button><button data-view="missions" aria-pressed="false"><span data-icon="trophy"></span> المهام</button><button data-view="economy" aria-pressed="false"><span data-icon="wallet"></span> الاقتصاد</button><button data-view="mobility" aria-pressed="false"><span data-icon="road"></span> النقل</button><button data-view="stats" aria-pressed="false"><span data-icon="heart"></span> المدينة</button></nav>
   <main class="dashboard">
    <aside class="sidebar side-regions" aria-label="المناطق والتحديات">
     <section class="panel intro-panel" data-tool="intro" hidden>
@@ -106,7 +107,12 @@
       <h3 class="world-subheading">بنك التنمية</h3><p class="fine-print">تمويل افتراضي 500 عملة، إجمالي السداد 550، حتى 55 يوميًا حسب الرصيد. يتطلب بنكًا مكتملًا.</p><button class="secondary-btn" id="economy-loan" type="button">طلب تمويل</button>
       <h3 class="world-subheading">سلاسل الإنتاج</h3><div id="economy-recipes"></div>
     </section>
-    <section class="panel indicators-panel" data-tool="stats" hidden>
+    <section class="panel mobility-panel" data-tool="mobility" hidden>
+ <div class="panel-heading"><h2>الحياة والمواصلات</h2><span class="mini-label" id="mobility-region"></span></div>
+ <p class="fine-print">شبكة الطرق داخل المدينة تحدد الوصول للعمل والخدمات. ابنِ محطة حافلات متصلة لتفعيل رحلات الحافلات. الحركة تمثيلية وليست بيانات تنقل حقيقية.</p>
+ <div class="economy-metrics"><div><small>الأسر المقدرة</small><strong id="mobility-households">—</strong></div><div><small>الوصول للطرق</small><strong id="mobility-roads">—</strong></div><div><small>الوصول للعمل</small><strong id="mobility-work">—</strong></div><div><small>الازدحام</small><strong id="mobility-congestion">—</strong></div><div><small>الرحلات المقدرة</small><strong id="mobility-trips">—</strong></div><div><small>وحدات الحركة المرئية</small><strong id="mobility-agents">—</strong></div></div>
+ <h3 class="world-subheading">الوصول إلى الخدمات عبر الطرق</h3><div id="mobility-services"></div><h3 class="world-subheading">وسائل النقل النشطة</h3><p id="mobility-mode-list" class="fine-print"></p>
+ </section><section class="panel indicators-panel" data-tool="stats" hidden>
       <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات القطاع</h2><span class="mini-label">مباشر</span></div>
       <div id="service-bars"></div>
       <div class="income-strip"><span>الدخل اليومي</span><strong id="income-label">—</strong></div>

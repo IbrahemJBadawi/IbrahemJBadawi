@@ -1,7 +1,7 @@
 /* Peace Council — original procedural vector art, TechMood. No external images. */
 (function(root){
 'use strict';
-const TYPES=['house','clinic','school','water','power','market','depot','park','council','port','airport','road','farm','ranch','mill','bakery','quarry','cementworks','steelworks','factory','warehouse','bank'];
+const TYPES=['house','clinic','school','water','power','market','depot','park','council','port','airport','road','farm','ranch','mill','bakery','quarry','cementworks','steelworks','factory','warehouse','bank','busstop'];
 const names=['العمارة المحلية','التطوير الحضري','المدينة الذكية','عمارة المستقبل'];
 function tier(level){return level>=100?3:level>=25?2:level>=6?1:0;}
 function style(level){return names[tier(level)];}
@@ -74,12 +74,22 @@ function model(type,level=1){
  base();block(-3,0,47,24,17+k*6,'#d2b38b','#927b63','#d9d4bb');for(let j=0;j<3;j++){r(-13+j*9,0-j*3,7,7,C.dark);block(-17+j*10,10-j*4,8,5,4,j%2?C.gold:C.steel,C.shade);}if(k>=1)panel(5,-20-k*6,20);break;
  case 'bank':
  base();block(0,2,47,23,18+k*8,C.stone,C.shade,C.cream);for(let j=0;j<4;j++)r(-15+j*8,4-j*2,3,15+k*6,C.cream);arch(0,5);d(0,-19-k*8,38,17,C.roof,C.dark);c(0,-23-k*8,5,C.gold);if(k>=2)panel(11,-24-k*8);break;
+ case 'busstop':
+ base('#a6bba3');d(0,0,48,24,'#b8b8a2');for(const x of [-14,14])l(x,4,x,-15,C.dark,2);p([[-19,-13],[0,-22],[19,-13],[0,-4]],'#6d9e9e',C.dark);r(-10,2,18,3,C.steel);l(20,5,20,-13,C.dark,1.7);r(17,-15,6,7,C.gold);if(k>=1)panel(0,-20,16);if(k>=2)r(-13,-7,25,2,C.glass);if(k===3)c(20,-16,3,C.glass);break;
  case 'road':
  base('#a8b99a');d(0,0,56,30,'#687c80','#c8d1c4');for(let i=-2;i<=2;i++)l(i*8-3,i*4-1,i*8+3,i*4+2,C.cream,1.5);break;
  }
  const frozen=Object.freeze(a.map(o=>Object.freeze(o)));cache.set(key,frozen);return frozen;
 }
 function vehicle(seed=0){const color=['#e9c16e','#d47b65','#91ced0','#e9e6d4'][Math.abs(seed)%4];return [{kind:'poly',pts:[[-6,0],[1,-4],[7,-1],[0,3]],fill:'#223b45'},{kind:'poly',pts:[[-5,-2],[1,-6],[7,-3],[1,1]],fill:color},{kind:'rect',x:-1,y:-5,w:3,h:2,fill:'#345969'}];}
+function traveler(mode,seed=0){
+ const color=['#e9c16e','#d47b65','#91ced0','#e9e6d4'][Math.abs(seed)%4];
+ if(mode==='person')return [{kind:'circle',x:0,y:-7,rad:2,fill:'#e6ba92'},{kind:'line',x:0,y:-5,x2:0,y2:0,stroke:color,width:3},{kind:'line',x:-1,y:0,x2:-2,y2:3,stroke:'#344b50',width:1.4},{kind:'line',x:1,y:0,x2:2,y2:3,stroke:'#344b50',width:1.4}];
+ if(mode==='bus'||mode==='truck'){const w=mode==='bus'?17:14;return [{kind:'rect',x:-w/2,y:-5,w,h:7,fill:mode==='bus'?'#e5bd66':'#83b9bf'},{kind:'rect',x:-w/2+2,y:-4,w:w-5,h:2,fill:'#365a69'},...[-4,4].map(x=>({kind:'circle',x,y:2,rad:1.6,fill:'#263e45'}))];}
+ if(mode==='ship')return [{kind:'poly',pts:[[-12,-1],[-5,-5],[12,-2],[8,3],[-7,4]],fill:'#f1e6c9',stroke:'#476674'},{kind:'rect',x:-4,y:-8,w:7,h:6,fill:'#cf8266'}];
+ if(mode==='plane')return [{kind:'poly',pts:[[-12,-2],[-2,-1],[2,-8],[5,-8],[4,0],[13,2],[13,4],[3,3],[-2,7],[-5,7],[-3,2],[-12,1]],fill:'#eaf1e9',stroke:'#5c8392'}];
+ return vehicle(seed);
+}
 function svg(type,level=1){const m=model(type,level);if(!m)return '';const shapes=m.map(o=>{if(o.kind==='poly')return '<polygon points="'+o.pts.map(p=>p.join(',')).join(' ')+'" fill="'+o.fill+'"'+(o.stroke?' stroke="'+o.stroke+'" stroke-width=".55"':'')+'/>';if(o.kind==='rect')return '<rect x="'+o.x+'" y="'+o.y+'" width="'+o.w+'" height="'+o.h+'" fill="'+o.fill+'"/>';if(o.kind==='circle')return '<circle cx="'+o.x+'" cy="'+o.y+'" r="'+o.rad+'" fill="'+o.fill+'"/>';return '<line x1="'+o.x+'" y1="'+o.y+'" x2="'+o.x2+'" y2="'+o.y2+'" stroke="'+o.stroke+'" stroke-width="'+o.width+'" stroke-linecap="round"/>';}).join('');return '<svg viewBox="-35 -82 70 103" aria-hidden="true" focusable="false">'+shapes+'</svg>';}
-const api={model,svg,style,tier,vehicle,TYPES};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PCArt=api;
+const api={model,svg,style,tier,vehicle,traveler,TYPES};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PCArt=api;
 })(typeof window!=='undefined'?window:globalThis);
