@@ -19,7 +19,7 @@ const assert=require('node:assert/strict');
     assert.deepEqual(errors,[]);await page.close();console.log('Browser smoke passed:',viewport.width+'x'+viewport.height);
   }
     const page=await browser.newPage({viewport:{width:1000,height:800},reducedMotion:'reduce'});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    const fs=require('node:fs'),path=require('node:path');const pixi=path.join(path.dirname(require.resolve('pixi.js/package.json')),'dist','pixi.min.js');
+    const fs=require('node:fs'),path=require('node:path');const pixi=path.join(path.join(__dirname,'..','node_modules','pixi.js'),'dist','pixi.min.js');
     await page.route('https://cdn.jsdelivr.net/npm/pixi.js@8.14.3/dist/pixi.min.js',route=>route.fulfill({body:fs.readFileSync(pixi),contentType:'application/javascript',headers:{'access-control-allow-origin':'*'}}));
     await page.goto('http://127.0.0.1:4173/?renderer=pixi',{waitUntil:'domcontentloaded'});
     await page.locator('#modal-host button').first().click();await page.waitForFunction(()=>window.PCPixi?.active===true,{},{timeout:20000});
