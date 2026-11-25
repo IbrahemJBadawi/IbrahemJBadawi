@@ -324,6 +324,7 @@
   function drawTraffic(){const roads=localBuildings().filter(b=>b.type==='road'&&!b.job);const z=camera.zoom;for(const b of roads.slice(0,45)){const neighbor=[[1,0],[0,1]].map(([dc,dr])=>occupied(b.c+dc,b.r+dr)).find(x=>x?.type==='road'&&!x.job);if(!neighbor)continue;const t=((visualTick*.045+b.id*.173)%1),p=iso(b.c+(neighbor.c-b.c)*t,b.r+(neighbor.r-b.r)*t);roundedRect(p.x-5*z,p.y-4*z,10*z,6*z,2*z,b.id%2?'#efd18b':'#9be1d6');ctx.fillStyle='#234954';ctx.fillRect(p.x-1*z,p.y-4*z,3*z,3*z);}}
   function draw(){
     rafPending=false;
+    if(window.PCPixi?.active && window.PCPixi.render({width:cw,height:ch,dpr,cols:COLS,rows:ROWS,zoom:camera.zoom,origin:origin(),buildings:localBuildings(),types:TYPES,water:(c,r)=>isWater(c,r),hover,selectedBuilding,selectedType,tick:visualTick,night:state.day%12>=9,canPlace:(c,r)=>canPlace(c,r)&&(!selectedType||canBuildType(selectedType,c,r))}))return;
     ctx.setTransform(dpr,0,0,dpr,0,0);
     const bg=ctx.createLinearGradient(0,0,0,ch);bg.addColorStop(0,'#18445b');bg.addColorStop(.55,'#0f3b54');bg.addColorStop(1,'#0a293d');ctx.fillStyle=bg;ctx.fillRect(0,0,cw,ch);
     // ambient water ripples
@@ -416,6 +417,7 @@
   ro?.observe($('canvas-wrap'));window.addEventListener('resize',viewport);
   $('sound-btn').innerHTML=icon('mute',20);
   viewport();updateUi();
+  window.PCPixi?.start(canvas,invalidate);
   dayTimer=setInterval(nextDay,DAY_MS);
   if(!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)setInterval(()=>{if(!document.hidden&&!manualPaused){visualTick++;invalidate()}},100);
   if(!state.introDone){

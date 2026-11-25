@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="visual-alpha.css">
   <script defer src="icons.js"></script>
   <script defer src="world-map.js"></script>
+  <script defer src="pixi-renderer.js"></script>
   <script defer src="game.js"></script>
   <script defer src="game-shell.js"></script>
 </head>
@@ -65,7 +66,7 @@
     <div class="game-header">
      <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2></div>
      <div class="game-header-actions">
-      <span class="alpha-tag">VISUAL ALPHA</span><span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
+      <button type="button" id="renderer-toggle" class="renderer-toggle" aria-label="تبديل محرك الرسومات" title="تبديل محرك الرسومات">Canvas</button><span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
       <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>
       <button class="map-control info" id="reset-camera" type="button" title="العودة إلى منتصف المدينة"><span data-icon="locate"></span></button>
      </div>
