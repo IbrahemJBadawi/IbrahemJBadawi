@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js && node --check peace-council/game-shell.js
+      - run: node --check peace-council/game.js && node --check peace-council/service-worker.js && node --check peace-council/world-map.js && node --check peace-council/game-shell.js && node --check peace-council/pixi-renderer.js
       - run: node --test peace-council/infinite-world.test.cjs
       - name: Verify pinned geographic dataset
         run: |
@@ -36,7 +36,7 @@ jobs:
           NODE
       - name: Install browser test tooling
         run: |
-          npm install --no-save --no-package-lock playwright@1.51.1
+          npm install --no-save --no-package-lock playwright@1.51.1 pixi.js@8.14.3
           npx playwright install --with-deps chromium
       - name: Browser smoke test
         run: |

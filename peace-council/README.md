@@ -73,3 +73,9 @@ geoBoundaries gbOpen PSE ADM2، مرجع 2017، Open Data Watch، CC BY 4.0. ا�
 - Construction and upgrades reserve a crew, charge immediately, complete after simulated days, and award XP upon completion. Existing saves v1–v3 migrate to v4; projects remain in saved state. Time advances while the game is active, not while closed.
 - Construction sites, moving vehicles on connected roads, subtle water motion and evening tint. Canvas remains the renderer; this is a transitional visual alpha, not PixiJS or a commercial 3D release.
 - No new paid dependencies or third-party art. Online accounts, multiplayer, store releases, actual connected street-level maps and original 3D asset production remain pending.
+
+## GPU Visual Alpha v5
+- Independent PixiJS 8.14.3 WebGL scene draws terrain, roads, buildings, trees, construction, traffic, selection and night tint; cached static layers and adaptive resolution. Original Canvas remains input surface and compatibility renderer. Toggle between engines in the game header; no gameplay or save changes.
+- Browser dependency pinned to CDN version, loaded asynchronously; failed loads/context loss automatically fall back to Canvas. Local test harness serves exact npm package. Offline startup can use Canvas when GPU library is unavailable.
+- Procedural 2.5D graphics, not imported 3D models. Production-ready commercial art, street-level world, multiplayer and store distribution remain separate milestones.
+- PixiJS MIT license: https://github.com/pixijs/pixijs/blob/v8.14.3/LICENSE
