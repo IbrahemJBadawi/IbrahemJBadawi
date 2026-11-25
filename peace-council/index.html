@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="refinements.css">
   <script defer src="icons.js"></script>
+  <script defer src="world-map.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
@@ -45,18 +46,21 @@
       <div class="game-clock"><span class="clock-line"><span data-icon="calendar"></span> اليوم <b id="game-day">1</b></span><span class="clock-speed">يوم جديد كل 25 ثانية</span></div>
     </section>
     <section class="panel">
-     <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">خريطة تجريبية</span></div>
+     <div class="panel-heading"><h2><span data-icon="pin"></span> مناطق قطاع غزة</h2><span class="mini-label">5 محافظات</span></div>
+     <svg id="gaza-world-map" class="geo-map" viewBox="0 0 260 300" role="group" aria-label="الخريطة الجغرافية التفاعلية لقطاع غزة"></svg>
+     <p class="fine-print" id="map-data-status" role="status">جارٍ تحميل الحدود الجغرافية...</p>
+     <p class="fine-print">المصدر: <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a> / Open Data Watch، <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>، بيانات 2017.</p>
      <div class="regions" id="regions"></div>
      <p class="fine-print">حدود الأحياء داخل مساحة اللعب تخطيطية وليست خريطة مساحية فعلية.</p>
     </section>
     <section class="panel mission-panel">
-     <div class="panel-heading"><h2><span data-icon="trophy"></span> مهمة الإعمار</h2><span class="mission-counter" id="mission-counter">1 / 5</span></div>
+     <div class="panel-heading"><h2><span data-icon="trophy"></span> مهمة الإعمار</h2><span class="mission-counter" id="mission-counter">1 / ∞</span></div>
      <div id="mission-card"></div>
     </section>
    </aside>
    <section class="game-panel" aria-label="مساحة بناء المدينة">
     <div class="game-header">
-     <div><span class="eyebrow" id="region-subtitle">منطقة الوسطى • نموذج أولي</span><h2 id="region-title">مدينة دير البلح</h2></div>
+     <div><span class="eyebrow" id="region-subtitle">مقر مجلس السلام • اقتصاد مشترك</span><h2 id="region-title">مدينة غزة</h2></div>
      <div class="game-header-actions">
       <span class="play-tag"><span class="pulsedot"></span> لعب مباشر</span>
       <button class="map-control" id="pause-game" type="button" aria-label="إيقاف الوقت مؤقتًا" title="إيقاف الوقت مؤقتًا"><span data-icon="pause"></span></button>
@@ -77,13 +81,18 @@
    </section>
    <aside class="sidebar side-build" aria-label="المشاريع والإحصاءات">
     <section class="panel build-panel">
-      <div class="panel-heading"><h2><span data-icon="build"></span> ابنِ مدينتك</h2><span class="mini-label">9 منشآت</span></div>
+      <div class="panel-heading"><h2><span data-icon="build"></span> ابنِ مدينتك</h2><span class="mini-label">منشآت ومشاريع</span></div>
       <p class="build-helper">اختر المنشأة، ثم اضغط على مربع فارغ داخل الخريطة.</p>
       <div class="build-list" id="build-list"></div>
       <div class="build-actions"><button id="cancel-build" class="secondary-btn" type="button">إلغاء الاختيار</button></div>
     </section>
+    <section class="panel">
+      <div class="panel-heading"><h2>مدارس التنمية</h2><span class="mini-label">تطوير متجدد</span></div>
+      <p class="build-helper">استثمر في الأبحاث لتحسين اقتصاد القطاع. المسارات مستوحاة من تجارب دولية، ومزاياها افتراضية.</p>
+      <div class="build-list" id="research-list"></div>
+    </section>
     <section class="panel indicators-panel">
-      <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات المدينة</h2><span class="mini-label">مباشر</span></div>
+      <div class="panel-heading"><h2><span data-icon="heart"></span> مؤشرات القطاع</h2><span class="mini-label">مباشر</span></div>
       <div id="service-bars"></div>
       <div class="income-strip"><span>الدخل اليومي</span><strong id="income-label">—</strong></div>
     </section>
