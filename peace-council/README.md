@@ -82,3 +82,9 @@ geoBoundaries gbOpen PSE ADM2، مرجع 2017، Open Data Watch، CC BY 4.0. ا�
 
 ## Art direction v6
 Original shared vector model library: 12 building categories, four visual generations (1–5, 6–24, 25–99, 100+), 48 category/tier combinations (roads use connectivity on the map; catalog road variants share a design), four vehicle colors, local limestone/flat roofs, water tanks, arches, palms, olives, rooftop solar, council civic architecture, port cranes and containers, future airport terminal and aircraft. Shared Canvas/PixiJS rendering and actual asset previews in the build catalog. No external art or paid assets. These are procedural 2.5D vector models, not handcrafted 3D mesh files or reproductions of real landmarks. Buildings continue to level up beyond the visual tier thresholds; further visual styles may be added without save migration.
+
+## Connected World v7
+- One georeferenced overview with five governorate polygons, 11 named public place markers, clickable locality focus within the existing regional construction grids, and two schematic civilian corridors inspired by Salah al-Din and Al-Rashid.
+- Eight upgradeable regional links form a graph; investments connect regions to Gaza City and add daily income/material bonuses through connected capacity and operating commerce. Regions remain accessible to protect existing saves. Route improvements are instant investments, not engineering-crew jobs.
+- Save v5 migrates v1–v4, preserves ongoing v4 construction, and stores selected locality and corridor levels. No fixed design-level cap on corridor upgrades.
+- Public reference: GeoNames Palestine locality coordinates (https://www.geonames.org/); general geographical corridor names based on historical public OCHA maps. Markers are approximate reference locations; corridors are game abstractions, not road survey geometry or live access information. Local boards remain stylized regional grids, not a seamless street-level GIS construction surface.
