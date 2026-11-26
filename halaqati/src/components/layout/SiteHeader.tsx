@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/halaqat", label: "الحلقات" },
   { href: "/teachers", label: "المحفّظون" },
   { href: "/centers", label: "الدور والمراكز" },
+  { href: "/forms", label: "نماذج المراكز" },
   { href: "/about", label: "عن حلقتي" },
 ];
 
