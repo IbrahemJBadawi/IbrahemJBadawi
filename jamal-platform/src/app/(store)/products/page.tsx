@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Link from "next/link";
 import { Listing, ListingSkeleton, flatParams } from "@/components/catalog/Listing";
 import { PageHeader } from "@/components/ui/States";
 import { parseFilters } from "@/lib/data/filters";
@@ -19,6 +20,7 @@ export default function ProductsPage({ searchParams }: PageProps<"/products">) {
   return (
     <>
       <PageHeader eyebrow="المتجر" title="جميع المنتجات" />
+      <div className="container-page pb-4"><Link href="/style-studio" className="inline-flex rounded-full border border-line bg-paper px-4 py-2 text-sm font-semibold text-ink">تسوّق حسب إطلالتك وألوانك ←</Link></div>
       <Suspense fallback={<ListingSkeleton />}>
         <Content searchParams={searchParams} />
       </Suspense>
