@@ -5,7 +5,7 @@ import "@fontsource/cormorant-garamond/latin-600.css";
 import "./globals.css";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL ? "https://aljamalbrand.vercel.app" : "http://localhost:3000");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
