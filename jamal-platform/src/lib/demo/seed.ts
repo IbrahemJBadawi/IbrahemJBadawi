@@ -122,7 +122,7 @@ export async function seedDemo(tx: Tx) {
         for (const size of sizes) {
           await tx.query(
             `insert into public.product_variants (id, product_id, color_name, color_hex, size, sku, availability, sort_order)
-             values (md5('jamal-demo-variant:' || $1::text || ':' || $2::text || ':' || coalesce($4::text,''))::uuid,$1,$2,$3,$4,$5,$6,$7)`,
+             values (md5('jamal-demo-variant:' || $1::uuid::text || ':' || $2::text || ':' || coalesce($4::text,''))::uuid,$1::uuid,$2,$3,$4,$5,$6,$7)`,
             [prod.id, colorName, hex, size, `DEMO-${p.slug.slice(5, 13).toUpperCase()}-${order}`, size === "XL" ? "out_of_stock" : "available", order++],
           );
         }
