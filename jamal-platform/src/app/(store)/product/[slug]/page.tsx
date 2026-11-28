@@ -9,6 +9,7 @@ import { formatMoney } from "@/lib/money";
 import { t } from "@/lib/i18n/ar";
 import { Gallery } from "@/components/product/Gallery";
 import { AddToCart } from "@/components/product/AddToCart";
+import { SizeGuide } from "@/components/product/SizeGuide";
 import { FavoriteButton } from "@/components/product/FavoriteButton";
 import { Price } from "@/components/product/Price";
 import { ProductGrid } from "@/components/product/ProductCard";
@@ -85,7 +86,7 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
   const p = await getProduct(slug);
   if (!p) notFound();
   const available = p.availability === "available" && (p.variants.length === 0 || p.variants.some((v) => v.availability === "available"));
-  const site = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const site = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL ? "https://aljamalbrand.vercel.app" : "http://localhost:3000");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -136,6 +137,7 @@ async function ProductContent({ params }: { params: PageProps<"/product/[slug]">
               <AddToCart productId={p.id} variants={p.variants} available={available} currency={p.currency_code} />
             </div>
           </div>
+          <div className="mt-4"><SizeGuide variants={p.variants}/></div>
           <p className="mt-4 text-xs leading-6 text-muted">
             <strong className="text-ink">اطلب الآن وادفع لاحقًا:</strong> نحجز مقاسك لدى المورد المحلي ونرسل لك السعر النهائي مع التوصيل، ثم تدفع بكل راحة.
           </p>

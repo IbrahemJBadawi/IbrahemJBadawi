@@ -5,6 +5,7 @@ import { formatMoney } from "@/lib/money";
 import { label, t } from "@/lib/i18n/ar";
 import { computeFinancials } from "@/lib/finance";
 import { AdminTitle, Card, Stat, Table, td } from "@/components/admin/ui";
+import { ProfitPlanner } from "@/components/admin/ProfitPlanner";
 import { OrderStatusBadge, formatDate } from "@/components/orders/OrderParts";
 
 export const metadata = { title: "الملخص" };
@@ -146,6 +147,7 @@ export default async function AdminDashboard() {
           </div>
         )}
       </Card>
+      <Card title="محاكي الربح الشهري"><ProfitPlanner/></Card>
       <Card title="أحدث الطلبات" action={<Link href="/admin/orders" className="text-sm text-beige-deep hover:underline">عرض الكل</Link>}>
         <Table head={["الطلب", "العميل", "الحالة", "الإجمالي", "التاريخ"]} empty={data.recent.length === 0}>
           {data.recent.map((o) => (
