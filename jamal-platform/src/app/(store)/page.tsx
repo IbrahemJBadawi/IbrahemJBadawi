@@ -191,6 +191,7 @@ export default function HomePage() {
         <CategoryChips />
       </Suspense>
       <Hero />
+      <section className="container-page py-5 md:py-8"><Link href="/style-studio" className="group flex flex-wrap items-center justify-between gap-4 rounded-[2rem] border border-line bg-paper px-6 py-6 shadow-[var(--shadow-card)] transition-colors hover:border-beige md:px-9"><div><p className="jamal-overline">JAMAL / STYLE STUDIO</p><h2 className="mt-2 text-xl font-bold md:text-2xl">اعثر على القطعة التي تشبهك.</h2><p className="mt-1 text-sm text-muted">اختيارات حسب المناسبة والميزانية واللون، أو ابحث عن لون من صورة.</p></div><span className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-ivory">جرّب منسق الإطلالات <ArrowLeft className="size-4"/></span></Link></section>
       <Section title="وصل حديثًا" href="/products">
         <Suspense fallback={<ProductGridSkeleton count={4} />}>
           <ProductsRow kind="new" />
