@@ -44,6 +44,7 @@ export function Footer() {
           <h2 className="mb-4 text-sm font-bold">تسوّق</h2>
           <ul className={col}>
             <li><Link className="hover:text-ivory" href="/products">جميع المنتجات</Link></li>
+            <li><Link className="hover:text-ivory" href="/style-studio">منسق الإطلالات</Link></li>
             <li><Link className="hover:text-ivory" href="/offers">العروض والتخفيضات</Link></li>
             <li><Link className="hover:text-ivory" href="/favorites">المفضلة</Link></li>
             <li><Link className="hover:text-ivory" href="/track">تتبع الطلب</Link></li>
